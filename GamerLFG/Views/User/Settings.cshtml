@@ -1,358 +1,101 @@
 @{
-    ViewData["Title"] = "Settings";
+    ViewData["Title"] = "Platform Settings";
 }
 
-<div class="settings-page">
-    <div class="page-header">
-        <h1><i data-lucide="settings"></i> Platform Settings</h1>
-        <p>Customize your GamerLFG experience</p>
+<main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark/50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Page Header -->
+        <div class="mb-10">
+            <h2 class="text-4xl font-black tracking-tight mb-2 text-white font-display uppercase italic">PLATFORM_SETTINGS</h2>
+            <p class="text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest text-xs">Manage your Hub identity, notification triggers, and security protocols.</p>
+        </div>
+
+        <div class="space-y-8 pb-20">
+            <!-- Notifications Section -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">notifications</span>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-tight">Notifications</h3>
+                </div>
+                <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 overflow-hidden divide-y divide-slate-100 dark:divide-white/5">
+                    <!-- Setting Row 1 -->
+                    <div class="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
+                        <div class="space-y-1">
+                            <p class="font-semibold text-white">Desktop Push Alerts</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Receive real-time match found and party invite notifications.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input checked="" class="sr-only peer" type="checkbox"/>
+                            <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                    <!-- Setting Row 2 -->
+                    <div class="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
+                        <div class="space-y-1">
+                            <p class="font-semibold text-white">Match Audio Cues</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Play a tactical sound effect when a game lobby is ready.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input checked="" class="sr-only peer" type="checkbox"/>
+                            <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Privacy Section -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">visibility</span>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-tight">Privacy Control</h3>
+                </div>
+                <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 overflow-hidden divide-y divide-slate-100 dark:divide-white/5">
+                    <div class="p-6 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="font-semibold text-white">Profile Visibility</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Control who can see your stats, history, and current game.</p>
+                        </div>
+                        <div class="flex bg-black p-1 rounded-lg">
+                            <button class="px-4 py-1.5 text-sm font-bold bg-primary text-black rounded shadow-sm">Public</button>
+                            <button class="px-4 py-1.5 text-sm font-medium text-slate-500 hover:text-white transition-colors">Friends</button>
+                            <button class="px-4 py-1.5 text-sm font-medium text-slate-500 hover:text-white transition-colors">Private</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Section -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">security</span>
+                    <h3 class="text-xl font-bold text-white uppercase tracking-tight">Security</h3>
+                </div>
+                <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 p-6">
+                    <button class="w-full py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 rounded font-bold text-sm uppercase tracking-widest transition-all">
+                        Delete Account Protocol
+                    </button>
+                </div>
+            </section>
+        </div>
     </div>
+</main>
 
-    <div class="settings-content">
-        <!-- Account Settings -->
-        <section class="settings-section card">
-            <h2><i data-lucide="user"></i> Account</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Email Address</span>
-                    <span class="setting-value">notatord@email.com</span>
-                </div>
-                <button class="btn btn-secondary btn-sm">Change</button>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Password</span>
-                    <span class="setting-value">••••••••••••</span>
-                </div>
-                <button class="btn btn-secondary btn-sm">Update</button>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Two-Factor Authentication</span>
-                    <span class="setting-desc">Add an extra layer of security</span>
-                </div>
-                <label class="toggle">
-                    <input type="checkbox" />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </section>
-
-        <!-- Privacy Settings -->
-        <section class="settings-section card">
-            <h2><i data-lucide="shield"></i> Privacy</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Profile Visibility</span>
-                    <span class="setting-desc">Control who can see your profile</span>
-                </div>
-                <select class="form-input setting-select">
-                    <option value="public">Public</option>
-                    <option value="friends">Friends Only</option>
-                    <option value="private">Private</option>
-                </select>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Show Online Status</span>
-                    <span class="setting-desc">Let others see when you're online</span>
-                </div>
-                <label class="toggle">
-                    <input type="checkbox" checked />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Allow Friend Requests</span>
-                    <span class="setting-desc">Receive friend requests from anyone</span>
-                </div>
-                <label class="toggle">
-                    <input type="checkbox" checked />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </section>
-
-        <!-- Notification Settings -->
-        <section class="settings-section card">
-            <h2><i data-lucide="bell"></i> Notifications</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Lobby Invites</span>
-                    <span class="setting-desc">Get notified when invited to lobbies</span>
-                </div>
-                <label class="toggle">
-                    <input type="checkbox" checked />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Friend Activity</span>
-                    <span class="setting-desc">Notifications when friends create lobbies</span>
-                </div>
-                <label class="toggle">
-                    <input type="checkbox" checked />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Karma Updates</span>
-                    <span class="setting-desc">Get notified when you receive ratings</span>
-                </div>
-                <label class="toggle">
-                    <input type="checkbox" />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Email Notifications</span>
-                    <span class="setting-desc">Receive weekly digest emails</span>
-                </div>
-                <label class="toggle">
-                    <input type="checkbox" />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </section>
-
-        <!-- Appearance Settings -->
-        <section class="settings-section card">
-            <h2><i data-lucide="palette"></i> Appearance</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Theme</span>
-                    <span class="setting-desc">Choose your preferred theme</span>
-                </div>
-                <select class="form-input setting-select">
-                    <option value="dark">Dark Mode</option>
-                    <option value="light" disabled>Light Mode (Coming Soon)</option>
-                </select>
-            </div>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Accent Color</span>
-                    <span class="setting-desc">Customize your accent color</span>
-                </div>
-                <div class="color-options">
-                    <button class="color-option active" style="--color: #FF9900;" title="Orange"></button>
-                    <button class="color-option" style="--color: #00D9FF;" title="Blue"></button>
-                    <button class="color-option" style="--color: #00FF88;" title="Green"></button>
-                    <button class="color-option" style="--color: #FF4757;" title="Red"></button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Danger Zone -->
-        <section class="settings-section card danger-zone">
-            <h2><i data-lucide="alert-triangle"></i> Danger Zone</h2>
-            
-            <div class="setting-item">
-                <div class="setting-info">
-                    <span class="setting-label">Delete Account</span>
-                    <span class="setting-desc">Permanently delete your account and all data</span>
-                </div>
-                <button class="btn btn-danger btn-sm">Delete Account</button>
-            </div>
-        </section>
+<!-- Footer Actions Bar -->
+<div class="fixed bottom-0 left-0 right-0 h-20 border-t border-white/5 bg-black/80 backdrop-blur-md flex items-center justify-center px-8 z-50">
+    <div class="max-w-4xl w-full flex items-center justify-between">
+        <div class="flex items-center gap-4 text-sm">
+            <span class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                <span class="material-symbols-outlined text-xs">info</span>
+                Ready to synchronize changes
+            </span>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="px-6 py-2.5 text-sm font-bold border border-white/10 text-white rounded hover:bg-white/5 transition-colors">
+                Abey Default
+            </button>
+            <button onclick="alert('Settings synchronized with Hub')" class="px-8 py-2.5 text-sm font-bold bg-primary text-black rounded hover:shadow-[0_0_20px_rgba(242,150,13,0.4)] transition-all">
+                Synchronize Settings
+            </button>
+        </div>
     </div>
 </div>
-
-<style>
-.settings-page {
-    max-width: 720px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-.page-header h1 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.75rem;
-}
-
-.page-header h1 i {
-    color: var(--color-primary-orange);
-}
-
-.page-header p {
-    color: var(--color-smoke-gray);
-    margin-top: var(--spacing-xs);
-}
-
-.settings-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-.settings-section h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.125rem;
-    color: var(--color-primary-orange);
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.settings-section h2 i {
-    width: 20px;
-    height: 20px;
-}
-
-/* Setting Items */
-.setting-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md) 0;
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.setting-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.setting-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.setting-label {
-    font-weight: 500;
-}
-
-.setting-value {
-    color: var(--color-smoke-gray);
-    font-size: 0.875rem;
-}
-
-.setting-desc {
-    color: var(--color-smoke-gray);
-    font-size: 0.75rem;
-}
-
-.setting-select {
-    width: auto;
-    min-width: 140px;
-}
-
-/* Toggle Switch */
-.toggle {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 28px;
-}
-
-.toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--color-dark-gray);
-    transition: var(--transition-fast);
-    border-radius: var(--radius-full);
-}
-
-.toggle-slider::before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: var(--transition-fast);
-    border-radius: 50%;
-}
-
-.toggle input:checked + .toggle-slider {
-    background-color: var(--color-primary-orange);
-}
-
-.toggle input:checked + .toggle-slider::before {
-    transform: translateX(20px);
-}
-
-/* Color Options */
-.color-options {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.color-option {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    background: var(--color);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.color-option:hover {
-    transform: scale(1.1);
-}
-
-.color-option.active {
-    border-color: white;
-    box-shadow: 0 0 12px var(--color);
-}
-
-/* Danger Zone */
-.danger-zone h2 {
-    color: var(--color-crimson);
-}
-
-.btn-sm {
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: 0.875rem;
-}
-</style>
-
-@section Scripts {
-    <script>
-        lucide.createIcons();
-        
-        // Color option selection
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
-}

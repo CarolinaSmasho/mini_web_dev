@@ -1,525 +1,231 @@
 @{
-    ViewData["Title"] = "Lobby Details";
-    var lobbyId = ViewData["LobbyId"]?.ToString() ?? "1";
+    ViewData["Title"] = "Mission Briefing";
 }
 
-<div class="lobby-details-page">
-    <!-- Lobby Header -->
-    <div class="lobby-header-section card">
-        <div class="lobby-meta">
-            <span class="game-tag">Elden Ring</span>
-            <span class="live-indicator"><i data-lucide="circle"></i> LIVE NOW</span>
-            <span class="slots-badge">2/3 Players</span>
-        </div>
-        <h1 class="lobby-title">Boss Hunt - Malenia Run</h1>
-        <p class="lobby-description">Need a tank and a healer. Mic required. Let's take down the hardest boss together! Be prepared for a challenging fight.</p>
-        
-        <div class="lobby-moods">
-            <span class="tag">🔥 Tryhard</span>
-            <span class="tag tag-blue">🎤 Mic On</span>
-            <span class="tag tag-green">⚔️ Boss Rush</span>
-        </div>
-        
-        <div class="lobby-host-info">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" alt="Host" class="host-avatar-lg" />
-            <div class="host-details">
-                <span class="host-label">Hosted by</span>
-                <span class="host-name-lg">Notatord</span>
-                <div class="karma-stars-lg">
-                    <i data-lucide="star"></i>
-                    <i data-lucide="star"></i>
-                    <i data-lucide="star"></i>
-                    <i data-lucide="star"></i>
-                    <i data-lucide="star" class="empty"></i>
-                    <span>4.8 Karma</span>
+<main class="flex-1 max-w-[1400px] mx-auto w-full px-6 py-8">
+    <div class="grid grid-cols-12 gap-8">
+        <!-- Main Column: Hero and Composition -->
+        <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+            <!-- Hero Section -->
+            <div class="relative w-full h-[400px] rounded-lg overflow-hidden group border border-white/10">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style='background-image: url("https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1400");'></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-8 w-full z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider">Active Transmission</span>
+                        <span class="px-2 py-0.5 bg-black/60 border border-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">Valorant</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none mb-2 italic">Ascendant 3 Grind - Need IGL</h1>
+                    <p class="text-white/60 mt-4 text-base max-w-2xl font-medium">Looking for a mature team leader who knows their strats. Professionalism required. High stakes infiltration mission on the rank ladder.</p>
                 </div>
             </div>
-            <span class="badge badge-success host-badge"><i data-lucide="crown"></i> HOST</span>
+
+            <!-- Squad Composition -->
+            <div class="bg-card-dark border border-white/10 rounded-lg p-6">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold uppercase tracking-tight text-white">Squad Composition</h3>
+                        <p class="text-xs text-white/40 mt-1 uppercase tracking-wider">2 SLOTS REMAINING • BALANCED TEAM PREFERRED</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-3xl font-black text-white">3<span class="text-white/30">/5</span></span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <!-- Host -->
+                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-white/5 hover:border-white/20 transition-all">
+                        <div class="relative aspect-square rounded overflow-hidden border border-primary/50">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=SentinelMain" alt="Host" class="h-full w-full object-cover" />
+                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary text-[9px] font-bold text-black uppercase">Host</div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-white">SentinelMain</p>
+                            <p class="text-[10px] text-primary uppercase font-mono mt-0.5">[LEADER] ONLINE</p>
+                        </div>
+                    </div>
+                    <!-- Member 1 -->
+                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-white/5 hover:border-white/20 transition-all">
+                        <div class="relative aspect-square rounded overflow-hidden border border-white/10">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User2" alt="Member" class="h-full w-full object-cover" />
+                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-white/20 backdrop-blur-md text-[9px] font-bold text-white uppercase">Duelist</div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-white">JettMain_V</p>
+                            <p class="text-[10px] text-white/40 uppercase font-mono mt-0.5">READY</p>
+                        </div>
+                    </div>
+                    <!-- Member 2 -->
+                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-white/5 hover:border-white/20 transition-all">
+                        <div class="relative aspect-square rounded overflow-hidden border border-white/10">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User3" alt="Member" class="h-full w-full object-cover" />
+                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-white/20 backdrop-blur-md text-[9px] font-bold text-white uppercase">Smokes</div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-white">OmenKing</p>
+                            <p class="text-[10px] text-white/40 uppercase font-mono mt-0.5">READY</p>
+                        </div>
+                    </div>
+                    <!-- Open Slot 1 -->
+                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-dashed border-white/20 hover:border-primary/50 hover:bg-primary/[0.02] transition-all cursor-pointer">
+                        <div class="relative aspect-square rounded overflow-hidden bg-black/40 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl text-primary/80">shield</span>
+                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary/20 text-primary text-[9px] font-bold uppercase">INITIATOR</div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-primary">SCANNING...</p>
+                            <p class="text-[10px] text-white/30 uppercase font-mono mt-0.5">VACANT</p>
+                        </div>
+                    </div>
+                    <!-- Open Slot 2 -->
+                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-dashed border-white/20 hover:border-primary/50 hover:bg-primary/[0.02] transition-all cursor-pointer">
+                        <div class="relative aspect-square rounded overflow-hidden bg-black/40 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl text-primary/80">medical_services</span>
+                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary/20 text-primary text-[9px] font-bold uppercase">FLEX</div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wide text-primary">SCANNING...</p>
+                            <p class="text-[10px] text-white/30 uppercase font-mono mt-0.5">VACANT</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Access Restriction Warning -->
+            <div class="bg-card-dark border border-primary/30 rounded-lg p-6 flex flex-col md:flex-row items-start gap-5 shadow-[0_0_30px_rgba(242,150,13,0.05)] relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+                <div class="p-3 bg-primary/10 rounded border border-primary/20 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-primary text-2xl">lock</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                        <h4 class="text-base font-bold uppercase text-white tracking-wide">Secure Communications Channel</h4>
+                        <span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded uppercase font-bold">Encrypted</span>
+                    </div>
+                    <p class="text-sm text-white/60 leading-relaxed mb-4 max-w-2xl">
+                        Voice channels and external links (Discord, TeamSpeak) are restricted to prevent unauthorized access. Tactical links will be automatically revealed once you are officially recruited by the squad host.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-black border border-white/10 rounded text-[10px] uppercase font-bold text-white/30 flex items-center gap-1.5 select-none">
+                            <span class="material-symbols-outlined text-sm">chat</span> Discord Hidden
+                        </span>
+                        <span class="px-2 py-1 bg-black border border-white/10 rounded text-[10px] uppercase font-bold text-white/30 flex items-center gap-1.5 select-none">
+                            <span class="material-symbols-outlined text-sm">mic</span> Tactical Comms Locked
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button class="w-full h-16 bg-primary hover:bg-primary/90 text-black text-xl font-black uppercase tracking-[0.1em] rounded-lg transition-all active:scale-[0.99] flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(242,150,13,0.3)] group" id="joinBtn">
+                <span class="material-symbols-outlined font-bold group-hover:animate-pulse">bolt</span>
+                REQUEST DEPLOYMENT
+            </button>
+        </div>
+
+        <!-- Sidebar: Host and Requirements -->
+        <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+            <div class="sticky top-24 bg-card-dark border border-white/10 rounded-lg overflow-hidden">
+                <div class="p-5 border-b border-white/10 bg-white/[0.02]">
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=SentinelMain" alt="Host" class="size-12 rounded bg-cover bg-center border border-primary/30" />
+                        <div>
+                            <h4 class="font-bold text-base text-white leading-none">SentinelMain</h4>
+                            <div class="flex items-center gap-1 mt-1.5">
+                                <div class="flex">
+                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                </div>
+                                <span class="text-[10px] font-mono ml-1 text-white/50">(4.9 karma)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-5 flex flex-col gap-6">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Protocol Starts In</p>
+                        <div class="bg-black/40 border border-primary/20 p-3 rounded text-center relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+                            <p class="text-2xl font-black text-white font-mono tracking-tighter tabular-nums">00:15:00</p>
+                            <p class="text-[9px] uppercase text-primary font-bold tracking-wider mt-1 animate-pulse">Live Link</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-3">Lobby Parameters</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2.5 py-1 bg-primary/10 border border-primary/30 text-primary rounded text-[10px] font-bold uppercase tracking-wider">Competitive</span>
+                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 text-white/70 rounded text-[10px] font-bold uppercase tracking-wider">Tryhard</span>
+                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 text-white/70 rounded text-[10px] font-bold uppercase tracking-wider">Mic Only</span>
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-white/10 w-full"></div>
+
+                    <div class="flex flex-col gap-3">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Squad Requirements</p>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-base">check_circle</span>
+                            <p class="text-xs text-white/80 font-medium uppercase">Min Rank: <span class="text-white">Diamond 3</span></p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-base">check_circle</span>
+                            <p class="text-xs text-white/80 font-medium uppercase">Comms: English</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary text-base">check_circle</span>
+                            <p class="text-xs text-white/80 font-medium uppercase">Region: NA-EAST</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 p-3 rounded bg-black/40 border border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-white/40 text-lg">public</span>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase text-white/40 leading-none">Terminal</p>
+                                <p class="text-xs text-white font-bold mt-1">NA-EAST DISCOVERY</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 rounded border border-green-500/20">
+                            <div class="size-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-[9px] font-bold text-green-500 uppercase">Latency Ok</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="px-2 flex flex-wrap gap-x-6 gap-y-2 opacity-30 hover:opacity-100 transition-opacity justify-center lg:justify-start">
+                <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors" href="#">Rules</a>
+                <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors" href="#">Security</a>
+                <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors" href="#">Report Transmission</a>
+            </div>
         </div>
     </div>
-
-    <!-- Main Content Tabs -->
-    <div class="lobby-tabs">
-        <button class="tab-btn active" data-tab="squad">
-            <i data-lucide="users"></i> Squad Info
-        </button>
-        <button class="tab-btn" data-tab="applicants">
-            <i data-lucide="user-plus"></i> Applicants <span class="badge">3</span>
-        </button>
-    </div>
-
-    <!-- Tab Content -->
-    <div class="tab-content">
-        <!-- Squad Info Tab -->
-        <div class="tab-panel active" id="squad-panel">
-            <div class="squad-grid">
-                <!-- Roles Needed -->
-                <div class="card">
-                    <h3><i data-lucide="target"></i> Roles Needed</h3>
-                    <div class="roles-list">
-                        <div class="role-item">
-                            <span class="role-name">Tank/Aggro</span>
-                            <span class="role-status pending">0/1</span>
-                        </div>
-                        <div class="role-item">
-                            <span class="role-name">Healer</span>
-                            <span class="role-status pending">0/1</span>
-                        </div>
-                        <div class="role-item filled">
-                            <span class="role-name">DPS</span>
-                            <span class="role-status filled">1/1 ✓</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Current Members -->
-                <div class="card">
-                    <h3><i data-lucide="users"></i> Current Squad</h3>
-                    <div class="members-list">
-                        <div class="member-item">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" alt="User" />
-                            <div class="member-info">
-                                <span class="member-name">Notatord</span>
-                                <span class="member-role">Host / DPS</span>
-                            </div>
-                            <span class="badge badge-success"><i data-lucide="crown"></i></span>
-                        </div>
-                        <div class="member-item">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=WarriorX" alt="User" />
-                            <div class="member-info">
-                                <span class="member-name">WarriorX</span>
-                                <span class="member-role">Member</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Join Section (for non-members) -->
-            <div class="join-section card">
-                <h3>Want to join this lobby?</h3>
-                <p>Select your desired role and send a request to the host.</p>
-                <div class="join-form">
-                    <select class="form-input" id="desiredRole">
-                        <option value="">Select a role</option>
-                        <option value="Tank/Aggro">Tank/Aggro</option>
-                        <option value="Healer">Healer</option>
-                    </select>
-                    <textarea class="form-input" id="applicationMessage" placeholder="Write a message to the host (optional)" rows="2"></textarea>
-                    <button class="btn btn-primary" onclick="applyToLobby()">
-                        <i data-lucide="send"></i> Request to Join
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Applicants Tab (Host Only) -->
-        <div class="tab-panel" id="applicants-panel">
-            <div class="applicants-list">
-                <div class="applicant-card card">
-                    <div class="applicant-header">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=TankMaster" alt="User" />
-                        <div class="applicant-info">
-                            <span class="applicant-name">TankMaster</span>
-                            <div class="karma-stars">
-                                <i data-lucide="star"></i>
-                                <i data-lucide="star"></i>
-                                <i data-lucide="star"></i>
-                                <i data-lucide="star"></i>
-                                <i data-lucide="star"></i>
-                                <span>5.0</span>
-                            </div>
-                        </div>
-                        <span class="tag tag-gold">Desired: Tank/Aggro</span>
-                    </div>
-                    <div class="applicant-tags">
-                        <span class="tag">Tryhard</span>
-                        <span class="tag tag-blue">Mic ON</span>
-                        <span class="tag tag-green">Team Player</span>
-                    </div>
-                    <p class="applicant-message">"Ready to tank! I have 200 hours in Elden Ring."</p>
-                    <div class="applicant-actions">
-                        <div class="vote-section">
-                            <span>Squad Votes:</span>
-                            <span class="vote-count positive">👍 2</span>
-                            <span class="vote-count">👎 0</span>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="btn btn-success">
-                                <i data-lucide="check"></i> Recruit
-                            </button>
-                            <button class="btn btn-danger">
-                                <i data-lucide="x"></i> Pass
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-.lobby-details-page {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-/* Header Section */
-.lobby-header-section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.lobby-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.slots-badge {
-    background: var(--color-midnight);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.live-indicator {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--color-toxic-green);
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.live-indicator i {
-    width: 10px;
-    height: 10px;
-    fill: currentColor;
-    animation: pulse 1.5s infinite;
-}
-
-.lobby-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-}
-
-.lobby-description {
-    color: var(--color-smoke-gray);
-    line-height: 1.6;
-}
-
-.lobby-host-info {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid var(--glass-border);
-}
-
-.host-avatar-lg {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 3px solid var(--color-golden);
-}
-
-.host-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.host-label {
-    font-size: 0.75rem;
-    color: var(--color-smoke-gray);
-}
-
-.host-name-lg {
-    font-weight: 700;
-    font-size: 1.125rem;
-}
-
-.karma-stars-lg i {
-    width: 14px;
-    height: 14px;
-}
-
-.host-badge {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* Tabs */
-.lobby-tabs {
-    display: flex;
-    gap: var(--spacing-sm);
-    background: var(--color-midnight);
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-lg);
-}
-
-.tab-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: transparent;
-    border: none;
-    color: var(--color-smoke-gray);
-    font-weight: 500;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.tab-btn:hover {
-    color: var(--color-ghost-white);
-    background: var(--color-midnight-light);
-}
-
-.tab-btn.active {
-    background: var(--color-primary-orange);
-    color: white;
-}
-
-.tab-btn i {
-    width: 18px;
-    height: 18px;
-}
-
-.tab-panel {
-    display: none;
-}
-
-.tab-panel.active {
-    display: block;
-}
-
-/* Squad Grid */
-.squad-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-lg);
-}
-
-.squad-grid h3 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1rem;
-    margin-bottom: var(--spacing-md);
-}
-
-.squad-grid h3 i {
-    color: var(--color-primary-orange);
-}
-
-/* Roles List */
-.roles-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.role-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-sm);
-    background: var(--color-midnight);
-    border-radius: var(--radius-sm);
-}
-
-.role-status.pending {
-    color: var(--color-crimson);
-}
-
-.role-status.filled {
-    color: var(--color-toxic-green);
-}
-
-/* Members List */
-.members-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.member-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-    background: var(--color-midnight);
-    border-radius: var(--radius-sm);
-}
-
-.member-item img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-}
-
-.member-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.member-role {
-    font-size: 0.75rem;
-    color: var(--color-smoke-gray);
-}
-
-/* Join Section */
-.join-section {
-    margin-top: var(--spacing-lg);
-}
-
-.join-section h3 {
-    margin-bottom: var(--spacing-xs);
-}
-
-.join-section p {
-    color: var(--color-smoke-gray);
-    margin-bottom: var(--spacing-md);
-}
-
-.join-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.join-form .btn {
-    align-self: flex-start;
-}
-
-/* Applicants */
-.applicants-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.applicant-card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.applicant-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-.applicant-header img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-}
-
-.applicant-info {
-    flex: 1;
-}
-
-.applicant-name {
-    font-weight: 600;
-}
-
-.applicant-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
-}
-
-.applicant-message {
-    font-style: italic;
-    color: var(--color-smoke-gray);
-    padding: var(--spacing-sm);
-    background: var(--color-midnight);
-    border-radius: var(--radius-sm);
-    border-left: 3px solid var(--color-primary-orange);
-}
-
-.applicant-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid var(--glass-border);
-}
-
-.vote-section {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--color-smoke-gray);
-}
-
-.vote-count {
-    font-weight: 600;
-}
-
-.vote-count.positive {
-    color: var(--color-toxic-green);
-}
-
-.action-buttons {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-@@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-</style>
+</main>
 
 @section Scripts {
     <script>
-        lucide.createIcons();
-        
-        // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabId = this.dataset.tab;
-                
-                // Update buttons
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update panels
-                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                document.getElementById(tabId + '-panel').classList.add('active');
-            });
+        document.getElementById('joinBtn').addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<span class="material-symbols-outlined animate-spin-slow">sync</span> REQUESTING...';
+            setTimeout(() => {
+                alert('Deployment request transmitted to host. Awaiting authorization.');
+                this.innerHTML = '<span class="material-symbols-outlined">check_circle</span> REQUEST SENT';
+                this.classList.remove('bg-primary');
+                this.classList.add('bg-green-500/20', 'text-green-500', 'border', 'border-green-500/30');
+            }, 1500);
         });
-        
-        // Apply to lobby
-        function applyToLobby() {
-            const role = document.getElementById('desiredRole').value;
-            const message = document.getElementById('applicationMessage').value;
-            
-            if (!role) {
-                alert('Please select a role');
-                return;
-            }
-            
-            // TODO: Call API
-            console.log('Applying:', { role, message });
-            alert('Application submitted!');
-        }
     </script>
+    <style>
+        @@keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 2s linear infinite;
+        }
+    </style>
 }

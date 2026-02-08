@@ -1,219 +1,108 @@
 @{
-    ViewData["Title"] = "Sign Up";
+    ViewData["Title"] = "Join the Hub";
 }
 
-<div class="auth-page">
-    <div class="auth-card">
-        <div class="auth-header">
-            <i data-lucide="user-plus" class="auth-icon"></i>
-            <h1>Join the Squad</h1>
-            <p>Create your account to start finding teammates</p>
+<div class="relative min-h-[calc(100vh-80px)] w-full flex flex-col overflow-x-hidden">
+    <!-- Grid Background -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.05]" style="background-image: radial-gradient(#f2960d 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+    <main class="flex-1 flex flex-col items-center justify-center px-4 py-12 relative z-10">
+        <div class="max-w-[1100px] w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="flex flex-col justify-center space-y-8 lg:pr-10">
+                <div class="space-y-4">
+                    <span class="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold tracking-widest uppercase">The Hub Access</span>
+                    <h1 class="text-4xl md:text-6xl font-bold leading-none tracking-tight font-display">JOIN THE <span class="text-primary">ELITE</span> SQUAD</h1>
+                    <p class="text-[#cbb390] text-lg max-w-md">Find your perfect teammates, sync your roles, and dominate the lobby. Registration is free and fast.</p>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4 items-start">
+                        <div class="bg-accent-dark p-3 rounded-lg border border-white/5">
+                            <span class="material-symbols-outlined text-primary">groups</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">Smart Matchmaking</h3>
+                            <p class="text-sm text-[#cbb390]/70">Find players based on playstyle and role compatibility.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="bg-accent-dark p-3 rounded-lg border border-white/5">
+                            <span class="material-symbols-outlined text-primary">verified_user</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">Verified Stats</h3>
+                            <p class="text-sm text-[#cbb390]/70">Connect your accounts to showcase your true rank.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card-dark rounded-xl border border-white/10 shadow-2xl p-6 md:p-8">
+                <div class="flex flex-col gap-3 mb-8">
+                    <div class="flex gap-6 justify-between items-end">
+                        <p class="text-white text-base font-bold leading-normal uppercase tracking-wider">Authentication Protocol</p>
+                        <p class="text-primary text-sm font-bold leading-normal">INITIALIZING...</p>
+                    </div>
+                    <div class="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                        <div class="h-full bg-primary" style="width: 45%;"></div>
+                    </div>
+                </div>
+
+                <form asp-controller="Auth" asp-action="Register" method="post" class="space-y-4" id="registerForm">
+                    @Html.AntiForgeryToken()
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="block text-[#cbb390] text-[10px] font-bold uppercase tracking-widest ml-1">Codename</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-sm">person</span>
+                                <input name="username" class="w-full rounded-lg border border-white/10 bg-black/50 focus:border-primary focus:ring-1 focus:ring-primary text-white h-12 px-10 text-base transition-all" placeholder="YOUR GAMERTAG" type="text" required />
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-[#cbb390] text-[10px] font-bold uppercase tracking-widest ml-1">Comms (Email)</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-sm">mail</span>
+                                <input name="email" class="w-full rounded-lg border border-white/10 bg-black/50 focus:border-primary focus:ring-1 focus:ring-primary text-white h-12 px-10 text-base transition-all" placeholder="YOUR@EMAIL.COM" type="email" required />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="block text-[#cbb390] text-[10px] font-bold uppercase tracking-widest ml-1">Secure Pass</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-sm">lock</span>
+                                    <input id="password" name="password" class="w-full rounded-lg border border-white/10 bg-black/50 focus:border-primary focus:ring-1 focus:ring-primary text-white h-12 px-10 text-base transition-all" placeholder="••••••••" type="password" required minlength="8" />
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[#cbb390] text-[10px] font-bold uppercase tracking-widest ml-1">Confirm Pass</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-sm">verified</span>
+                                    <input id="confirmPassword" name="confirmPassword" class="w-full rounded-lg border border-white/10 bg-black/50 focus:border-primary focus:ring-1 focus:ring-primary text-white h-12 px-10 text-base transition-all" placeholder="••••••••" type="password" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 space-y-4">
+                        <button class="w-full flex items-center justify-center gap-2 rounded-lg h-14 bg-primary text-black text-lg font-black uppercase tracking-tighter hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(242,150,13,0.3)]" type="submit">
+                            ESTABLISH ACCESS
+                            <span class="material-symbols-outlined">rocket_launch</span>
+                        </button>
+                        <p class="text-center text-[10px] text-[#cbb390]/50 uppercase tracking-widest leading-relaxed">
+                            Already part of the squad? 
+                            <a asp-controller="Auth" asp-action="Login" class="text-primary font-bold hover:underline">LOGIN HERE</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
         </div>
-        
-        <form asp-controller="Auth" asp-action="Register" method="post" class="auth-form" id="registerForm">
-            @Html.AntiForgeryToken()
-            
-            <div class="form-group">
-                <label class="form-label" for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-input" placeholder="YourGamerTag" required />
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="email">Email</label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required />
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required minlength="8" />
-                <small class="form-hint">At least 8 characters</small>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="••••••••" required />
-            </div>
-            
-            <div class="form-options">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="agreeTerms" required />
-                    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
-                </label>
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-full">
-                <i data-lucide="rocket"></i>
-                Create Account
-            </button>
-            
-            <div class="auth-divider">
-                <span>or sign up with</span>
-            </div>
-            
-            <div class="social-login">
-                <button type="button" class="btn btn-social">
-                    <i data-lucide="chrome"></i>
-                    Google
-                </button>
-                <button type="button" class="btn btn-social">
-                    <i data-lucide="message-circle"></i>
-                    Discord
-                </button>
-            </div>
-        </form>
-        
-        <div class="auth-footer">
-            <p>Already have an account? <a asp-controller="Auth" asp-action="Login">Log in</a></p>
-        </div>
-    </div>
+    </main>
 </div>
-
-<style>
-.auth-page {
-    min-height: calc(100vh - var(--header-height) - 200px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-xl) 0;
-}
-
-.auth-card {
-    width: 100%;
-    max-width: 420px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-}
-
-.auth-header {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-}
-
-.auth-icon {
-    width: 48px;
-    height: 48px;
-    color: var(--color-primary-orange);
-    margin-bottom: var(--spacing-md);
-}
-
-.auth-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-xs);
-}
-
-.auth-header p {
-    color: var(--color-smoke-gray);
-}
-
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.form-hint {
-    display: block;
-    margin-top: var(--spacing-xs);
-    color: var(--color-smoke-gray);
-    font-size: 0.75rem;
-}
-
-.form-options {
-    font-size: 0.875rem;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-    color: var(--color-smoke-gray);
-    cursor: pointer;
-}
-
-.checkbox-label input {
-    margin-top: 4px;
-    accent-color: var(--color-primary-orange);
-}
-
-.checkbox-label a {
-    color: var(--color-electric-blue);
-}
-
-.btn-full {
-    width: 100%;
-    padding: var(--spacing-md);
-}
-
-.auth-divider {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    color: var(--color-smoke-gray);
-    font-size: 0.875rem;
-}
-
-.auth-divider::before,
-.auth-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--glass-border);
-}
-
-.social-login {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.btn-social {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--color-midnight);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    color: var(--color-ghost-white);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-social:hover {
-    background: var(--color-midnight-light);
-    border-color: var(--color-primary-orange);
-}
-
-.btn-social i {
-    width: 18px;
-    height: 18px;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--glass-border);
-    color: var(--color-smoke-gray);
-}
-
-.auth-footer a {
-    color: var(--color-primary-orange);
-    font-weight: 600;
-}
-</style>
 
 @section Scripts {
     <script>
-        lucide.createIcons();
-        
-        // Password confirmation validation
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;

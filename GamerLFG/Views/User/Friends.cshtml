@@ -1,354 +1,92 @@
 @{
-    ViewData["Title"] = "Friends";
+    ViewData["Title"] = "Squad Database";
 }
 
-<div class="friends-page">
-    <div class="page-header">
-        <h1><i data-lucide="users"></i> Friends</h1>
-        <p>Manage your gaming squad</p>
-    </div>
-
-    <!-- Search & Filters -->
-    <div class="friends-controls card">
-        <div class="search-box">
-            <i data-lucide="search"></i>
-            <input type="text" class="form-input" placeholder="Search friends..." id="friendSearch" />
+<main class="flex-1 flex flex-col relative bg-background-light dark:bg-background-dark">
+    <header class="h-20 border-b border-gray-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-background-dark/50 backdrop-blur-sm sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+            <h2 class="text-2xl font-bold tracking-tight uppercase italic text-white font-display">SQUAD_DATABASE</h2>
+            <span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase">12 Online</span>
         </div>
-        <div class="filter-tabs">
-            <button class="filter-tab active" data-filter="all">All (8)</button>
-            <button class="filter-tab" data-filter="online">Online (3)</button>
-            <button class="filter-tab" data-filter="pending">Pending (2)</button>
+        <div class="flex items-center gap-6">
+            <div class="relative group hidden sm:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
+                <input class="bg-gray-100 dark:bg-white/5 border-none rounded-lg pl-10 pr-4 py-2 text-xs font-bold tracking-widest focus:ring-1 focus:ring-primary w-64 transition-all text-white" placeholder="SEARCH SQUADMATES..." type="text"/>
+            </div>
+            <button class="bg-primary hover:bg-primary/90 text-black px-6 py-2 rounded-lg text-xs font-black tracking-widest uppercase transition-transform active:scale-95">
+                Find Squad
+            </button>
         </div>
-    </div>
+    </header>
 
-    <!-- Friends List -->
-    <div class="friends-list">
-        <!-- Online Friends -->
-        <div class="friend-card card" data-status="online">
-            <div class="friend-status online"></div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ProGamer" alt="Avatar" class="friend-avatar" />
-            <div class="friend-info">
-                <div class="friend-name">ProGamer_X</div>
-                <div class="friend-game">Playing Valorant</div>
-            </div>
-            <div class="friend-karma">
-                <i data-lucide="star"></i> 5.0
-            </div>
-            <div class="friend-actions">
-                <button class="btn btn-primary btn-sm">
-                    <i data-lucide="message-circle"></i>
-                </button>
-                <button class="btn btn-secondary btn-sm">
-                    <i data-lucide="user"></i>
-                </button>
-            </div>
+    <div class="p-8 max-w-7xl w-full mx-auto">
+        <!-- Dashboard Navigation (for Friends page) -->
+        <div class="flex gap-4 mb-8 overflow-x-auto pb-2 hide-scrollbar">
+            <button class="px-6 py-2 bg-primary text-black rounded text-[10px] font-black uppercase tracking-widest">All Friends</button>
+            <button class="px-6 py-2 bg-white/5 text-white/40 hover:bg-white/10 rounded text-[10px] font-black uppercase tracking-widest transition-all">Pending Requests (2)</button>
+            <button class="px-6 py-2 bg-white/5 text-white/40 hover:bg-white/10 rounded text-[10px] font-black uppercase tracking-widest transition-all">Blocked</button>
         </div>
 
-        <div class="friend-card card" data-status="online">
-            <div class="friend-status online"></div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=TankMaster" alt="Avatar" class="friend-avatar" />
-            <div class="friend-info">
-                <div class="friend-name">TankMaster</div>
-                <div class="friend-game">In Lobby</div>
-            </div>
-            <div class="friend-karma">
-                <i data-lucide="star"></i> 4.9
-            </div>
-            <div class="friend-actions">
-                <button class="btn btn-primary btn-sm">
-                    <i data-lucide="message-circle"></i>
-                </button>
-                <button class="btn btn-secondary btn-sm">
-                    <i data-lucide="user"></i>
-                </button>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <!-- Friend Card (Online) -->
+            @foreach (var friend in new[] { ("ShadowWalker", "Cyberpunk 2077"), ("NeonViper", "Valorant"), ("ZeroSum", "Away"), ("Glitch_Fixer", "Elden Ring") })
+            {
+                <div class="group relative bg-white dark:bg-card-dark border-l-4 border-primary p-4 rounded-lg flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@friend.Item1" class="size-12 rounded-lg bg-black/20" alt="Avatar" />
+                            <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-primary status-pulse border-2 border-card-dark"></div>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Item1</p>
+                            <p class="text-[10px] text-primary/80 font-bold uppercase tracking-tighter">@friend.Item2</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-gray-500 group-hover:text-primary transition-colors">more_vert</span>
+                </div>
+            }
+
+            <!-- Offline Friends -->
+            @foreach (var friend in new[] { ("GhostRider", "Offline - 4h ago"), ("Retro_88", "Offline - 2d ago") })
+            {
+                <div class="group bg-white dark:bg-card-dark border-l-4 border-gray-600 p-4 rounded-lg flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer opacity-60">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@friend.Item1" class="size-12 rounded-lg bg-black/20 grayscale" alt="Avatar" />
+                            <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-gray-600 border-2 border-card-dark"></div>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Item1</p>
+                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">@friend.Item2</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-gray-600">more_vert</span>
+                </div>
+            }
         </div>
 
-        <div class="friend-card card" data-status="online">
-            <div class="friend-status online"></div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=WarriorX" alt="Avatar" class="friend-avatar" />
-            <div class="friend-info">
-                <div class="friend-name">WarriorX</div>
-                <div class="friend-game">Online</div>
+        <!-- Empty State / Add Suggestion -->
+        <div class="mt-12 p-12 border-2 border-dashed border-white/5 rounded-xl flex flex-col items-center justify-center text-center bg-card-dark/50">
+            <div class="size-16 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-4xl text-white/20">person_add</span>
             </div>
-            <div class="friend-karma">
-                <i data-lucide="star"></i> 4.5
-            </div>
-            <div class="friend-actions">
-                <button class="btn btn-primary btn-sm">
-                    <i data-lucide="message-circle"></i>
-                </button>
-                <button class="btn btn-secondary btn-sm">
-                    <i data-lucide="user"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Offline Friends -->
-        <div class="friend-card card" data-status="offline">
-            <div class="friend-status offline"></div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=GamerGirl" alt="Avatar" class="friend-avatar" />
-            <div class="friend-info">
-                <div class="friend-name">GamerGirl_99</div>
-                <div class="friend-game">Offline - Last seen 2h ago</div>
-            </div>
-            <div class="friend-karma">
-                <i data-lucide="star"></i> 4.7
-            </div>
-            <div class="friend-actions">
-                <button class="btn btn-secondary btn-sm">
-                    <i data-lucide="user"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="friend-card card" data-status="offline">
-            <div class="friend-status offline"></div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow" alt="Avatar" class="friend-avatar" />
-            <div class="friend-info">
-                <div class="friend-name">ShadowNinja</div>
-                <div class="friend-game">Offline - Last seen 1d ago</div>
-            </div>
-            <div class="friend-karma">
-                <i data-lucide="star"></i> 4.2
-            </div>
-            <div class="friend-actions">
-                <button class="btn btn-secondary btn-sm">
-                    <i data-lucide="user"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Pending Requests -->
-        <div class="friend-card card pending" data-status="pending">
-            <div class="friend-status pending"></div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=NewPlayer" alt="Avatar" class="friend-avatar" />
-            <div class="friend-info">
-                <div class="friend-name">NewPlayer123</div>
-                <div class="friend-game">Sent you a friend request</div>
-            </div>
-            <div class="friend-karma">
-                <i data-lucide="star"></i> 4.0
-            </div>
-            <div class="friend-actions">
-                <button class="btn btn-success btn-sm">
-                    <i data-lucide="check"></i>
-                </button>
-                <button class="btn btn-danger btn-sm">
-                    <i data-lucide="x"></i>
-                </button>
-            </div>
+            <h3 class="text-lg font-bold uppercase tracking-widest mb-2 italic text-white font-display">Expand your SQUAD</h3>
+            <p class="text-sm text-gray-500 max-w-xs mb-8">Invite more players to your network and never play solo again.</p>
+            <button class="bg-primary hover:bg-primary/90 text-black px-10 py-3 rounded-lg text-xs font-black tracking-[0.2em] uppercase transition-all shadow-[0_0_20px_rgba(242,150,13,0.2)]">
+                Send Invitation
+            </button>
         </div>
     </div>
-</div>
+</main>
 
 <style>
-.friends-page {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-.page-header h1 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.75rem;
-}
-
-.page-header h1 i {
-    color: var(--color-primary-orange);
-}
-
-.page-header p {
-    color: var(--color-smoke-gray);
-    margin-top: var(--spacing-xs);
-}
-
-/* Controls */
-.friends-controls {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-@@media (min-width: 600px) {
-    .friends-controls {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
+    .status-pulse {
+        box-shadow: 0 0 0 0 rgba(242, 150, 13, 0.7);
+        animation: pulse 2s infinite;
     }
-}
-
-.search-box {
-    position: relative;
-    flex: 1;
-    max-width: 300px;
-}
-
-.search-box i {
-    position: absolute;
-    left: var(--spacing-sm);
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-smoke-gray);
-    width: 18px;
-    height: 18px;
-}
-
-.search-box .form-input {
-    padding-left: 40px;
-}
-
-.filter-tabs {
-    display: flex;
-    gap: var(--spacing-xs);
-}
-
-.filter-tab {
-    padding: var(--spacing-xs) var(--spacing-md);
-    background: var(--color-midnight);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-full);
-    color: var(--color-smoke-gray);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.filter-tab:hover {
-    color: var(--color-ghost-white);
-    border-color: var(--color-primary-orange);
-}
-
-.filter-tab.active {
-    background: var(--color-primary-orange);
-    color: white;
-    border-color: var(--color-primary-orange);
-}
-
-/* Friends List */
-.friends-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.friend-card {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-}
-
-.friend-status {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.friend-status.online {
-    background: var(--color-toxic-green);
-    box-shadow: 0 0 8px var(--color-toxic-green);
-}
-
-.friend-status.offline {
-    background: var(--color-smoke-gray);
-}
-
-.friend-status.pending {
-    background: var(--color-golden);
-    box-shadow: 0 0 8px var(--color-golden);
-}
-
-.friend-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 2px solid var(--color-primary-orange);
-}
-
-.friend-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.friend-name {
-    font-weight: 600;
-    font-size: 1rem;
-}
-
-.friend-game {
-    font-size: 0.75rem;
-    color: var(--color-smoke-gray);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.friend-karma {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--color-primary-orange);
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-.friend-karma i {
-    width: 14px;
-    height: 14px;
-}
-
-.friend-actions {
-    display: flex;
-    gap: var(--spacing-xs);
-}
-
-.btn-sm {
-    padding: var(--spacing-xs);
-    min-width: 36px;
-    height: 36px;
-}
-
-.btn-sm i {
-    width: 16px;
-    height: 16px;
-}
+    @@keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(242, 150, 13, 0.7); }
+        70% { box-shadow: 0 0 0 6px rgba(242, 150, 13, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(242, 150, 13, 0); }
+    }
 </style>
-
-@section Scripts {
-    <script>
-        lucide.createIcons();
-        
-        // Filter functionality
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const filter = this.dataset.filter;
-                
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                document.querySelectorAll('.friend-card').forEach(card => {
-                    if (filter === 'all' || card.dataset.status === filter) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-        
-        // Search functionality
-        document.getElementById('friendSearch').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            document.querySelectorAll('.friend-card').forEach(card => {
-                const name = card.querySelector('.friend-name').textContent.toLowerCase();
-                card.style.display = name.includes(query) ? 'flex' : 'none';
-            });
-        });
-    </script>
-}

@@ -1,201 +1,84 @@
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "System Access";
 }
 
-<div class="auth-page">
-    <div class="auth-card">
-        <div class="auth-header">
-            <i data-lucide="gamepad-2" class="auth-icon"></i>
-            <h1>Welcome Back</h1>
-            <p>Log in to find your squad</p>
-        </div>
-        
-        <form asp-controller="Auth" asp-action="Login" method="post" class="auth-form" id="loginForm">
-            @Html.AntiForgeryToken()
+<div class="relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center overflow-hidden">
+    <!-- Grid Background -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.03]" style="background-image: radial-gradient(circle, #f2960d 1px, transparent 1px); background-size: 40px 40px;"></div>
+    
+    <!-- Scanline Effect -->
+    <div class="absolute top-0 w-full h-24 pointer-events-none opacity-10" style="background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(242, 150, 13, 0.2) 50%, rgba(0, 0, 0, 0) 100%); animation: scanline 4s linear infinite;"></div>
+
+    <main class="relative z-10 w-full max-w-md px-4 py-12">
+        <div class="bg-[#0f0f0f] border border-white/5 p-8 rounded-lg shadow-2xl relative">
+            <!-- Decorative Corners -->
+            <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary rounded-tl"></div>
+            <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary rounded-br"></div>
             
-            <div class="form-group">
-                <label class="form-label" for="email">Email</label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required />
+            <div class="mb-8 text-center">
+                <h2 class="text-2xl font-bold tracking-widest text-white uppercase font-display">System Access</h2>
+                <p class="text-xs text-primary/60 mt-1 font-medium tracking-[0.1em]">ESTABLISHING ENCRYPTED LINK...</p>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required />
-            </div>
-            
-            <div class="form-options">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="rememberMe" />
-                    <span>Remember me</span>
-                </label>
-                <a href="#" class="forgot-link">Forgot password?</a>
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-full">
-                <i data-lucide="log-in"></i>
-                Log In
-            </button>
-            
-            <div class="auth-divider">
-                <span>or continue with</span>
-            </div>
-            
-            <div class="social-login">
-                <button type="button" class="btn btn-social">
-                    <i data-lucide="chrome"></i>
-                    Google
+
+            <form asp-controller="Auth" asp-action="Login" method="post" class="space-y-6">
+                @Html.AntiForgeryToken()
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-primary/80 uppercase tracking-widest ml-1">
+                        Operator Identity
+                    </label>
+                    <div class="relative group">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-sm group-focus-within:text-primary transition-colors">person</span>
+                        <input name="email" class="w-full bg-black/50 border border-white/10 rounded px-10 py-4 text-sm font-medium tracking-wider placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all uppercase" placeholder="ENTER EMAIL" type="email" required />
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="block text-[10px] font-bold text-primary/80 uppercase tracking-widest">
+                            Secure Passcode
+                        </label>
+                        <a class="text-[10px] text-white/40 hover:text-primary transition-colors uppercase tracking-widest" href="#">Forgot?</a>
+                    </div>
+                    <div class="relative group">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-sm group-focus-within:text-primary transition-colors">lock</span>
+                        <input name="password" class="w-full bg-black/50 border border-white/10 rounded px-10 py-4 text-sm font-medium tracking-wider placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all uppercase" placeholder="••••••••" type="password" required />
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 px-1">
+                    <input type="checkbox" name="rememberMe" id="rememberMe" class="rounded border-white/10 bg-black/50 text-primary focus:ring-primary focus:ring-offset-black" />
+                    <label for="rememberMe" class="text-[10px] font-bold text-white/40 uppercase tracking-widest cursor-pointer hover:text-white/60">Maintain Session</label>
+                </div>
+
+                <button class="w-full bg-primary text-black font-bold py-4 rounded-lg hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(242,150,13,0.3)] flex items-center justify-center gap-2 group tracking-[0.2em]" type="submit">
+                    SIGN IN
+                    <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
-                <button type="button" class="btn btn-social">
-                    <i data-lucide="message-circle"></i>
-                    Discord
-                </button>
-            </div>
-        </form>
-        
-        <div class="auth-footer">
-            <p>Don't have an account? <a asp-controller="Auth" asp-action="Register">Sign up</a></p>
+            </form>
         </div>
-    </div>
+
+        <div class="mt-8 text-center space-y-4">
+            <p class="text-xs text-white/40 tracking-widest">
+                NEW TO THE SECTOR? 
+                <a asp-controller="Auth" asp-action="Register" class="text-primary font-bold hover:underline underline-offset-4 ml-1">JOIN THE HUB</a>
+            </p>
+            <div class="flex justify-center gap-6">
+                <div class="flex items-center gap-1 text-[9px] text-white/20 uppercase tracking-[0.2em]">
+                    <span class="material-symbols-outlined text-[10px]">verified_user</span>
+                    Encrypted
+                </div>
+                <div class="flex items-center gap-1 text-[9px] text-white/20 uppercase tracking-[0.2em]">
+                    <span class="material-symbols-outlined text-[10px]">dns</span>
+                    Node 04
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 
 <style>
-.auth-page {
-    min-height: calc(100vh - var(--header-height) - 200px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-xl) 0;
-}
-
-.auth-card {
-    width: 100%;
-    max-width: 420px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-}
-
-.auth-header {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-}
-
-.auth-icon {
-    width: 48px;
-    height: 48px;
-    color: var(--color-primary-orange);
-    margin-bottom: var(--spacing-md);
-}
-
-.auth-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-xs);
-}
-
-.auth-header p {
-    color: var(--color-smoke-gray);
-}
-
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.875rem;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--color-smoke-gray);
-    cursor: pointer;
-}
-
-.checkbox-label input {
-    accent-color: var(--color-primary-orange);
-}
-
-.forgot-link {
-    color: var(--color-electric-blue);
-}
-
-.btn-full {
-    width: 100%;
-    padding: var(--spacing-md);
-}
-
-.auth-divider {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    color: var(--color-smoke-gray);
-    font-size: 0.875rem;
-}
-
-.auth-divider::before,
-.auth-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--glass-border);
-}
-
-.social-login {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.btn-social {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--color-midnight);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    color: var(--color-ghost-white);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-social:hover {
-    background: var(--color-midnight-light);
-    border-color: var(--color-primary-orange);
-}
-
-.btn-social i {
-    width: 18px;
-    height: 18px;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--glass-border);
-    color: var(--color-smoke-gray);
-}
-
-.auth-footer a {
-    color: var(--color-primary-orange);
-    font-weight: 600;
-}
+    @@keyframes scanline {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(1000%); }
+    }
 </style>
-
-@section Scripts {
-    <script>
-        lucide.createIcons();
-    </script>
-}

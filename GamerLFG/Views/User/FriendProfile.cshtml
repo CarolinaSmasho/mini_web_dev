@@ -1,259 +1,135 @@
 @{
-    var username = ViewData["Username"]?.ToString() ?? "Unknown";
-    ViewData["Title"] = $"{username}'s Profile";
+    ViewData["Title"] = "Gamer Dossier";
 }
 
-<div class="user-profile-page">
-    <!-- Profile Header -->
-    <div class="profile-header card">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@username" alt="@username" class="profile-avatar" />
-        
-        <div class="profile-info">
-            <h1 class="profile-username">@username</h1>
-            <p class="profile-tagline">Ready to dominate! 🎮</p>
-            
-            <div class="profile-stats">
-                <div class="stat">
-                    <span class="stat-value">47</span>
-                    <span class="stat-label">Lobbies</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-value">12</span>
-                    <span class="stat-label">Hosted</span>
-                </div>
-                <div class="stat karma-stat">
-                    <span class="stat-value">
-                        <i data-lucide="star"></i> 4.8
-                    </span>
-                    <span class="stat-label">Karma</span>
+<main class="flex-1 max-w-[1200px] mx-auto w-full px-4 md:px-10 py-8">
+    <!-- Profile Header Card -->
+    <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 p-6 mb-6 overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+        <div class="flex flex-col md:flex-row w-full gap-8 items-start relative z-10">
+            <div class="relative">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ShadowStrike" class="h-40 w-40 rounded-xl border-4 border-primary/20 shadow-2xl shadow-primary/10 object-cover bg-black/20" alt="Avatar" />
+                <div class="absolute -bottom-2 -right-2 bg-primary rounded-full p-1 border-4 border-white dark:border-card-dark">
+                    <span class="material-symbols-outlined text-white text-xl fill">verified</span>
                 </div>
             </div>
-            
-            <div class="profile-actions">
-                <button class="btn btn-primary">
-                    <i data-lucide="user-plus"></i> Add Friend
-                </button>
-                <button class="btn btn-secondary">
-                    <i data-lucide="message-circle"></i> Message
-                </button>
+            <div class="flex flex-col flex-1 gap-2">
+                <div class="flex flex-wrap items-center gap-3">
+                    <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white font-display uppercase italic">ShadowStrike_42</h1>
+                    <span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest border border-primary/20">Pro Gamer</span>
+                </div>
+                <div class="flex items-center gap-4 text-slate-500 dark:text-white/40">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span class="text-sm font-medium">Online - Playing Apex Legends</span>
+                    </div>
+                    <span class="text-white/10">|</span>
+                    <div class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">location_on</span>
+                        <span class="text-sm">United Kingdom</span>
+                    </div>
+                </div>
+                <p class="mt-2 text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">Competitive FPS player. Looking for a steady squad for ranked climbs. 2.4 KD, flexible on roles but prefer Entry Fragger. No toxicity please.</p>
+                <div class="flex flex-wrap gap-3 mt-4">
+                    <button class="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-primary text-black text-sm font-black tracking-widest uppercase hover:brightness-110 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto">
+                        <span class="material-symbols-outlined">chat</span>
+                        <span>MESSAGE</span>
+                    </button>
+                    <button class="flex items-center justify-center gap-2 rounded-lg h-12 px-6 bg-white/5 text-white text-sm font-bold uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 w-full sm:w-auto">
+                        <span class="material-symbols-outlined">group_add</span>
+                        <span>INVITE TO PARTY</span>
+                    </button>
+                    <button class="flex items-center justify-center rounded-lg h-12 w-12 bg-white/5 text-white hover:text-red-500 transition-all border border-white/5">
+                        <span class="material-symbols-outlined">flag</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- User Info -->
-    <div class="profile-content">
-        <div class="card">
-            <h2><i data-lucide="info"></i> About</h2>
-            <p class="bio">Competitive gamer who loves team play. Always looking for skilled teammates! I play mostly during evenings and weekends.</p>
-            
-            <h3>Preferred Games</h3>
-            <div class="game-tags">
-                <span class="tag">Valorant</span>
-                <span class="tag">Elden Ring</span>
-                <span class="tag">Apex Legends</span>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left Column: Reputation & Stats -->
+        <div class="lg:col-span-4 space-y-6">
+            <!-- Karma Card -->
+            <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 p-6">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-white font-display uppercase italic">
+                    <span class="material-symbols-outlined text-primary">military_tech</span>
+                    Community Karma
+                </h3>
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-end gap-3 text-white">
+                        <p class="text-5xl font-black leading-none">4.9</p>
+                        <div class="flex flex-col">
+                            <div class="flex gap-0.5 text-primary">
+                                <span class="material-symbols-outlined text-xl fill">star</span>
+                                <span class="material-symbols-outlined text-xl fill">star</span>
+                                <span class="material-symbols-outlined text-xl fill">star</span>
+                                <span class="material-symbols-outlined text-xl fill">star</span>
+                                <span class="material-symbols-outlined text-xl fill">star</span>
+                            </div>
+                            <p class="text-slate-500 text-xs mt-1">Based on 142 reviews</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <h3>Playstyle</h3>
-            <div class="playstyle-tags">
-                <span class="tag">🔥 Tryhard</span>
-                <span class="tag tag-blue">🎤 Mic On</span>
+
+            <!-- Vibe Tags -->
+            <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 p-6">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-white font-display uppercase italic">
+                    <span class="material-symbols-outlined text-primary">style</span>
+                    Player Vibe
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 rounded-lg bg-white/5 text-white text-[10px] font-bold border border-white/5 uppercase tracking-widest">CHILL</span>
+                    <span class="px-3 py-1.5 rounded-lg bg-primary/20 text-primary text-[10px] font-bold border border-primary/30 uppercase tracking-widest">COMPETITIVE</span>
+                    <span class="px-3 py-1.5 rounded-lg bg-white/5 text-white text-[10px] font-bold border border-white/5 uppercase tracking-widest">STRATEGIST</span>
+                    <span class="px-3 py-1.5 rounded-lg bg-white/5 text-white text-[10px] font-bold border border-white/5 uppercase tracking-widest">TEAM PLAYER</span>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2><i data-lucide="trophy"></i> Recent Activity</h2>
-            <div class="activity-list">
-                <div class="activity-item">
-                    <i data-lucide="users" class="activity-icon"></i>
-                    <div class="activity-text">
-                        <span>Joined <strong>Boss Hunt - Malenia Run</strong></span>
-                        <span class="activity-time">2 hours ago</span>
-                    </div>
+        <!-- Right Column: Games & Activity -->
+        <div class="lg:col-span-8 space-y-6">
+            <!-- Most Played Games -->
+            <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-white font-display uppercase italic">Most Played Games</h3>
+                    <a class="text-primary text-xs font-bold hover:underline uppercase tracking-widest" href="#">View Archive</a>
                 </div>
-                <div class="activity-item">
-                    <i data-lucide="crown" class="activity-icon"></i>
-                    <div class="activity-text">
-                        <span>Hosted <strong>Ranked Grind to Diamond</strong></span>
-                        <span class="activity-time">Yesterday</span>
-                    </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    @foreach (var game in new[] { ("Apex Legends", "1,200H"), ("Valorant", "840H"), ("CS 2", "420H"), ("Elden Ring", "120H") })
+                    {
+                        <div class="group relative cursor-pointer">
+                            <div class="aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent group-hover:border-primary transition-all shadow-md bg-white/5">
+                                <div class="w-full h-full flex items-center justify-center text-white/10">
+                                    <span class="material-symbols-outlined text-4xl">image</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-center sm:text-left">
+                                <p class="font-bold text-xs truncate text-white uppercase tracking-tight">@game.Item1</p>
+                                <p class="text-primary text-[9px] font-bold uppercase tracking-widest">@game.Item2</p>
+                            </div>
+                        </div>
+                    }
                 </div>
-                <div class="activity-item">
-                    <i data-lucide="star" class="activity-icon"></i>
-                    <div class="activity-text">
-                        <span>Received 5-star rating from <strong>ProGamer_X</strong></span>
-                        <span class="activity-time">2 days ago</span>
+            </div>
+
+            <!-- Recent Achievements -->
+            <div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-white/5 p-6">
+                <h3 class="text-xl font-bold mb-6 text-white font-display uppercase italic">Tactical Achievements</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/5 group cursor-pointer hover:bg-primary/5 transition-colors">
+                        <div class="size-12 rounded bg-primary/20 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl fill">emoji_events</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-white uppercase tracking-tight text-sm">Apex Predator</p>
+                            <p class="text-xs text-white/40">Reached Top 750 players in Ranked Season 19</p>
+                        </div>
+                        <div class="text-[10px] font-bold text-white/20 uppercase tracking-widest">2D AGO</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<style>
-.user-profile-page {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-/* Profile Header */
-.profile-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--spacing-lg);
-}
-
-@@media (min-width: 600px) {
-    .profile-header {
-        flex-direction: row;
-        text-align: left;
-    }
-}
-
-.profile-avatar {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    border: 4px solid var(--color-primary-orange);
-    box-shadow: var(--shadow-glow-orange);
-}
-
-.profile-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.profile-username {
-    font-size: 2rem;
-    font-weight: 700;
-}
-
-.profile-tagline {
-    color: var(--color-smoke-gray);
-}
-
-.profile-stats {
-    display: flex;
-    gap: var(--spacing-xl);
-    flex-wrap: wrap;
-    margin: var(--spacing-md) 0;
-}
-
-.stat {
-    display: flex;
-    flex-direction: column;
-}
-
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-.stat-label {
-    font-size: 0.75rem;
-    color: var(--color-smoke-gray);
-}
-
-.karma-stat .stat-value {
-    color: var(--color-primary-orange);
-}
-
-.karma-stat i {
-    width: 20px;
-    height: 20px;
-}
-
-.profile-actions {
-    display: flex;
-    gap: var(--spacing-sm);
-    flex-wrap: wrap;
-}
-
-/* Profile Content */
-.profile-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-.profile-content h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.125rem;
-    color: var(--color-primary-orange);
-    margin-bottom: var(--spacing-md);
-}
-
-.profile-content h2 i {
-    width: 20px;
-    height: 20px;
-}
-
-.profile-content h3 {
-    font-size: 0.875rem;
-    color: var(--color-smoke-gray);
-    margin: var(--spacing-md) 0 var(--spacing-sm);
-}
-
-.bio {
-    color: var(--color-ghost-white);
-    line-height: 1.6;
-}
-
-.game-tags, .playstyle-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
-}
-
-/* Activity List */
-.activity-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.activity-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-    background: var(--color-midnight);
-    border-radius: var(--radius-sm);
-}
-
-.activity-icon {
-    width: 20px;
-    height: 20px;
-    color: var(--color-primary-orange);
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.activity-text {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.875rem;
-}
-
-.activity-time {
-    font-size: 0.75rem;
-    color: var(--color-smoke-gray);
-}
-</style>
-
-@section Scripts {
-    <script>
-        lucide.createIcons();
-    </script>
-}
+</main>

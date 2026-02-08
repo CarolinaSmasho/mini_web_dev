@@ -2,426 +2,135 @@
     ViewData["Title"] = "Activity Feed";
 }
 
-<div class="activity-feed">
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1>Find Your <span class="text-gradient">Perfect Squad</span></h1>
-            <p class="hero-subtitle">Join lobbies, team up with players, and dominate together.</p>
-            <div class="hero-actions">
-                <a asp-controller="Lobby" asp-action="Create" class="btn btn-primary btn-lg">
-                    <i data-lucide="plus-circle"></i>
-                    Create Lobby
-                </a>
-                <a asp-controller="Lobby" asp-action="Index" class="btn btn-secondary btn-lg">
-                    <i data-lucide="search"></i>
-                    Browse All
-                </a>
-            </div>
-        </div>
-    </section>
-
+<main class="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-6 py-8">
     <!-- My Lobbies Section -->
-    <section class="feed-section">
-        <div class="section-header">
-            <h2><i data-lucide="crown"></i> My Lobbies</h2>
-            <span class="badge">0</span>
+    <section class="flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">sports_esports</span>
+                My Lobbies
+            </h2>
+            <button class="text-sm font-medium text-gray-400 hover:text-white transition-colors">View History</button>
         </div>
-        <div class="lobbies-grid" id="myLobbies">
-            <div class="empty-state">
-                <i data-lucide="gamepad-2"></i>
-                <p>You haven't created any lobbies yet.</p>
-                <a asp-controller="Lobby" asp-action="Create" class="btn btn-primary">Create Your First Lobby</a>
+        <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar" id="myLobbiesGrid">
+            <!-- Active Lobby Card 1 (Sample) -->
+            <div class="group relative flex h-48 w-80 min-w-[320px] shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:border-primary/50">
+                <div class="absolute inset-0 z-0">
+                    <img alt="Game background" class="h-full w-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-110" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                </div>
+                <div class="relative z-10 flex justify-between p-4">
+                    <span class="inline-flex items-center rounded bg-green-500/20 px-2 py-0.5 text-xs font-bold text-green-400 backdrop-blur-md border border-green-500/20">
+                        <span class="mr-1.5 block size-1.5 animate-pulse rounded-full bg-green-400"></span>
+                        LIVE
+                    </span>
+                    <span class="rounded bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-md">2/3 Filled</span>
+                </div>
+                <div class="relative z-10 p-4">
+                    <h3 class="mb-1 text-lg font-bold leading-tight text-white">Apex Ranked Grind</h3>
+                    <p class="mb-3 text-xs text-gray-300">Host: @Context.Session.GetString("Username")</p>
+                    <button class="flex h-8 w-full items-center justify-center rounded bg-white text-black text-xs font-bold uppercase hover:bg-primary transition-colors">
+                        Manage Lobby
+                    </button>
+                </div>
             </div>
+
+            <!-- Create New Placeholder -->
+            <a asp-controller="Lobby" asp-action="Create" class="flex h-48 w-40 min-w-[160px] shrink-0 flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-white/10 bg-white/5 text-gray-400 transition-colors hover:border-primary hover:text-primary">
+                <span class="material-symbols-outlined text-[32px]">add_circle</span>
+                <span class="text-xs font-bold uppercase">New Lobby</span>
+            </a>
         </div>
     </section>
 
-    <!-- Pending Requests Section -->
-    <section class="feed-section">
-        <div class="section-header">
-            <h2><i data-lucide="clock"></i> Pending Requests</h2>
-            <span class="badge">0</span>
-        </div>
-        <div class="lobbies-grid" id="pendingRequests">
-            <div class="empty-state">
-                <i data-lucide="inbox"></i>
-                <p>No pending requests at the moment.</p>
+    <!-- Public Feed Section -->
+    <section class="flex flex-col gap-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">public</span>
+                Public Feed
+            </h2>
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-2">
+                <button class="flex h-8 items-center gap-2 rounded bg-white text-black px-3 text-xs font-bold hover:bg-gray-200">
+                    <span class="material-symbols-outlined text-[16px]">grid_view</span>
+                    All Games
+                </button>
+                <button class="flex h-8 items-center gap-2 rounded bg-card-dark border border-white/10 px-3 text-xs font-bold text-gray-300 hover:border-primary/50 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">crossword</span>
+                    FPS
+                </button>
+                <button class="flex h-8 items-center gap-2 rounded bg-card-dark border border-white/10 px-3 text-xs font-bold text-gray-300 hover:border-primary/50 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">swords</span>
+                    RPG
+                </button>
+                <button class="ml-2 flex h-8 items-center justify-center rounded bg-card-dark border border-white/10 px-2 text-gray-300 hover:text-white">
+                    <span class="material-symbols-outlined text-[18px]">filter_list</span>
+                </button>
             </div>
         </div>
-    </section>
 
-    <!-- Find a Squad (Public Feed) -->
-    <section class="feed-section">
-        <div class="section-header">
-            <h2><i data-lucide="users"></i> Find a Squad</h2>
-            <div class="filter-controls">
-                <select class="form-input" id="gameFilter">
-                    <option value="">All Games</option>
-                    <option value="valorant">Valorant</option>
-                    <option value="elden-ring">Elden Ring</option>
-                    <option value="apex-legends">Apex Legends</option>
-                    <option value="minecraft">Minecraft</option>
-                </select>
-                <select class="form-input" id="moodFilter">
-                    <option value="">Any Mood</option>
-                    <option value="tryhard">Tryhard</option>
-                    <option value="chill">Chill</option>
-                    <option value="competitive">Competitive</option>
-                </select>
-            </div>
+        <!-- Grid -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="publicLobbiesGrid">
+            <!-- Sample Lobby Card -->
+            <article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+                <div class="relative h-32 w-full overflow-hidden">
+                    <div class="absolute top-2 left-2 z-10 flex gap-2">
+                        <span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">Valorant</span>
+                    </div>
+                    <img alt="Game artwork" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+                </div>
+                <div class="flex flex-1 flex-col p-4 pt-0">
+                    <div class="mb-2 flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                            <span class="material-symbols-outlined text-[14px]">person</span>
+                            <span>Host: ValorantGod</span>
+                        </div>
+                        <span class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                    </div>
+                    <h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Plat 2+ Need Smokes for Ranked</h3>
+                    <!-- Slots -->
+                    <div class="mb-4 flex items-center gap-1">
+                        <div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+                            <span class="material-symbols-outlined text-[20px]">person_filled</span>
+                        </div>
+                        <div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+                            <span class="material-symbols-outlined text-[20px]">person_filled</span>
+                        </div>
+                        <div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+                            <span class="material-symbols-outlined text-[20px]">person_add</span>
+                        </div>
+                    </div>
+                    <div class="mt-auto flex flex-wrap gap-2">
+                        <span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Competitive</span>
+                    </div>
+                </div>
+                <div class="p-4 pt-0">
+                    <button class="w-full py-2 bg-primary/10 hover:bg-primary text-primary hover:text-black font-bold text-xs uppercase rounded transition-all">Join Lobby</button>
+                </div>
+            </article>
         </div>
-        
-        <div class="lobbies-grid" id="publicLobbies">
-            <!-- Sample Lobby Card (will be replaced by dynamic content) -->
-            <div class="lobby-card">
-                <div class="lobby-header">
-                    <div class="lobby-game">
-                        <span class="game-tag">Elden Ring</span>
-                        <span class="live-indicator"><i data-lucide="circle"></i> LIVE</span>
-                    </div>
-                    <div class="lobby-slots">2/3</div>
-                </div>
-                <h3 class="lobby-title">Boss Hunt - Malenia Run</h3>
-                <p class="lobby-description">Need a tank and a healer. Mic required. Let's take down the hardest boss!</p>
-                <div class="lobby-moods">
-                    <span class="tag">Tryhard</span>
-                    <span class="tag tag-blue">Mic On</span>
-                    <span class="tag tag-green">Boss Rush</span>
-                </div>
-                <div class="lobby-host">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" alt="Host" class="host-avatar" />
-                    <div class="host-info">
-                        <span class="host-name">Notatord</span>
-                        <div class="karma-stars">
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star" class="empty"></i>
-                            <span>4.8</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="lobby-actions">
-                    <button class="btn btn-primary">Join Lobby</button>
-                    <button class="btn btn-secondary">View Details</button>
-                </div>
-            </div>
-            
-            <!-- Another sample lobby -->
-            <div class="lobby-card">
-                <div class="lobby-header">
-                    <div class="lobby-game">
-                        <span class="game-tag">Valorant</span>
-                    </div>
-                    <div class="lobby-slots">3/5</div>
-                </div>
-                <h3 class="lobby-title">Ranked Grind to Diamond</h3>
-                <p class="lobby-description">Must have good comms. No toxicity. Diamond+ players preferred.</p>
-                <div class="lobby-moods">
-                    <span class="tag">Competitive</span>
-                    <span class="tag tag-blue">Mic On</span>
-                </div>
-                <div class="lobby-host">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ProGamer" alt="Host" class="host-avatar" />
-                    <div class="host-info">
-                        <span class="host-name">ProGamer_X</span>
-                        <div class="karma-stars">
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star"></i>
-                            <i data-lucide="star"></i>
-                            <span>5.0</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="lobby-actions">
-                    <button class="btn btn-primary">Join Lobby</button>
-                    <button class="btn btn-secondary">View Details</button>
-                </div>
-            </div>
+
+        <div class="mt-4 flex justify-center">
+            <button class="flex items-center gap-2 rounded border border-white/10 bg-card-dark px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/5 hover:text-primary">
+                <span class="material-symbols-outlined">refresh</span>
+                Load More Lobbies
+            </button>
         </div>
     </section>
+</main>
+
+<!-- Floating Create Button (Mobile) -->
+<div class="fixed bottom-6 right-6 z-50 md:hidden">
+    <a asp-controller="Lobby" asp-action="Create" class="flex size-14 items-center justify-center rounded-full bg-primary text-black shadow-lg shadow-primary/30 active:scale-95">
+        <span class="material-symbols-outlined text-[32px]">add</span>
+    </a>
 </div>
-
-<style>
-/* Activity Feed Styles */
-.activity-feed {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-}
-
-/* Hero Section */
-.hero-section {
-    background: linear-gradient(135deg, var(--color-midnight) 0%, var(--color-obsidian) 100%);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-2xl);
-    text-align: center;
-}
-
-.hero-content h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-}
-
-.text-gradient {
-    background: linear-gradient(135deg, var(--color-primary-orange), var(--color-golden));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.hero-subtitle {
-    color: var(--color-smoke-gray);
-    font-size: 1.125rem;
-    margin-bottom: var(--spacing-lg);
-}
-
-.hero-actions {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-md);
-    flex-wrap: wrap;
-}
-
-.btn-lg {
-    padding: var(--spacing-md) var(--spacing-xl);
-    font-size: 1rem;
-}
-
-/* Feed Sections */
-.feed-section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-}
-
-.section-header h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-.section-header h2 i {
-    width: 24px;
-    height: 24px;
-    color: var(--color-primary-orange);
-}
-
-.filter-controls {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.filter-controls .form-input {
-    width: auto;
-    min-width: 150px;
-}
-
-/* Lobbies Grid */
-.lobbies-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--spacing-lg);
-}
-
-/* Empty State */
-.empty-state {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-2xl);
-    background: var(--color-midnight);
-    border: 1px dashed var(--color-dark-gray);
-    border-radius: var(--radius-lg);
-    text-align: center;
-}
-
-.empty-state i {
-    width: 48px;
-    height: 48px;
-    color: var(--color-smoke-gray);
-    margin-bottom: var(--spacing-md);
-}
-
-.empty-state p {
-    color: var(--color-smoke-gray);
-    margin-bottom: var(--spacing-md);
-}
-
-/* Lobby Card */
-.lobby-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    transition: all var(--transition-normal);
-}
-
-.lobby-card:hover {
-    border-color: var(--glass-border-hover);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-glow-card);
-}
-
-.lobby-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.lobby-game {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.game-tag {
-    background: var(--color-midnight-light);
-    color: var(--color-ghost-white);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.live-indicator {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--color-toxic-green);
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.live-indicator i {
-    width: 8px;
-    height: 8px;
-    fill: currentColor;
-    animation: pulse 1.5s infinite;
-}
-
-@@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-.lobby-slots {
-    background: var(--color-midnight);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.lobby-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--color-ghost-white);
-}
-
-.lobby-description {
-    color: var(--color-smoke-gray);
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-.lobby-moods {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
-}
-
-.lobby-host {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding-top: var(--spacing-sm);
-    border-top: 1px solid var(--glass-border);
-}
-
-.host-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--color-primary-orange);
-}
-
-.host-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.host-name {
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-.karma-stars {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 0.75rem;
-    color: var(--color-golden);
-}
-
-.karma-stars i {
-    width: 12px;
-    height: 12px;
-}
-
-.karma-stars .empty {
-    color: var(--color-dark-gray);
-}
-
-.karma-stars span {
-    margin-left: 4px;
-}
-
-.lobby-actions {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-top: auto;
-}
-
-.lobby-actions .btn {
-    flex: 1;
-}
-</style>
 
 @section Scripts {
     <script>
-        // Re-initialize Lucide icons for dynamic content
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-            
-            // Load lobbies via Ajax
-            async function loadLobbies() {
-                // This will be connected to the actual API
-                console.log('Loading lobbies...');
-            }
-            
-            loadLobbies();
-        });
+        // Placeholder for future AJAX loading logic
+        console.log("Activity feed initialized");
     </script>
 }

@@ -1,304 +1,142 @@
 @{
-    ViewData["Title"] = "Create Lobby";
+    ViewData["Title"] = "Establish Link";
 }
 
-<div class="create-lobby-page">
-    <div class="page-header">
-        <h1><i data-lucide="plus-circle"></i> Create New Lobby</h1>
-        <p>Set up a lobby and find your perfect squad</p>
+<main class="flex-1 max-w-[800px] mx-auto w-full px-6 py-12">
+    <div class="mb-10 text-center">
+        <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase mb-2">ESTABLISH SQUAD LINK</h1>
+        <p class="text-white/40 font-bold uppercase tracking-widest text-sm">Configure your tactical recruitment parameters</p>
     </div>
 
-    <form asp-action="Create" method="post" class="create-form card" id="createLobbyForm">
+    <form asp-action="Create" method="post" class="flex flex-col gap-8">
         @Html.AntiForgeryToken()
         
-        <!-- Basic Info -->
-        <section class="form-section">
-            <h2>Basic Information</h2>
-            
-            <div class="form-group">
-                <label class="form-label" for="title">Lobby Title *</label>
-                <input type="text" id="title" name="title" class="form-input" placeholder="e.g., Ranked Grind to Diamond" required />
+        <!-- Primary Config -->
+        <section class="bg-card-dark border border-white/10 rounded-lg p-8 flex flex-col gap-6">
+            <h2 class="text-lg font-bold text-primary uppercase tracking-widest flex items-center gap-3">
+                <span class="size-2 bg-primary rounded-full animate-pulse"></span>
+                CORE PARAMETERS
+            </h2>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="title">Transmission Title</label>
+                <input type="text" id="title" name="title" required 
+                       class="bg-black border border-white/10 rounded px-4 py-3 text-white placeholder:text-white/20 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                       placeholder="e.g., RANKED GRIND TO ASCENDANT" />
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label" for="game">Game *</label>
-                    <select id="game" name="game" class="form-input" required>
-                        <option value="">Select a game</option>
-                        <option value="Valorant">Valorant</option>
-                        <option value="Elden Ring">Elden Ring</option>
-                        <option value="Apex Legends">Apex Legends</option>
-                        <option value="Minecraft">Minecraft</option>
-                        <option value="Counter-Strike 2">Counter-Strike 2</option>
-                        <option value="League of Legends">League of Legends</option>
-                        <option value="Overwatch 2">Overwatch 2</option>
-                        <option value="Other">Other</option>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="game">Target Game</label>
+                    <select id="game" name="game" required
+                            class="bg-black border border-white/10 rounded px-4 py-3 text-white focus:border-primary outline-none transition-all appearance-none cursor-pointer">
+                        <option value="Valorant">VALORANT</option>
+                        <option value="Elden Ring">ELDEN RING</option>
+                        <option value="Apex Legends">APEX LEGENDS</option>
+                        <option value="Minecraft">MINECRAFT</option>
+                        <option value="Other">OTHER PROTOCOL</option>
                     </select>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="maxPlayers">Max Players *</label>
-                    <input type="number" id="maxPlayers" name="maxPlayers" class="form-input" min="2" max="20" value="5" required />
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="maxPlayers">Squad Size</label>
+                    <input type="number" id="maxPlayers" name="maxPlayers" min="2" max="20" value="5" required
+                           class="bg-black border border-white/10 rounded px-4 py-3 text-white focus:border-primary outline-none transition-all" />
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="description">Description</label>
-                <textarea id="description" name="description" class="form-input form-textarea" rows="3" placeholder="Describe what you're looking for, requirements, etc."></textarea>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="description">Mission Objectives</label>
+                <textarea id="description" name="description" rows="4"
+                          class="bg-black border border-white/10 rounded px-4 py-3 text-white placeholder:text-white/20 focus:border-primary outline-none transition-all resize-none"
+                          placeholder="Detail your requirements, strats, and mission goals..."></textarea>
             </div>
         </section>
 
-        <!-- Schedule -->
-        <section class="form-section">
-            <h2>Schedule</h2>
+        <!-- Tactical Tags -->
+        <section class="bg-card-dark border border-white/10 rounded-lg p-8">
+            <h2 class="text-lg font-bold text-primary uppercase tracking-widest flex items-center gap-3 mb-6">
+                <span class="size-2 bg-primary rounded-full"></span>
+                TACTICAL TAGS
+            </h2>
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label" for="scheduledDate">Date</label>
-                    <input type="date" id="scheduledDate" name="scheduledDate" class="form-input" />
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="scheduledTime">Time</label>
-                    <input type="time" id="scheduledTime" name="scheduledTime" class="form-input" />
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="duration">Duration</label>
-                    <select id="duration" name="duration" class="form-input">
-                        <option value="">No limit</option>
-                        <option value="1hr">1 hour</option>
-                        <option value="2hrs">2 hours</option>
-                        <option value="3hrs">3 hours</option>
-                        <option value="until-loss">Until loss</option>
-                    </select>
-                </div>
+            <div class="flex flex-wrap gap-3">
+                @foreach (var mood in new[] { "TRYHARD", "CHILL", "COMPETITIVE", "CASUAL", "MIC REQ", "18+", "NO TOXIC" })
+                {
+                    <label class="relative cursor-pointer group">
+                        <input type="checkbox" name="moods" value="@mood" class="peer sr-only" />
+                        <span class="px-4 py-2 bg-white/5 border border-white/10 rounded text-[10px] font-bold text-white/40 uppercase tracking-widest transition-all group-hover:bg-white/10 peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary">
+                            @mood
+                        </span>
+                    </label>
+                }
             </div>
         </section>
 
-        <!-- Moods -->
-        <section class="form-section">
-            <h2>Vibe / Mood Tags</h2>
-            <p class="section-hint">Select tags that describe your lobby's atmosphere</p>
-            
-            <div class="mood-tags">
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="Tryhard" />
-                    <span class="tag">🔥 Tryhard</span>
-                </label>
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="Chill" />
-                    <span class="tag tag-green">😎 Chill</span>
-                </label>
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="Competitive" />
-                    <span class="tag">🏆 Competitive</span>
-                </label>
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="Casual" />
-                    <span class="tag tag-blue">🎮 Casual</span>
-                </label>
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="Mic On" />
-                    <span class="tag tag-blue">🎤 Mic On</span>
-                </label>
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="No Mic" />
-                    <span class="tag">🔇 No Mic</span>
-                </label>
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="Learning" />
-                    <span class="tag tag-gold">📚 Learning</span>
-                </label>
-                <label class="mood-tag-option">
-                    <input type="checkbox" name="moods" value="Teaching" />
-                    <span class="tag tag-gold">👨‍🏫 Teaching</span>
-                </label>
-            </div>
-        </section>
+        <!-- Personnel Requirements -->
+        <section class="bg-card-dark border border-white/10 rounded-lg p-8">
+            <h2 class="text-lg font-bold text-primary uppercase tracking-widest flex items-center gap-3 mb-6">
+                <span class="size-2 bg-primary rounded-full"></span>
+                PERSONNEL REQUIREMENTS
+            </h2>
 
-        <!-- Roles -->
-        <section class="form-section">
-            <h2>Roles Needed</h2>
-            <p class="section-hint">Define specific roles you're looking for (optional)</p>
-            
-            <div id="rolesContainer">
-                <div class="role-row">
-                    <input type="text" name="roleNames[]" class="form-input" placeholder="Role name (e.g., Tank, Healer, DPS)" />
-                    <input type="number" name="roleCounts[]" class="form-input role-count" min="1" max="10" value="1" placeholder="Count" />
-                    <button type="button" class="btn btn-secondary remove-role" onclick="removeRole(this)">
-                        <i data-lucide="x"></i>
-                    </button>
+            <div id="rolesContainer" class="flex flex-col gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                    <div class="md:col-span-8 flex flex-col gap-2">
+                        <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Role Designation</label>
+                        <input type="text" name="roleNames[]" class="bg-black border border-white/10 rounded px-4 py-2 text-white placeholder:text-white/20 focus:border-primary outline-none" placeholder="e.g., IGL, ENTRY, TANK" />
+                    </div>
+                    <div class="md:col-span-3 flex flex-col gap-2">
+                        <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Count</label>
+                        <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black border border-white/10 rounded px-4 py-2 text-white focus:border-primary outline-none" />
+                    </div>
+                    <div class="md:col-span-1">
+                        <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-10 flex items-center justify-center bg-white/5 hover:bg-red-500/20 text-white/20 hover:text-red-500 border border-white/10 rounded transition-all">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-            
-            <button type="button" class="btn btn-secondary add-role-btn" onclick="addRole()">
-                <i data-lucide="plus"></i>
-                Add Another Role
+
+            <button type="button" onclick="addRole()" class="mt-6 w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-[10px] font-bold text-white uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-lg">add</span>
+                ADD ROLE REQUIREMENT
             </button>
         </section>
 
-        <!-- Submit -->
-        <div class="form-actions">
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i data-lucide="rocket"></i>
-                Create Lobby
+        <!-- Actions -->
+        <div class="flex flex-col md:flex-row gap-4">
+            <a asp-action="Index" class="flex-1 h-14 bg-white/5 hover:bg-white/10 border border-white/10 rounded flex items-center justify-center text-xs font-bold text-white uppercase tracking-widest transition-all">
+                ABORT TRANSMISSION
+            </a>
+            <button type="submit" class="flex-[2] h-14 bg-primary hover:bg-primary/90 rounded flex items-center justify-center text-sm font-black text-black uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(242,150,13,0.3)] transition-all active:scale-[0.98]">
+                ESTABLISH LINK <span class="material-symbols-outlined ml-2">rocket_launch</span>
             </button>
         </div>
     </form>
-</div>
-
-<style>
-.create-lobby-page {
-    max-width: 720px;
-    margin: 0 auto;
-}
-
-.page-header {
-    margin-bottom: var(--spacing-xl);
-}
-
-.page-header h1 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.75rem;
-}
-
-.page-header h1 i {
-    color: var(--color-primary-orange);
-}
-
-.page-header p {
-    color: var(--color-smoke-gray);
-    margin-top: var(--spacing-xs);
-}
-
-.create-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-}
-
-.form-section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.form-section h2 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--color-primary-orange);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.section-hint {
-    color: var(--color-smoke-gray);
-    font-size: 0.875rem;
-    margin-top: calc(-1 * var(--spacing-sm));
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--spacing-md);
-}
-
-.form-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* Mood Tags */
-.mood-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-}
-
-.mood-tag-option {
-    cursor: pointer;
-}
-
-.mood-tag-option input {
-    display: none;
-}
-
-.mood-tag-option .tag {
-    transition: all var(--transition-fast);
-    border: 2px solid transparent;
-}
-
-.mood-tag-option input:checked + .tag {
-    border-color: var(--color-primary-orange);
-    box-shadow: var(--shadow-glow-orange);
-}
-
-/* Roles */
-.role-row {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
-}
-
-.role-row .form-input {
-    flex: 1;
-}
-
-.role-count {
-    max-width: 80px;
-}
-
-.remove-role {
-    padding: var(--spacing-sm);
-}
-
-.remove-role i {
-    width: 18px;
-    height: 18px;
-}
-
-.add-role-btn {
-    align-self: flex-start;
-}
-
-/* Form Actions */
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-md);
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--glass-border);
-}
-</style>
+</main>
 
 @section Scripts {
     <script>
-        lucide.createIcons();
-        
         function addRole() {
             const container = document.getElementById('rolesContainer');
-            const roleRow = document.createElement('div');
-            roleRow.className = 'role-row';
-            roleRow.innerHTML = `
-                <input type="text" name="roleNames[]" class="form-input" placeholder="Role name" />
-                <input type="number" name="roleCounts[]" class="form-input role-count" min="1" max="10" value="1" />
-                <button type="button" class="btn btn-secondary remove-role" onclick="removeRole(this)">
-                    <i data-lucide="x"></i>
-                </button>
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-1 md:grid-cols-12 gap-4 items-end';
+            div.innerHTML = `
+                <div class="md:col-span-8 flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Role Designation</label>
+                    <input type="text" name="roleNames[]" class="bg-black border border-white/10 rounded px-4 py-2 text-white placeholder:text-white/20 focus:border-primary outline-none" placeholder="e.g., IGL, ENTRY, TANK" />
+                </div>
+                <div class="md:col-span-3 flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Count</label>
+                    <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black border border-white/10 rounded px-4 py-2 text-white focus:border-primary outline-none" />
+                </div>
+                <div class="md:col-span-1">
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-10 flex items-center justify-center bg-white/5 hover:bg-red-500/20 text-white/20 hover:text-red-500 border border-white/10 rounded transition-all">
+                        <span class="material-symbols-outlined text-xl">close</span>
+                    </button>
+                </div>
             `;
-            container.appendChild(roleRow);
-            lucide.createIcons();
-        }
-        
-        function removeRole(btn) {
-            const container = document.getElementById('rolesContainer');
-            if (container.children.length > 1) {
-                btn.closest('.role-row').remove();
-            }
+            container.appendChild(div);
         }
     </script>
 }
