@@ -1,0 +1,91 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = GamerLFG
+build_property.RootNamespace = GamerLFG
+build_property.ProjectDir = /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Auth/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXV0aC9Mb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Auth/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXV0aC9SZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Lobby/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9iYnkvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Lobby/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9iYnkvRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Lobby/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9iYnkvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Shared/_KarmaModal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19LYXJtYU1vZGFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/User/FriendProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9GcmllbmRQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/User/Friends.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9GcmllbmRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/User/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9Qcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/User/Settings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9TZXR0aW5ncy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-bpc65v806a

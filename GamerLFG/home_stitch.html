@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gamer LFG Activity Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ff9900",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#000000",
+                        "card-dark": "#1B1B1B",
+                        "accent-dark": "#2a2a2a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "sm": "0.125rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-white/10 bg-black/95 backdrop-blur-md px-6 py-4">
+<div class="mx-auto flex max-w-[1440px] items-center justify-between gap-8">
+<!-- Logo -->
+<div class="flex items-center gap-1 text-white select-none">
+<span class="text-xl font-black tracking-tighter">GAMER</span>
+<span class="bg-primary text-black px-1.5 py-0.5 text-xl font-black tracking-tighter rounded-sm">LFG</span>
+</div>
+<!-- Search Bar -->
+<div class="hidden md:flex flex-1 max-w-xl">
+<label class="relative flex w-full items-center">
+<div class="absolute left-3 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="h-10 w-full rounded bg-card-dark border border-white/5 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all" placeholder="Search lobbies, games, or players..." type="text"/>
+<div class="absolute right-3 flex gap-1">
+<kbd class="hidden rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold text-gray-400 sm:inline-block">CTRL</kbd>
+<kbd class="hidden rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold text-gray-400 sm:inline-block">K</kbd>
+</div>
+</label>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="hidden md:flex h-10 items-center justify-center gap-2 rounded bg-primary px-5 text-sm font-bold text-black transition-transform hover:scale-105 hover:shadow-[0_0_15px_rgba(255,153,0,0.4)] active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    CREATE LOBBY
+                </button>
+<div class="flex items-center gap-2 border-l border-white/10 pl-4">
+<button class="flex size-9 items-center justify-center rounded-full bg-card-dark text-gray-400 hover:bg-white/10 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex size-9 items-center justify-center rounded-full bg-card-dark text-gray-400 hover:bg-white/10 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+</button>
+<div class="relative ml-2 cursor-pointer group">
+<div class="size-9 overflow-hidden rounded-full border-2 border-card-dark ring-2 ring-transparent group-hover:ring-primary transition-all">
+<img alt="User avatar profile picture" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIiT2z_1mK5ljGeUUegM4Kuko_Nx6M6Ov7KNl1LSeDWPK-RhAEFidcOlFln-uU-DqvXU-xh7cZkWFmncqBT2rQppCF_Y3GO2KKeDj2cWneTSb6ufWB6YRqKaBy_CBbrc1MXYoZ1EPXe6XWydyG8pJVG5EBjK_kYuTo3hlprSPT_l_4pPZIEeqmHSUW-nuhExT4DukEfWxGkBaF8NX9Jd_k0RFLs7fHWwMELT80veyiPOOLeZMkeoopLzvMvzLCKUp0j1-zKtCj7YU"/>
+</div>
+<div class="absolute bottom-0 right-0 size-2.5 rounded-full bg-green-500 ring-2 ring-black"></div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-6 py-8">
+<!-- My Lobbies Section -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">sports_esports</span>
+                    My Lobbies
+                </h2>
+<button class="text-sm font-medium text-gray-400 hover:text-white transition-colors">View History</button>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
+<!-- Active Lobby Card 1 -->
+<div class="group relative flex h-48 w-80 min-w-[320px] shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:border-primary/50">
+<div class="absolute inset-0 z-0">
+<img alt="Futuristic sci-fi shooter game environment" class="h-full w-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtiGU8zV8QrB8mktOxuNG8aweuqtk6NyJ1ERtvk1VNhM1WfN_bLpHVmZ4H8VvKPMzoZCodqt3bdJFg9BtEUqkIKPeFjOupMuYspPWJZl_dcatfB6l49oGO3vinCdP5mMsXy2oK7dNTKvdt1FNfzktgVqkMFhgvqBoZFwiE7och5RnQvnYbf7HjinGCMjHPFzgUVO4QfQLIIUM4hLaZEjPqgwT4-IHIsTCclsUx0xRj75ZnxH9F5MWAXf5iON6i2OY07PvIlGvWoL4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+</div>
+<div class="relative z-10 flex justify-between p-4">
+<span class="inline-flex items-center rounded bg-green-500/20 px-2 py-0.5 text-xs font-bold text-green-400 backdrop-blur-md border border-green-500/20">
+<span class="mr-1.5 block size-1.5 animate-pulse rounded-full bg-green-400"></span>
+                            LIVE
+                        </span>
+<span class="rounded bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-md">2/3 Filled</span>
+</div>
+<div class="relative z-10 p-4">
+<h3 class="mb-1 text-lg font-bold leading-tight text-white">Apex Ranked Grind</h3>
+<p class="mb-3 text-xs text-gray-300">Host: JettMain99</p>
+<button class="flex h-8 w-full items-center justify-center rounded bg-white text-black text-xs font-bold uppercase hover:bg-primary transition-colors">
+                            Resume Session
+                        </button>
+</div>
+</div>
+<!-- Active Lobby Card 2 -->
+<div class="group relative flex h-48 w-80 min-w-[320px] shrink-0 flex-col justify-between overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:border-primary/50">
+<div class="absolute inset-0 z-0">
+<img alt="Dark fantasy rpg game landscape" class="h-full w-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0tD3No453fAbhsdLHKJkHSr20HsYx-AECL-Mp6aAkt3_aEsyXHyssmzRqHChQB2y-1oCBWbvkesf8fpdtll0yV0yIvYuFf-3__HTtvc1h9OVdAa8QSbaXqqUqKQfJd_XieOnop_GpRXfHopSwfTafPymbKPnAR4rdzeqFFxl-y_K1ZmuChKM_ja9ggfZe6rwuiEhZpVOM3aEfpqhIuV5v4uo9jyULNcUR8Ho47CCSCTdW7vU25sRMkVM-AiAWPP2rg7_xoah-W1Y"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+</div>
+<div class="relative z-10 flex justify-between p-4">
+<span class="inline-flex items-center rounded bg-blue-500/20 px-2 py-0.5 text-xs font-bold text-blue-400 backdrop-blur-md border border-blue-500/20">
+                            SCHEDULED 8 PM
+                        </span>
+<span class="rounded bg-black/60 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-md">5/6 Filled</span>
+</div>
+<div class="relative z-10 p-4">
+<h3 class="mb-1 text-lg font-bold leading-tight text-white">Destiny 2 Raid Night</h3>
+<p class="mb-3 text-xs text-gray-300">Host: Guardian42</p>
+<button class="flex h-8 w-full items-center justify-center rounded bg-white/10 text-white backdrop-blur-sm border border-white/10 text-xs font-bold uppercase hover:bg-white hover:text-black transition-colors">
+                            Manage Lobby
+                        </button>
+</div>
+</div>
+<!-- Create New Placeholder -->
+<button class="flex h-48 w-40 min-w-[160px] shrink-0 flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-white/10 bg-white/5 text-gray-400 transition-colors hover:border-primary hover:text-primary">
+<span class="material-symbols-outlined text-[32px]">add_circle</span>
+<span class="text-xs font-bold uppercase">New Lobby</span>
+</button>
+</div>
+</section>
+<!-- Public Feed Section -->
+<section class="flex flex-col gap-6">
+<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">public</span>
+                    Public Feed
+                </h2>
+<!-- Filters -->
+<div class="flex flex-wrap gap-2">
+<button class="flex h-8 items-center gap-2 rounded bg-white text-black px-3 text-xs font-bold hover:bg-gray-200">
+<span class="material-symbols-outlined text-[16px]">grid_view</span>
+                        All Games
+                    </button>
+<button class="flex h-8 items-center gap-2 rounded bg-card-dark border border-white/10 px-3 text-xs font-bold text-gray-300 hover:border-primary/50 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[16px]">crossword</span>
+                        FPS
+                    </button>
+<button class="flex h-8 items-center gap-2 rounded bg-card-dark border border-white/10 px-3 text-xs font-bold text-gray-300 hover:border-primary/50 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[16px]">swords</span>
+                        RPG
+                    </button>
+<button class="flex h-8 items-center gap-2 rounded bg-card-dark border border-white/10 px-3 text-xs font-bold text-gray-300 hover:border-primary/50 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[16px]">trophy</span>
+                        Competitive
+                    </button>
+<button class="ml-2 flex h-8 items-center justify-center rounded bg-card-dark border border-white/10 px-2 text-gray-300 hover:text-white">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+<!-- Lobby Card 1 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">Valorant</span>
+</div>
+<img alt="Tactical shooter game character artwork" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7jme3Eq_mauJMu5M6KfxJkLUxs3NrAfW4WjKxji3MISELiODYK9a4QUMiyGNv3O_Swtfa4XHpKJ5uggZgOTgVf5tfNuP-GWdUIZ89sIODP-CrmPMCptjBl7mQbFFkzlwDxDbOCjrt92DLdhlPxp_Ku_kDKxSfUncHUj84OP0jNnYqnDtCM-bvxs4KS7pjnwEczHllRnnMKhwvNH5PCkutMPouj6m38ky0wPhFC8PLS9AW5TsoQw8rFesTKq5w51EfahB3H5ws3XA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: ValorantGod</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Plat 2+ Need Smokes for Ranked</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Competitive</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Mic Required</span>
+</div>
+</div>
+</article>
+<!-- Lobby Card 2 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">Overwatch 2</span>
+</div>
+<img alt="Futuristic robot hero character" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv7x8vC6ivmoJTCZoyo2rDtAuyg3Gjvbnv-et3if5PwgXxt2YhnJ0rWYe8zkoniQ2QbRPD3d7BfO-2m2b61v-aZUF2X-UwGWzoIpvfJeA6avb9PSA9p5e_cfSTXW3m7z3dL9UQl7UXD-2d1wlGeCCDg2SbLaDUd69uoKRaZoz8wSLR6WVpTsTP6iRAq7hrCD1_n0rr-MECr-0MvhuFIxcPmeZLBtDZ6Hn6L3t2r0_upo5teh_doVuo167FColxZ-RYo86kkbFhD4o"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: MercyMain</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Chill Quick Play - No Toxicity</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Casual</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Any Rank</span>
+</div>
+</div>
+</article>
+<!-- Lobby Card 3 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">Elden Ring</span>
+</div>
+<img alt="Dark mystical fantasy castle" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB26Azazhy8VPRDFuIK49lJLY6vhUDp5qiqGeDBtWV6-wXsxaQbtL3ikWaFkCp0kNJZM2VD7Q6Q4sp2BYUkSqLnTqCu9IM-LIkFYUb7N3Zht8AKTW7qsMb4GZ0z1i127nZde_Ar6L6HEBOXTNjflSbnfLIWQ09EczRDa4RbuuHf0coNnGYdlTWOIgoejRzmkr7Mlqcat-KqTKJaXOhxYWKdSlIE_GWkP31WJ1UQI5wcjyeJpk36DQ7_f1M32ue3bB53iL54q15-Ft8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: TarnishedOne</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Malenia Boss Help Needed ASAP</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Boss Fight</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Co-op</span>
+</div>
+</div>
+</article>
+<!-- Lobby Card 4 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">LoL</span>
+</div>
+<img alt="Fantasy magic spell effects blue and purple" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0ydpCitosogqtdl7OqmUVC9ZXIF7aFkRYQtcsX_HcFIQ3w17mA26S7gwB5nkV4lQvMVIvqVUanTi6h0lXaxY9IDDbZd3xKMUr_OzKBOzqNivb_-saFWaietwyuHbY9HYGdP11KVViwQXGwAlL82SIXj6hOFKT7gCeWSynXbqwuRm_oQD1lTb-61wJTP-5uy1cD9cO4wsL0b6b3gMAEFMaKtogaP_A9uHuneHKrk1KGBQOqYxxKIKn1H7nEiIqaz5gkTFKS9t_IV8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: MidOrFeed</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Clash Team Looking for Jungler</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Clash</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Tryhard</span>
+</div>
+</div>
+</article>
+<!-- Lobby Card 5 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">CS2</span>
+</div>
+<img alt="Urban military tactical gear close up" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhQaf-Qu_zUxG_6kXaVITU3Wbz9drtGtqPmPGZn-y-WPbUvSAKtKj35rVET8G9N1ZVWPqefOUwZYL_3sAseNiZLM5aoWhNOSW_TAhcHdZlPs3ZEsb8oGICnL6JNmaTZBFpk3G69fqds7D6WOhT_ZBUBlOt6wB0Hh9ruUgyXTjo5Yrn5swKRx6HlrVPuL4vVZ3BMAOd5MrFLVDr16aH1htoFYE5_9TcZE5HxwnwpWprzYCMN21g2atW8pZoB0yDcCeJh4ExG-z465o"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: AwpGod</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Premier Mode - Road to 20k</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Ranked</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">English</span>
+</div>
+</div>
+</article>
+<!-- Lobby Card 6 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">Fortnite</span>
+</div>
+<img alt="Colorful cartoon style landscape with vibrant sky" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7jiYK3Pktcom6gb0cmpJ2oKvjpNeNObHCw73oG3o-x1dq7RmDpAEOVlF2RVrJ2LbP_UC5V7mm04FooDnuZRr1v-3DDTHsw9BLEueowDb1N314xZBrqzjKfAMYAED8sBtEVEWpBFwu0kKMqtCtaGxYlLC4FXJh9DkmyIXConiCUKNeWE7uMvBGFPSOliSqQp6OYyI4iEZyE5qWP9tceoNJzierqSRC2-zV4xcXFvaqV5L0YzfWIYyl_IT_2JjY-7NV_4w_8plmH1U"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: BoxFightKing</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Zero Build Squads - Wins Only</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Zero Build</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Sweaty</span>
+</div>
+</div>
+</article>
+<!-- Lobby Card 7 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">WoW</span>
+</div>
+<img alt="Fantasy forest with magical glow" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjACxHaCF3tuWqQyZhmnAqWB9R-kCe65szz2jRMXmHAd9HDZm0Eov3ASFMYhHMWVp9H-4s1UGBOejxOxTYfsm5H4OfEnEjBW8r9V-Pjnl5Xpk2ZKYdhCR8NATB_1wFsIp-1FOVGXK1vPm1L_rikJTHirXW-DwWYgNZYEeoNdM7t7ZKO_ZZSu8AyDY3IGGivYqK5az0ji5boh1uqKU4Df_QKIr6NoA21JolkD0ZuVVFjbs8f6qxJRSIDW5KhfbngnD9ucT5yIri8Ow"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: TankMain</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-gray-500"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Mythic+ Keys (+15-20)</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Dungeon</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Chill</span>
+</div>
+</div>
+</article>
+<!-- Lobby Card 8 -->
+<article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]">
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute top-2 left-2 z-10 flex gap-2">
+<span class="rounded bg-black/70 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">Minecraft</span>
+</div>
+<img alt="Blocky pixelated landscape with trees and sun" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB-ObQdCUN_duy65GKGosYC1bdArM54J_gwEU7zd54vGVHxqN_CHQ7KVnNIK4qL1dBXF4M7v0WGkVW_69PYYyL1pRNZhGHMT8Wzi6XBV26uZAhnQsNBxmlJZ6XiIhWt03xASJbnT_7zxBtiBRIe7FUK7VK7P1-x9WVUwZSM-zpiH-FUGfADgSvJMrxprcpF5kP4uQAJUSxKL9yIKCBfrDVO0EzQg3leP_v6UeZO0tQbc1nlGdCs3xjZjmZ3gQsnHiCRHWq2zflVBA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark to-transparent"></div>
+</div>
+<div class="flex flex-1 flex-col p-4 pt-0">
+<div class="mb-2 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-xs text-gray-400">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Host: BuilderBob</span>
+</div>
+<span class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+</div>
+<h3 class="mb-3 text-lg font-bold text-white leading-snug group-hover:text-primary transition-colors">Starting New Survival SMP</h3>
+<!-- Slots -->
+<div class="mb-4 flex items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">person_filled</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+<div class="flex h-8 w-8 items-center justify-center rounded border border-dashed border-gray-600 text-gray-500">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+</div>
+</div>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">SMP</span>
+<span class="rounded bg-white/5 px-2 py-1 text-[10px] font-medium text-gray-300 uppercase">Vanilla</span>
+</div>
+</div>
+</article>
+</div>
+<div class="mt-4 flex justify-center">
+<button class="flex items-center gap-2 rounded border border-white/10 bg-card-dark px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/5 hover:text-primary">
+<span class="material-symbols-outlined">refresh</span>
+                    Load More Lobbies
+                </button>
+</div>
+</section>
+</main>
+<!-- Floating Create Button (Mobile) -->
+<div class="fixed bottom-6 right-6 z-50 md:hidden">
+<button class="flex size-14 items-center justify-center rounded-full bg-primary text-black shadow-lg shadow-primary/30 active:scale-95">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+</div>
+</body></html>

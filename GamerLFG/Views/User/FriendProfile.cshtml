@@ -1,0 +1,259 @@
+@{
+    var username = ViewData["Username"]?.ToString() ?? "Unknown";
+    ViewData["Title"] = $"{username}'s Profile";
+}
+
+<div class="user-profile-page">
+    <!-- Profile Header -->
+    <div class="profile-header card">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@username" alt="@username" class="profile-avatar" />
+        
+        <div class="profile-info">
+            <h1 class="profile-username">@username</h1>
+            <p class="profile-tagline">Ready to dominate! 🎮</p>
+            
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class="stat-value">47</span>
+                    <span class="stat-label">Lobbies</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">12</span>
+                    <span class="stat-label">Hosted</span>
+                </div>
+                <div class="stat karma-stat">
+                    <span class="stat-value">
+                        <i data-lucide="star"></i> 4.8
+                    </span>
+                    <span class="stat-label">Karma</span>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <button class="btn btn-primary">
+                    <i data-lucide="user-plus"></i> Add Friend
+                </button>
+                <button class="btn btn-secondary">
+                    <i data-lucide="message-circle"></i> Message
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Info -->
+    <div class="profile-content">
+        <div class="card">
+            <h2><i data-lucide="info"></i> About</h2>
+            <p class="bio">Competitive gamer who loves team play. Always looking for skilled teammates! I play mostly during evenings and weekends.</p>
+            
+            <h3>Preferred Games</h3>
+            <div class="game-tags">
+                <span class="tag">Valorant</span>
+                <span class="tag">Elden Ring</span>
+                <span class="tag">Apex Legends</span>
+            </div>
+            
+            <h3>Playstyle</h3>
+            <div class="playstyle-tags">
+                <span class="tag">🔥 Tryhard</span>
+                <span class="tag tag-blue">🎤 Mic On</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i data-lucide="trophy"></i> Recent Activity</h2>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <i data-lucide="users" class="activity-icon"></i>
+                    <div class="activity-text">
+                        <span>Joined <strong>Boss Hunt - Malenia Run</strong></span>
+                        <span class="activity-time">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <i data-lucide="crown" class="activity-icon"></i>
+                    <div class="activity-text">
+                        <span>Hosted <strong>Ranked Grind to Diamond</strong></span>
+                        <span class="activity-time">Yesterday</span>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <i data-lucide="star" class="activity-icon"></i>
+                    <div class="activity-text">
+                        <span>Received 5-star rating from <strong>ProGamer_X</strong></span>
+                        <span class="activity-time">2 days ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.user-profile-page {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Profile Header */
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-lg);
+}
+
+@@media (min-width: 600px) {
+    .profile-header {
+        flex-direction: row;
+        text-align: left;
+    }
+}
+
+.profile-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 4px solid var(--color-primary-orange);
+    box-shadow: var(--shadow-glow-orange);
+}
+
+.profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.profile-username {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.profile-tagline {
+    color: var(--color-smoke-gray);
+}
+
+.profile-stats {
+    display: flex;
+    gap: var(--spacing-xl);
+    flex-wrap: wrap;
+    margin: var(--spacing-md) 0;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--color-smoke-gray);
+}
+
+.karma-stat .stat-value {
+    color: var(--color-primary-orange);
+}
+
+.karma-stat i {
+    width: 20px;
+    height: 20px;
+}
+
+.profile-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+/* Profile Content */
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.profile-content h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.125rem;
+    color: var(--color-primary-orange);
+    margin-bottom: var(--spacing-md);
+}
+
+.profile-content h2 i {
+    width: 20px;
+    height: 20px;
+}
+
+.profile-content h3 {
+    font-size: 0.875rem;
+    color: var(--color-smoke-gray);
+    margin: var(--spacing-md) 0 var(--spacing-sm);
+}
+
+.bio {
+    color: var(--color-ghost-white);
+    line-height: 1.6;
+}
+
+.game-tags, .playstyle-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+/* Activity List */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--color-midnight);
+    border-radius: var(--radius-sm);
+}
+
+.activity-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary-orange);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.activity-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.875rem;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: var(--color-smoke-gray);
+}
+</style>
+
+@section Scripts {
+    <script>
+        lucide.createIcons();
+    </script>
+}

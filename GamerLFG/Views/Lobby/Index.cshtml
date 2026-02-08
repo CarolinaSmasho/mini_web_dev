@@ -1,0 +1,370 @@
+@{
+    ViewData["Title"] = "Browse Lobbies";
+}
+
+<div class="lobby-browse">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1><i data-lucide="users"></i> Browse Lobbies</h1>
+            <p>Find your perfect squad and join the action</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i data-lucide="plus-circle"></i>
+            Create Lobby
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar card">
+        <div class="filter-group">
+            <label>Game</label>
+            <select class="form-input" id="gameFilter">
+                <option value="">All Games</option>
+                <option value="valorant">Valorant</option>
+                <option value="elden-ring">Elden Ring</option>
+                <option value="apex-legends">Apex Legends</option>
+                <option value="minecraft">Minecraft</option>
+                <option value="cs2">Counter-Strike 2</option>
+                <option value="lol">League of Legends</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Mood</label>
+            <select class="form-input" id="moodFilter">
+                <option value="">Any Mood</option>
+                <option value="tryhard">Tryhard</option>
+                <option value="chill">Chill</option>
+                <option value="competitive">Competitive</option>
+                <option value="casual">Casual</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Status</label>
+            <select class="form-input" id="statusFilter">
+                <option value="open">Open Only</option>
+                <option value="">All</option>
+                <option value="full">Full</option>
+            </select>
+        </div>
+        <button class="btn btn-secondary" id="applyFilters">
+            <i data-lucide="filter"></i>
+            Apply Filters
+        </button>
+    </div>
+
+    <!-- Lobbies Grid -->
+    <div class="lobbies-grid" id="lobbiesGrid">
+        <!-- Sample lobbies - will be loaded via Ajax -->
+        <div class="lobby-card">
+            <div class="lobby-header">
+                <div class="lobby-game">
+                    <span class="game-tag">Elden Ring</span>
+                    <span class="live-indicator"><i data-lucide="circle"></i> LIVE</span>
+                </div>
+                <div class="lobby-slots">2/3</div>
+            </div>
+            <h3 class="lobby-title">Boss Hunt - Malenia Run</h3>
+            <p class="lobby-description">Need a tank and a healer. Mic required. Let's take down the hardest boss!</p>
+            <div class="lobby-moods">
+                <span class="tag">Tryhard</span>
+                <span class="tag tag-blue">Mic On</span>
+            </div>
+            <div class="lobby-host">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" alt="Host" class="host-avatar" />
+                <div class="host-info">
+                    <span class="host-name">Notatord</span>
+                    <div class="karma-stars">
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star" class="empty"></i>
+                        <span>4.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lobby-actions">
+                <a asp-action="Details" asp-route-id="1" class="btn btn-primary">View & Join</a>
+            </div>
+        </div>
+
+        <div class="lobby-card">
+            <div class="lobby-header">
+                <div class="lobby-game">
+                    <span class="game-tag">Valorant</span>
+                </div>
+                <div class="lobby-slots">3/5</div>
+            </div>
+            <h3 class="lobby-title">Ranked Grind to Diamond</h3>
+            <p class="lobby-description">Must have good comms. No toxicity. Diamond+ players preferred.</p>
+            <div class="lobby-moods">
+                <span class="tag">Competitive</span>
+                <span class="tag tag-blue">Mic On</span>
+            </div>
+            <div class="lobby-host">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ProGamer" alt="Host" class="host-avatar" />
+                <div class="host-info">
+                    <span class="host-name">ProGamer_X</span>
+                    <div class="karma-stars">
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <span>5.0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lobby-actions">
+                <a asp-action="Details" asp-route-id="2" class="btn btn-primary">View & Join</a>
+            </div>
+        </div>
+
+        <div class="lobby-card">
+            <div class="lobby-header">
+                <div class="lobby-game">
+                    <span class="game-tag">Minecraft</span>
+                </div>
+                <div class="lobby-slots">1/4</div>
+            </div>
+            <h3 class="lobby-title">Chill Survival World</h3>
+            <p class="lobby-description">Just building and vibing. All skill levels welcome!</p>
+            <div class="lobby-moods">
+                <span class="tag tag-green">Chill</span>
+                <span class="tag">Casual</span>
+            </div>
+            <div class="lobby-host">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=BlockMaster" alt="Host" class="host-avatar" />
+                <div class="host-info">
+                    <span class="host-name">BlockMaster</span>
+                    <div class="karma-stars">
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star"></i>
+                        <i data-lucide="star" class="empty"></i>
+                        <span>4.5</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lobby-actions">
+                <a asp-action="Details" asp-route-id="3" class="btn btn-primary">View & Join</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="btn btn-secondary" disabled>&larr; Previous</button>
+        <span class="page-info">Page 1 of 5</span>
+        <button class="btn btn-secondary">Next &rarr;</button>
+    </div>
+</div>
+
+<style>
+.lobby-browse {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.header-content h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.75rem;
+}
+
+.header-content h1 i {
+    color: var(--color-neon-purple);
+}
+
+.header-content p {
+    color: var(--color-smoke-gray);
+    margin-top: var(--spacing-xs);
+}
+
+.filters-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-smoke-gray);
+}
+
+.filter-group .form-input {
+    min-width: 150px;
+}
+
+.lobbies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.lobby-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    transition: all var(--transition-normal);
+}
+
+.lobby-card:hover {
+    border-color: var(--color-neon-purple);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.lobby-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lobby-game {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.game-tag {
+    background: var(--color-midnight-light);
+    color: var(--color-ghost-white);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-toxic-green);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.live-indicator i {
+    width: 8px;
+    height: 8px;
+    fill: currentColor;
+    animation: pulse 1.5s infinite;
+}
+
+.lobby-slots {
+    background: var(--color-midnight);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.lobby-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.lobby-description {
+    color: var(--color-smoke-gray);
+    font-size: 0.875rem;
+}
+
+.lobby-moods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.lobby-host {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--glass-border);
+}
+
+.host-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--color-golden);
+}
+
+.host-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.host-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.lobby-actions {
+    margin-top: auto;
+}
+
+.lobby-actions .btn {
+    width: 100%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) 0;
+}
+
+.page-info {
+    color: var(--color-smoke-gray);
+}
+
+@@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+</style>
+
+@section Scripts {
+    <script>
+        lucide.createIcons();
+        
+        // Filter functionality
+        document.getElementById('applyFilters')?.addEventListener('click', function() {
+            const game = document.getElementById('gameFilter').value;
+            const mood = document.getElementById('moodFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            // TODO: Call API with filters
+            console.log('Filters:', { game, mood, status });
+        });
+    </script>
+}

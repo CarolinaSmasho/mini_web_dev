@@ -1,0 +1,427 @@
+﻿@{
+    ViewData["Title"] = "Activity Feed";
+}
+
+<div class="activity-feed">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Find Your <span class="text-gradient">Perfect Squad</span></h1>
+            <p class="hero-subtitle">Join lobbies, team up with players, and dominate together.</p>
+            <div class="hero-actions">
+                <a asp-controller="Lobby" asp-action="Create" class="btn btn-primary btn-lg">
+                    <i data-lucide="plus-circle"></i>
+                    Create Lobby
+                </a>
+                <a asp-controller="Lobby" asp-action="Index" class="btn btn-secondary btn-lg">
+                    <i data-lucide="search"></i>
+                    Browse All
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Lobbies Section -->
+    <section class="feed-section">
+        <div class="section-header">
+            <h2><i data-lucide="crown"></i> My Lobbies</h2>
+            <span class="badge">0</span>
+        </div>
+        <div class="lobbies-grid" id="myLobbies">
+            <div class="empty-state">
+                <i data-lucide="gamepad-2"></i>
+                <p>You haven't created any lobbies yet.</p>
+                <a asp-controller="Lobby" asp-action="Create" class="btn btn-primary">Create Your First Lobby</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pending Requests Section -->
+    <section class="feed-section">
+        <div class="section-header">
+            <h2><i data-lucide="clock"></i> Pending Requests</h2>
+            <span class="badge">0</span>
+        </div>
+        <div class="lobbies-grid" id="pendingRequests">
+            <div class="empty-state">
+                <i data-lucide="inbox"></i>
+                <p>No pending requests at the moment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Find a Squad (Public Feed) -->
+    <section class="feed-section">
+        <div class="section-header">
+            <h2><i data-lucide="users"></i> Find a Squad</h2>
+            <div class="filter-controls">
+                <select class="form-input" id="gameFilter">
+                    <option value="">All Games</option>
+                    <option value="valorant">Valorant</option>
+                    <option value="elden-ring">Elden Ring</option>
+                    <option value="apex-legends">Apex Legends</option>
+                    <option value="minecraft">Minecraft</option>
+                </select>
+                <select class="form-input" id="moodFilter">
+                    <option value="">Any Mood</option>
+                    <option value="tryhard">Tryhard</option>
+                    <option value="chill">Chill</option>
+                    <option value="competitive">Competitive</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="lobbies-grid" id="publicLobbies">
+            <!-- Sample Lobby Card (will be replaced by dynamic content) -->
+            <div class="lobby-card">
+                <div class="lobby-header">
+                    <div class="lobby-game">
+                        <span class="game-tag">Elden Ring</span>
+                        <span class="live-indicator"><i data-lucide="circle"></i> LIVE</span>
+                    </div>
+                    <div class="lobby-slots">2/3</div>
+                </div>
+                <h3 class="lobby-title">Boss Hunt - Malenia Run</h3>
+                <p class="lobby-description">Need a tank and a healer. Mic required. Let's take down the hardest boss!</p>
+                <div class="lobby-moods">
+                    <span class="tag">Tryhard</span>
+                    <span class="tag tag-blue">Mic On</span>
+                    <span class="tag tag-green">Boss Rush</span>
+                </div>
+                <div class="lobby-host">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" alt="Host" class="host-avatar" />
+                    <div class="host-info">
+                        <span class="host-name">Notatord</span>
+                        <div class="karma-stars">
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star" class="empty"></i>
+                            <span>4.8</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="lobby-actions">
+                    <button class="btn btn-primary">Join Lobby</button>
+                    <button class="btn btn-secondary">View Details</button>
+                </div>
+            </div>
+            
+            <!-- Another sample lobby -->
+            <div class="lobby-card">
+                <div class="lobby-header">
+                    <div class="lobby-game">
+                        <span class="game-tag">Valorant</span>
+                    </div>
+                    <div class="lobby-slots">3/5</div>
+                </div>
+                <h3 class="lobby-title">Ranked Grind to Diamond</h3>
+                <p class="lobby-description">Must have good comms. No toxicity. Diamond+ players preferred.</p>
+                <div class="lobby-moods">
+                    <span class="tag">Competitive</span>
+                    <span class="tag tag-blue">Mic On</span>
+                </div>
+                <div class="lobby-host">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=ProGamer" alt="Host" class="host-avatar" />
+                    <div class="host-info">
+                        <span class="host-name">ProGamer_X</span>
+                        <div class="karma-stars">
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star"></i>
+                            <i data-lucide="star"></i>
+                            <span>5.0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="lobby-actions">
+                    <button class="btn btn-primary">Join Lobby</button>
+                    <button class="btn btn-secondary">View Details</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+/* Activity Feed Styles */
+.activity-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--color-midnight) 0%, var(--color-obsidian) 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--color-primary-orange), var(--color-golden));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    color: var(--color-smoke-gray);
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.btn-lg {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: 1rem;
+}
+
+/* Feed Sections */
+.feed-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.section-header h2 i {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary-orange);
+}
+
+.filter-controls {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.filter-controls .form-input {
+    width: auto;
+    min-width: 150px;
+}
+
+/* Lobbies Grid */
+.lobbies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+/* Empty State */
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    background: var(--color-midnight);
+    border: 1px dashed var(--color-dark-gray);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.empty-state i {
+    width: 48px;
+    height: 48px;
+    color: var(--color-smoke-gray);
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-state p {
+    color: var(--color-smoke-gray);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Lobby Card */
+.lobby-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    transition: all var(--transition-normal);
+}
+
+.lobby-card:hover {
+    border-color: var(--glass-border-hover);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow-card);
+}
+
+.lobby-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lobby-game {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.game-tag {
+    background: var(--color-midnight-light);
+    color: var(--color-ghost-white);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-toxic-green);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.live-indicator i {
+    width: 8px;
+    height: 8px;
+    fill: currentColor;
+    animation: pulse 1.5s infinite;
+}
+
+@@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.lobby-slots {
+    background: var(--color-midnight);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.lobby-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-ghost-white);
+}
+
+.lobby-description {
+    color: var(--color-smoke-gray);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.lobby-moods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.lobby-host {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--glass-border);
+}
+
+.host-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary-orange);
+}
+
+.host-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.host-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.karma-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.75rem;
+    color: var(--color-golden);
+}
+
+.karma-stars i {
+    width: 12px;
+    height: 12px;
+}
+
+.karma-stars .empty {
+    color: var(--color-dark-gray);
+}
+
+.karma-stars span {
+    margin-left: 4px;
+}
+
+.lobby-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: auto;
+}
+
+.lobby-actions .btn {
+    flex: 1;
+}
+</style>
+
+@section Scripts {
+    <script>
+        // Re-initialize Lucide icons for dynamic content
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // Load lobbies via Ajax
+            async function loadLobbies() {
+                // This will be connected to the actual API
+                console.log('Loading lobbies...');
+            }
+            
+            loadLobbies();
+        });
+    </script>
+}

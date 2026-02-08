@@ -1,0 +1,525 @@
+@{
+    ViewData["Title"] = "Lobby Details";
+    var lobbyId = ViewData["LobbyId"]?.ToString() ?? "1";
+}
+
+<div class="lobby-details-page">
+    <!-- Lobby Header -->
+    <div class="lobby-header-section card">
+        <div class="lobby-meta">
+            <span class="game-tag">Elden Ring</span>
+            <span class="live-indicator"><i data-lucide="circle"></i> LIVE NOW</span>
+            <span class="slots-badge">2/3 Players</span>
+        </div>
+        <h1 class="lobby-title">Boss Hunt - Malenia Run</h1>
+        <p class="lobby-description">Need a tank and a healer. Mic required. Let's take down the hardest boss together! Be prepared for a challenging fight.</p>
+        
+        <div class="lobby-moods">
+            <span class="tag">🔥 Tryhard</span>
+            <span class="tag tag-blue">🎤 Mic On</span>
+            <span class="tag tag-green">⚔️ Boss Rush</span>
+        </div>
+        
+        <div class="lobby-host-info">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" alt="Host" class="host-avatar-lg" />
+            <div class="host-details">
+                <span class="host-label">Hosted by</span>
+                <span class="host-name-lg">Notatord</span>
+                <div class="karma-stars-lg">
+                    <i data-lucide="star"></i>
+                    <i data-lucide="star"></i>
+                    <i data-lucide="star"></i>
+                    <i data-lucide="star"></i>
+                    <i data-lucide="star" class="empty"></i>
+                    <span>4.8 Karma</span>
+                </div>
+            </div>
+            <span class="badge badge-success host-badge"><i data-lucide="crown"></i> HOST</span>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="lobby-tabs">
+        <button class="tab-btn active" data-tab="squad">
+            <i data-lucide="users"></i> Squad Info
+        </button>
+        <button class="tab-btn" data-tab="applicants">
+            <i data-lucide="user-plus"></i> Applicants <span class="badge">3</span>
+        </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Squad Info Tab -->
+        <div class="tab-panel active" id="squad-panel">
+            <div class="squad-grid">
+                <!-- Roles Needed -->
+                <div class="card">
+                    <h3><i data-lucide="target"></i> Roles Needed</h3>
+                    <div class="roles-list">
+                        <div class="role-item">
+                            <span class="role-name">Tank/Aggro</span>
+                            <span class="role-status pending">0/1</span>
+                        </div>
+                        <div class="role-item">
+                            <span class="role-name">Healer</span>
+                            <span class="role-status pending">0/1</span>
+                        </div>
+                        <div class="role-item filled">
+                            <span class="role-name">DPS</span>
+                            <span class="role-status filled">1/1 ✓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Members -->
+                <div class="card">
+                    <h3><i data-lucide="users"></i> Current Squad</h3>
+                    <div class="members-list">
+                        <div class="member-item">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" alt="User" />
+                            <div class="member-info">
+                                <span class="member-name">Notatord</span>
+                                <span class="member-role">Host / DPS</span>
+                            </div>
+                            <span class="badge badge-success"><i data-lucide="crown"></i></span>
+                        </div>
+                        <div class="member-item">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=WarriorX" alt="User" />
+                            <div class="member-info">
+                                <span class="member-name">WarriorX</span>
+                                <span class="member-role">Member</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Join Section (for non-members) -->
+            <div class="join-section card">
+                <h3>Want to join this lobby?</h3>
+                <p>Select your desired role and send a request to the host.</p>
+                <div class="join-form">
+                    <select class="form-input" id="desiredRole">
+                        <option value="">Select a role</option>
+                        <option value="Tank/Aggro">Tank/Aggro</option>
+                        <option value="Healer">Healer</option>
+                    </select>
+                    <textarea class="form-input" id="applicationMessage" placeholder="Write a message to the host (optional)" rows="2"></textarea>
+                    <button class="btn btn-primary" onclick="applyToLobby()">
+                        <i data-lucide="send"></i> Request to Join
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicants Tab (Host Only) -->
+        <div class="tab-panel" id="applicants-panel">
+            <div class="applicants-list">
+                <div class="applicant-card card">
+                    <div class="applicant-header">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=TankMaster" alt="User" />
+                        <div class="applicant-info">
+                            <span class="applicant-name">TankMaster</span>
+                            <div class="karma-stars">
+                                <i data-lucide="star"></i>
+                                <i data-lucide="star"></i>
+                                <i data-lucide="star"></i>
+                                <i data-lucide="star"></i>
+                                <i data-lucide="star"></i>
+                                <span>5.0</span>
+                            </div>
+                        </div>
+                        <span class="tag tag-gold">Desired: Tank/Aggro</span>
+                    </div>
+                    <div class="applicant-tags">
+                        <span class="tag">Tryhard</span>
+                        <span class="tag tag-blue">Mic ON</span>
+                        <span class="tag tag-green">Team Player</span>
+                    </div>
+                    <p class="applicant-message">"Ready to tank! I have 200 hours in Elden Ring."</p>
+                    <div class="applicant-actions">
+                        <div class="vote-section">
+                            <span>Squad Votes:</span>
+                            <span class="vote-count positive">👍 2</span>
+                            <span class="vote-count">👎 0</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-success">
+                                <i data-lucide="check"></i> Recruit
+                            </button>
+                            <button class="btn btn-danger">
+                                <i data-lucide="x"></i> Pass
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.lobby-details-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Header Section */
+.lobby-header-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.lobby-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.slots-badge {
+    background: var(--color-midnight);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-toxic-green);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.live-indicator i {
+    width: 10px;
+    height: 10px;
+    fill: currentColor;
+    animation: pulse 1.5s infinite;
+}
+
+.lobby-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.lobby-description {
+    color: var(--color-smoke-gray);
+    line-height: 1.6;
+}
+
+.lobby-host-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--glass-border);
+}
+
+.host-avatar-lg {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid var(--color-golden);
+}
+
+.host-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.host-label {
+    font-size: 0.75rem;
+    color: var(--color-smoke-gray);
+}
+
+.host-name-lg {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.karma-stars-lg i {
+    width: 14px;
+    height: 14px;
+}
+
+.host-badge {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Tabs */
+.lobby-tabs {
+    display: flex;
+    gap: var(--spacing-sm);
+    background: var(--color-midnight);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-lg);
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: transparent;
+    border: none;
+    color: var(--color-smoke-gray);
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.tab-btn:hover {
+    color: var(--color-ghost-white);
+    background: var(--color-midnight-light);
+}
+
+.tab-btn.active {
+    background: var(--color-primary-orange);
+    color: white;
+}
+
+.tab-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* Squad Grid */
+.squad-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.squad-grid h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.squad-grid h3 i {
+    color: var(--color-primary-orange);
+}
+
+/* Roles List */
+.roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.role-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background: var(--color-midnight);
+    border-radius: var(--radius-sm);
+}
+
+.role-status.pending {
+    color: var(--color-crimson);
+}
+
+.role-status.filled {
+    color: var(--color-toxic-green);
+}
+
+/* Members List */
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--color-midnight);
+    border-radius: var(--radius-sm);
+}
+
+.member-item img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.member-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.member-role {
+    font-size: 0.75rem;
+    color: var(--color-smoke-gray);
+}
+
+/* Join Section */
+.join-section {
+    margin-top: var(--spacing-lg);
+}
+
+.join-section h3 {
+    margin-bottom: var(--spacing-xs);
+}
+
+.join-section p {
+    color: var(--color-smoke-gray);
+    margin-bottom: var(--spacing-md);
+}
+
+.join-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.join-form .btn {
+    align-self: flex-start;
+}
+
+/* Applicants */
+.applicants-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.applicant-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.applicant-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.applicant-header img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+.applicant-info {
+    flex: 1;
+}
+
+.applicant-name {
+    font-weight: 600;
+}
+
+.applicant-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.applicant-message {
+    font-style: italic;
+    color: var(--color-smoke-gray);
+    padding: var(--spacing-sm);
+    background: var(--color-midnight);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-primary-orange);
+}
+
+.applicant-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--glass-border);
+}
+
+.vote-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-smoke-gray);
+}
+
+.vote-count {
+    font-weight: 600;
+}
+
+.vote-count.positive {
+    color: var(--color-toxic-green);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+@@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+</style>
+
+@section Scripts {
+    <script>
+        lucide.createIcons();
+        
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                
+                // Update buttons
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update panels
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                document.getElementById(tabId + '-panel').classList.add('active');
+            });
+        });
+        
+        // Apply to lobby
+        function applyToLobby() {
+            const role = document.getElementById('desiredRole').value;
+            const message = document.getElementById('applicationMessage').value;
+            
+            if (!role) {
+                alert('Please select a role');
+                return;
+            }
+            
+            // TODO: Call API
+            console.log('Applying:', { role, message });
+            alert('Application submitted!');
+        }
+    </script>
+}
