@@ -20,6 +20,19 @@ namespace GamerLFG.Repositories
             return await _context.Endorsements.Find(e => e.ToUserId == userId).ToListAsync();
         }
 
+        public async Task<List<Endorsement>> GetEndorsementsFromUserInLobbyAsync(string fromUserId, string lobbyId)
+        {
+            return await _context.Endorsements.Find(e => e.FromUserId == fromUserId && e.LobbyId == lobbyId).ToListAsync();
+        }
+
+        public async Task<bool> HasEndorsedInLobbyAsync(string fromUserId, string toUserId, string lobbyId)
+        {
+            return await _context.Endorsements.Find(e => 
+                e.FromUserId == fromUserId && 
+                e.ToUserId == toUserId && 
+                e.LobbyId == lobbyId).AnyAsync();
+        }
+
         public async Task CreateEndorsementAsync(Endorsement endorsement)
         {
             await _context.Endorsements.InsertOneAsync(endorsement);

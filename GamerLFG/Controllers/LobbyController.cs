@@ -344,6 +344,13 @@ namespace GamerLFG.Controllers
                     var pendingApp = userApps.FirstOrDefault(a => a.LobbyId == id && a.Status == "Pending");
                     ViewData["PendingApplication"] = pendingApp;
                 }
+                else if (lobby.IsCompleted)
+                {
+                    // Check for existing endorsements
+                    var endorsements = await _endorsementRepository.GetEndorsementsFromUserInLobbyAsync(currentUserId, id);
+                    var endorsedUserIds = endorsements.Select(e => e.ToUserId).ToHashSet();
+                    ViewData["EndorsedUserIds"] = endorsedUserIds;
+                }
             }
 
             return View(lobby);
@@ -625,12 +632,19 @@ namespace GamerLFG.Controllers
             if (!lobby.Members.Any(m => m.UserId == userId) || !lobby.Members.Any(m => m.UserId == targetUserId))
                 return Json(new { success = false, message = "Invalid members" });
 
+            // Check if already endorsed
+            if (await _endorsementRepository.HasEndorsedInLobbyAsync(userId, targetUserId, lobbyId))
+            {
+                return Json(new { success = false, message = "You have already evaluated this member for this mission." });
+            }
+
             var endorsement = new Endorsement
             {
                 FromUserId = userId,
                 ToUserId = targetUserId,
                 EndorsementType = type, 
                 Comment = "Session Feedback",
+                LobbyId = lobbyId, 
                 CreatedAt = DateTime.UtcNow
             };
 

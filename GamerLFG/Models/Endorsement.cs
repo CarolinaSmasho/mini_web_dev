@@ -14,6 +14,7 @@ namespace GamerLFG.Models
         public string ToUserId { get; set; } = string.Empty;
         public string EndorsementType { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
+        public string? LobbyId { get; set; } // Optional: Link to specific session
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
