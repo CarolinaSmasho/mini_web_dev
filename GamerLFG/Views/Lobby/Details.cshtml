@@ -77,7 +77,7 @@
                                 <div class="flex items-center gap-3">
                                     <img src="@(user?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + member.UserId)" class="size-10 rounded-lg border border-white/10 object-cover" />
                                     <div class="min-w-0">
-                                        <p class="text-xs font-black text-white uppercase truncate">@(user?.Username ?? "Unknown")</p>
+                                        <a href="@Url.Action("FriendProfile", "User", new { id = user?.Username ?? "" })" class="text-xs font-black text-white uppercase truncate hover:text-primary transition-colors">@(user?.Username ?? "Unknown")</a>
                                         <p class="text-[9px] text-primary uppercase font-bold">@member.AssignedRole</p>
                                     </div>
                                 </div>
@@ -255,7 +255,7 @@ else
                                     }
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold uppercase tracking-wide text-white">@(player?.Username ?? "Unknown")</p>
+                                    <a href="@Url.Action("FriendProfile", "User", new { id = player?.Username ?? "" })" class="text-xs font-bold uppercase tracking-wide text-white hover:text-primary transition-colors">@(player?.Username ?? "Unknown")</a>
                                     <p class="text-[10px] text-primary uppercase font-mono mt-0.5">@(playerIsHost ? "[LEADER] ONLINE" : "READY")</p>
                                 </div>
                             </div>
@@ -296,15 +296,21 @@ else
                                 <div class="p-4 bg-black/40 rounded-lg border border-white/5 flex flex-col items-center gap-4 text-center">
                                     <img src="@(player?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + memberId)" class="size-16 rounded-lg border border-white/10" />
                                     <div>
-                                        <p class="text-sm font-bold text-white uppercase">@(player?.Username ?? "Unknown")</p>
+                                        <a href="@Url.Action("FriendProfile", "User", new { id = player?.Username ?? "" })" class="text-sm font-bold text-white uppercase hover:text-primary transition-colors">@(player?.Username ?? "Unknown")</a>
                                         <p class="text-[10px] text-white/30 uppercase mt-0.5">Teammate</p>
                                     </div>
-                                    <div class="flex gap-2 w-full">
-                                        <button onclick="endorseMember('@Model.Id', '@memberId', 'Positive', this)" class="flex-1 py-1.5 bg-green-500/10 hover:bg-green-500 text-green-500 hover:text-black border border-green-500/20 rounded text-[10px] font-black uppercase transition-all">
-                                            Good Vibe
-                                        </button>
-                                        <button onclick="endorseMember('@Model.Id', '@memberId', 'Negative', this)" class="flex-1 py-1.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded text-[10px] font-black uppercase transition-all">
-                                            Toxic
+                                    <div class="flex flex-col gap-2 w-full">
+                                        <select id="endorsement-@memberId" class="w-full bg-black/50 border border-white/10 rounded px-2 py-2 text-[10px] text-white uppercase focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                                            <option value="MVP">MVP (+5)</option>
+                                            <option value="Leader">Leader (+4)</option>
+                                            <option value="Good Teammate" selected>Good Teammate (+3)</option>
+                                            <option value="Chill">Chill (+2)</option>
+                                            <option value="Leaver">Leaver (-3)</option>
+                                            <option value="Toxic">Toxic (-5)</option>
+                                            <option value="AFK">AFK (-3)</option>
+                                        </select>
+                                        <button onclick="submitEndorsement('@Model.Id', '@memberId', this)" class="w-full py-2 bg-primary/10 hover:bg-primary text-primary hover:text-black border border-primary/20 rounded text-[10px] font-black uppercase transition-all">
+                                            Submit Rating
                                         </button>
                                     </div>
                                 </div>
@@ -491,7 +497,7 @@ else
                         <div class="flex items-center gap-4 mb-4">
                             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="size-12 rounded bg-cover bg-center border border-primary/30" />
                             <div>
-                                <h4 class="font-bold text-base text-white leading-none">@hostName</h4>
+                                <a href="@Url.Action("FriendProfile", "User", new { id = hostName })" class="font-bold text-base text-white leading-none hover:text-primary transition-colors">@hostName</a>
                                 <div class="flex items-center gap-1 mt-1.5 border-b border-white/5 pb-2 mb-2">
                                     <div class="flex">
                                         <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
@@ -870,12 +876,15 @@ else
             });
         }
 
-        function endorseMember(lobbyId, targetUserId, type, btn) {
+        function submitEndorsement(lobbyId, targetUserId, btn) {
+            const select = document.getElementById(`endorsement-${targetUserId}`);
+            const type = select.value;
+            
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<span class="material-symbols-outlined text-[10px] animate-spin-slow">sync</span>';
             
-            fetch(`/Lobby/EndorseMember?lobbyId=${lobbyId}&targetUserId=${targetUserId}&type=${type}`, {
+            fetch(`/Lobby/EndorseMember?lobbyId=${lobbyId}&targetUserId=${targetUserId}&type=${encodeURIComponent(type)}`, {
                 method: 'POST',
                 headers: {
                     'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
@@ -884,12 +893,24 @@ else
             .then(r => r.json())
             .then(data => {
                 if(data.success) {
-                    btn.closest('.flex.gap-2').innerHTML = '<span class="text-[10px] font-bold text-primary uppercase">EVALUATION LOGGED</span>';
+                    const container = btn.closest('.flex-col');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="w-full py-2 bg-green-500/10 border border-green-500/20 rounded text-center">
+                                <span class="text-[10px] font-bold text-green-500 uppercase tracking-wider">Evaluation Logged</span>
+                            </div>
+                        `;
+                    }
                 } else {
                     alert(data.message || "Failed to log evaluation");
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                 }
+            })
+            .catch(err => {
+                 console.error(err);
+                 btn.disabled = false;
+                 btn.innerHTML = originalText;
             });
         }
 

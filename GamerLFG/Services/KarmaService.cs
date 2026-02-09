@@ -130,31 +130,40 @@ namespace GamerLFG.Services
         }
 
         /// <summary>
-        /// Award/penalize karma for endorsement
+        /// Award/penalize karma for endorsement with weighted points
         /// </summary>
         public async Task ProcessEndorsementAsync(string toUserId, string fromUsername, string endorsementType, string endorsementId)
         {
-            bool isPositive = IsPositiveEndorsement(endorsementType);
-            var actionType = isPositive ? KarmaActionTypes.ENDORSEMENT_POSITIVE : KarmaActionTypes.ENDORSEMENT_NEGATIVE;
-            var points = isPositive ? KarmaPoints.ENDORSEMENT_POSITIVE : KarmaPoints.ENDORSEMENT_NEGATIVE;
-
+            int points = CalculateEndorsementPoints(endorsementType);
+            string actionType = points > 0 ? KarmaActionTypes.ENDORSEMENT_POSITIVE : KarmaActionTypes.ENDORSEMENT_NEGATIVE;
+            
             await AwardKarmaAsync(
                 toUserId,
                 actionType,
                 points,
                 "Endorsement",
                 endorsementId,
-                $"Received {endorsementType} endorsement from {fromUsername}"
+                $"Received '{endorsementType}' endorsement from {fromUsername}"
             );
         }
 
-        /// <summary>
-        /// Check if endorsement type is positive
-        /// </summary>
-        private bool IsPositiveEndorsement(string endorsementType)
+        private int CalculateEndorsementPoints(string type)
         {
-            var positiveTypes = new[] { "helpful", "skilled", "friendly", "good_teammate", "chill", "leader", "positive" };
-            return positiveTypes.Any(t => endorsementType.ToLower().Contains(t));
+            return type.ToLower() switch
+            {
+                "mvp" => 5,
+                "leader" => 4,
+                "tactical" => 4,
+                "friendly" => 3,
+                "supportive" => 3,
+                "good teammate" => 3,
+                "chill" => 2,
+                "toxic" => -5,
+                "griefer" => -5,
+                "afk" => -3,
+                "leaver" => -3,
+                _ => 1 // Default positive
+            };
         }
 
         /// <summary>

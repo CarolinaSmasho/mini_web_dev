@@ -82,12 +82,18 @@ namespace GamerLFG.Controllers
             }
 
             lobby.HostId = request.HostUserId;
+            
+            // Determine host role
+            var hostRoleName = !string.IsNullOrEmpty(request.HostRole) 
+                ? request.HostRole 
+                : (lobby.Roles.FirstOrDefault()?.Name ?? "Host");
+
             lobby.Members = new List<Member>
             {
                 new Member 
                 { 
                     UserId = request.HostUserId, 
-                    AssignedRole = lobby.Roles.FirstOrDefault()?.Name ?? "Host", 
+                    AssignedRole = hostRoleName, 
                     IsHost = true, 
                     JoinedAt = DateTime.UtcNow 
                 }
@@ -463,6 +469,7 @@ namespace GamerLFG.Controllers
         public DateTime? SessionStartTime { get; set; }
         public DateTime? SessionEndTime { get; set; }
         public string? PictureUrl { get; set; }
+        public string? HostRole { get; set; }
     }
 
     public class RoleRequest

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GamerLFG")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+433911691c2c005e17a2635ec7163ae8986863a2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0dcc1a080ad00d07d918fcbb1f6003013b61b3f2")]
 [assembly: System.Reflection.AssemblyProductAttribute("GamerLFG")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GamerLFG")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

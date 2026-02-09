@@ -20,10 +20,13 @@ builder.Services.AddScoped<GamerLFG.Repositories.IUserRepository, GamerLFG.Repos
 builder.Services.AddScoped<GamerLFG.Repositories.ILobbyRepository, GamerLFG.Repositories.MongoLobbyRepository>();
 builder.Services.AddScoped<GamerLFG.Repositories.IApplicationRepository, GamerLFG.Repositories.MongoApplicationRepository>();
 builder.Services.AddScoped<GamerLFG.Repositories.IEndorsementRepository, GamerLFG.Repositories.MongoEndorsementRepository>();
+builder.Services.AddScoped<GamerLFG.Repositories.IFriendRequestRepository, GamerLFG.Repositories.MongoFriendRequestRepository>();
+builder.Services.AddScoped<GamerLFG.Repositories.INotificationRepository, GamerLFG.Repositories.MongoNotificationRepository>();
 builder.Services.AddScoped<GamerLFG.Repositories.IKarmaRepository, GamerLFG.Repositories.MongoKarmaRepository>();
 
 // Services
 builder.Services.AddScoped<GamerLFG.Services.KarmaService>();
+builder.Services.AddScoped<GamerLFG.Services.NotificationService>();
 
 // Register Seeder
 builder.Services.AddScoped<GamerLFG.Services.MongoDbSeeder>();

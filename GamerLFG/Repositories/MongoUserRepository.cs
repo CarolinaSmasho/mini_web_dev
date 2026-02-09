@@ -1,5 +1,6 @@
 using GamerLFG.Data;
 using GamerLFG.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -51,6 +52,13 @@ namespace GamerLFG.Repositories
         {
             var filter = Builders<User>.Filter.In(u => u.Id, ids);
             return await _context.Users.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<User>> SearchUsersAsync(string query)
+        {
+            // Case-insensitive regex search on username
+            var filter = Builders<User>.Filter.Regex("Username", new BsonRegularExpression(query, "i"));
+            return await _context.Users.Find(filter).Limit(20).ToListAsync();
         }
     }
 }

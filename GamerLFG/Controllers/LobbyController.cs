@@ -13,16 +13,18 @@ namespace GamerLFG.Controllers
         private readonly IApplicationRepository _applicationRepository;
         private readonly IEndorsementRepository _endorsementRepository;
         private readonly KarmaService _karmaService;
+        private readonly NotificationService _notificationService;
 
         public LobbyController(ILobbyRepository lobbyRepository, IUserRepository userRepository, 
             IApplicationRepository applicationRepository, IEndorsementRepository endorsementRepository,
-            KarmaService karmaService)
+            KarmaService karmaService, NotificationService notificationService)
         {
             _lobbyRepository = lobbyRepository;
             _userRepository = userRepository;
             _applicationRepository = applicationRepository;
             _endorsementRepository = endorsementRepository;
             _karmaService = karmaService;
+            _notificationService = notificationService;
         }
 
         // GET: /Lobby
@@ -94,7 +96,7 @@ namespace GamerLFG.Controllers
         // POST: /Lobby/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Lobby lobby, List<string> moods, List<string> roleNames, List<int> roleCounts)
+        public async Task<IActionResult> Create(Lobby lobby, List<string> moods, List<string> roleNames, List<int> roleCounts, string hostRole)
         {
             var userId = HttpContext.Session.GetString("UserId");
             if (userId == null)
@@ -152,21 +154,26 @@ namespace GamerLFG.Controllers
             {
                 lobby.HostId = userId;
                 
+                // Determine host role
+                var assignedRole = !string.IsNullOrEmpty(hostRole) 
+                    ? hostRole 
+                    : (lobby.Roles.FirstOrDefault()?.Name ?? "Host");
+                
                 // Add Host as a Member
                 lobby.Members = new List<Member>
                 {
                     new Member 
                     { 
                         UserId = userId, 
-                        AssignedRole = lobby.Roles.FirstOrDefault()?.Name ?? "Host", 
+                        AssignedRole = assignedRole, 
                         IsHost = true, 
                         JoinedAt = DateTime.UtcNow 
                     }
                 };
                 
                 // Update Filled count for the role assigned to host
-                var hostRole = lobby.Roles.FirstOrDefault(r => r.Name == lobby.Members[0].AssignedRole);
-                if (hostRole != null) hostRole.Filled = 1;
+                var assignedHostRole = lobby.Roles.FirstOrDefault(r => r.Name == lobby.Members[0].AssignedRole);
+                if (assignedHostRole != null) assignedHostRole.Filled = 1;
                 
                 if (lobby.RecruitmentDeadline.HasValue) 
                     lobby.RecruitmentDeadline = DateTime.SpecifyKind(lobby.RecruitmentDeadline.Value, DateTimeKind.Unspecified).ToUniversalTime();
@@ -401,6 +408,10 @@ namespace GamerLFG.Controllers
             };
             
             await _applicationRepository.CreateApplicationAsync(application);
+
+            // Notify Host
+            var user = await _userRepository.GetUserAsync(userId);
+            await _notificationService.NotifyUserAsync(lobby.HostId, "Application", $"New application from {user?.Username ?? "Unknown"} for {lobby.Title}", application.Id);
             
             return Json(new { success = true, message = "Application sent" });
         }
@@ -467,6 +478,9 @@ namespace GamerLFG.Controllers
             // Award karma to the new member
             await _karmaService.AwardLobbyAcceptedAsync(application.UserId, lobby.Id, lobby.Title);
 
+            // Notify Applicant
+            await _notificationService.NotifyUserAsync(application.UserId, "Recruitment", $"You have been recruited to {lobby.Title}!", lobby.Id);
+
             return Json(new { success = true });
         }
 
@@ -486,6 +500,9 @@ namespace GamerLFG.Controllers
             if (lobby.HostId != userId) return Json(new { success = false, error = "Not authorized" });
 
             await _applicationRepository.UpdateApplicationStatusAsync(id, "Rejected");
+
+            // Notify Applicant
+            await _notificationService.NotifyUserAsync(application.UserId, "Recruitment", $"Your application to {lobby.Title} was declined.", lobby.Id);
 
             return Json(new { success = true });
         }
@@ -526,6 +543,9 @@ namespace GamerLFG.Controllers
 
             // Apply karma penalty (only for hard kick)
             await _karmaService.PenalizeKickedAsync(memberId, lobbyId, lobby.Title, hardKick);
+
+            // Notify Member
+            await _notificationService.NotifyUserAsync(memberId, "System", $"You were removed from lobby {lobby.Title}.", lobbyId);
 
             return Json(new { success = true, hardKick = hardKick });
         }

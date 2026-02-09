@@ -166,3 +166,122 @@ function formatRelativeTime(dateString) {
 
     return date.toLocaleDateString();
 }
+
+// Notification System
+const Notifications = {
+    async loadUnreadCount() {
+        const badge = document.getElementById('unreadCount');
+        if (!badge) return;
+
+        try {
+            const response = await API.get('/api/NotificationApi/unread-count');
+            if (response.success) {
+                if (response.data.count > 0) {
+                    badge.textContent = response.data.count > 99 ? '99+' : response.data.count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load notifications count", e);
+        }
+    },
+
+    async loadNotifications() {
+        const list = document.getElementById('notificationItems');
+        if (!list) return;
+
+        list.innerHTML = '<div class="p-4 text-center text-xs text-white/50">Loading...</div>';
+
+        try {
+            const response = await API.get('/api/NotificationApi');
+
+            if (response.success && response.data.notifications && response.data.notifications.length > 0) {
+                list.innerHTML = response.data.notifications.map(n => `
+                    <div class="px-4 py-3 border-b border-white/5 hover:bg-white/5 transition-colors ${!n.isRead ? 'bg-white/5' : ''}">
+                        <div class="flex justify-between items-start gap-2">
+                            <p class="text-xs text-white">${truncateString(n.message, 60)}</p>
+                            ${!n.isRead ? '<span class="size-2 rounded-full bg-primary flex-shrink-0 mt-1"></span>' : ''}
+                        </div>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-[10px] text-white/40">${formatRelativeTime(n.createdAt)}</span>
+                            ${!n.isRead ? `<button onclick="event.stopPropagation(); Notifications.markRead('${n.id}')" class="text-[10px] text-primary hover:underline">Mark read</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<div class="p-4 text-center text-xs text-white/50">No notifications</div>';
+            }
+        } catch (e) {
+            console.error("Failed to load notifications", e);
+            list.innerHTML = '<div class="p-4 text-center text-xs text-red-500">Failed to load</div>';
+        }
+    },
+
+    async markRead(id) {
+        try {
+            await API.post(`/api/NotificationApi/read/${id}`, {});
+            this.loadUnreadCount();
+            // Refresh list if dropdown is open
+            const dropdown = document.getElementById('notificationList');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                this.loadNotifications();
+            }
+        } catch (e) {
+            console.error("Failed to mark read", e);
+        }
+    },
+
+    async markAllRead() {
+        try {
+            await API.post('/api/NotificationApi/read-all', {});
+            this.loadUnreadCount();
+            this.loadNotifications();
+        } catch (e) {
+            console.error("Failed to mark all read", e);
+        }
+    }
+};
+
+function truncateString(str, n) {
+    if (!str) return '';
+    return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
+}
+
+// Global functions for inline onclick handlers
+window.toggleNotifications = function () {
+    const list = document.getElementById('notificationList');
+    if (list) {
+        if (list.classList.contains('hidden')) {
+            list.classList.remove('hidden', 'opacity-0', 'invisible');
+            Notifications.loadNotifications();
+        } else {
+            list.classList.add('hidden', 'opacity-0', 'invisible');
+        }
+    }
+};
+
+window.markAllRead = function () {
+    Notifications.markAllRead();
+};
+
+// Initialize Notifications
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial check
+    setTimeout(() => Notifications.loadUnreadCount(), 1000);
+
+    // Poll every 60 seconds
+    setInterval(() => Notifications.loadUnreadCount(), 60000);
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        const dropdownWrapper = document.getElementById('notificationDropdown');
+        const list = document.getElementById('notificationList');
+
+        if (list && !list.classList.contains('hidden') &&
+            dropdownWrapper && !dropdownWrapper.contains(e.target)) {
+            list.classList.add('hidden', 'opacity-0', 'invisible');
+        }
+    });
+});

@@ -130,6 +130,18 @@
                         <p class="text-[9px] text-white/30 font-bold uppercase">Restricted to recruited members only</p>
                     </div>
                 </div>
+                <!-- Host Role Selection -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-8">
+                    <h2 class="text-xl font-black uppercase text-white tracking-tight italic mb-2">Host Role Assignment</h2>
+                    <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-4">Select your role in the squad</p>
+                    
+                    <div class="relative">
+                        <select id="hostRole" name="hostRole" class="w-full bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none appearance-none cursor-pointer transition-all">
+                            <option value="">-- Assign Host Role --</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-white/50 text-sm pointer-events-none">expand_more</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Sidebar Column: Mission Parameters -->
@@ -231,11 +243,53 @@
                 </div>
             `;
             container.appendChild(div);
+            updateHostRoles();
+        }
+
+        function updateHostRoles() {
+            const roleInputs = document.getElementsByName('roleNames[]');
+            const hostRoleSelect = document.getElementById('hostRole');
+            const currentSelection = hostRoleSelect.value;
+            
+            // Clear existing options except default
+            while (hostRoleSelect.options.length > 1) {
+                hostRoleSelect.remove(1);
+            }
+            
+            // Add roles from inputs
+            roleInputs.forEach(input => {
+                if (input.value && input.value.trim() !== '') {
+                    const option = document.createElement('option');
+                    option.value = input.value.trim();
+                    option.text = input.value.trim();
+                    hostRoleSelect.add(option);
+                }
+                
+                // Add listener to update on change
+                input.addEventListener('input', updateHostRoles);
+            });
+            
+            // Restore selection if possible
+            if (currentSelection) {
+                for (let i = 0; i < hostRoleSelect.options.length; i++) {
+                    if (hostRoleSelect.options[i].value === currentSelection) {
+                        hostRoleSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
         }
 
         // Initialize with a few default tags if needed
         document.addEventListener('DOMContentLoaded', () => {
              // Optional auto-init
+             updateHostRoles();
+             
+             // Initial listener for the first input
+             const firstInput = document.querySelector('input[name="roleNames[]"]');
+             if(firstInput) {
+                 firstInput.addEventListener('input', updateHostRoles);
+             }
         });
     </script>
     <style>

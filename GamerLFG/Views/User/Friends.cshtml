@@ -20,66 +20,256 @@
         </div>
     </header>
 
-    <div class="p-8 max-w-7xl w-full mx-auto">
-        <!-- Dashboard Navigation (for Friends page) -->
-        <div class="flex gap-4 mb-8 overflow-x-auto pb-2 hide-scrollbar">
-            <button class="px-6 py-2 bg-primary text-black rounded text-[10px] font-black uppercase tracking-widest">All Friends</button>
-            <button class="px-6 py-2 bg-white/5 text-white/40 hover:bg-white/10 rounded text-[10px] font-black uppercase tracking-widest transition-all">Pending Requests (2)</button>
-            <button class="px-6 py-2 bg-white/5 text-white/40 hover:bg-white/10 rounded text-[10px] font-black uppercase tracking-widest transition-all">Blocked</button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <!-- Friend Card (Online) -->
-            <!-- Friend Card (Online) -->
-            @foreach (var friend in Model.Where(u => u.IsOnline))
-            {
-                <a asp-action="FriendProfile" asp-route-id="@friend.Username" class="group relative bg-white dark:bg-card-dark border-l-4 border-primary p-4 rounded-lg flex items-center justify-center sm:justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer">
-                    <div class="flex items-center gap-4">
-                        <div class="relative">
-                            <img src="@friend.AvatarUrl" class="size-12 rounded-lg bg-black/20" alt="Avatar" />
-                            <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-primary status-pulse border-2 border-card-dark"></div>
-                        </div>
-                        <div>
-                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Username</p>
-                            <p class="text-[10px] text-primary/80 font-bold uppercase tracking-tighter">@(friend.GameLibrary.FirstOrDefault() ?? "Online")</p>
-                        </div>
-                    </div>
-                    <span class="material-symbols-outlined text-gray-500 group-hover:text-primary transition-colors">more_vert</span>
-                </a>
-            }
-
-            <!-- Offline Friends -->
-            <!-- Offline Friends -->
-            @foreach (var friend in Model.Where(u => !u.IsOnline))
-            {
-                <a asp-action="FriendProfile" asp-route-id="@friend.Username" class="group bg-white dark:bg-card-dark border-l-4 border-gray-600 p-4 rounded-lg flex items-center justify-center sm:justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer opacity-60">
-                    <div class="flex items-center gap-4">
-                        <div class="relative">
-                            <img src="@friend.AvatarUrl" class="size-12 rounded-lg bg-black/20 grayscale" alt="Avatar" />
-                            <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-gray-600 border-2 border-card-dark"></div>
-                        </div>
-                        <div>
-                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Username</p>
-                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">Offline</p>
-                        </div>
-                    </div>
-                    <span class="material-symbols-outlined text-gray-600">more_vert</span>
-                </a>
-            }
-        </div>
-
-        <!-- Empty State / Add Suggestion -->
-        <div class="mt-12 p-12 border-2 border-dashed border-white/5 rounded-xl flex flex-col items-center justify-center text-center bg-card-dark/50">
-            <div class="size-16 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                <span class="material-symbols-outlined text-4xl text-white/20">person_add</span>
-            </div>
-            <h3 class="text-lg font-bold uppercase tracking-widest mb-2 italic text-white font-display">Expand your SQUAD</h3>
-            <p class="text-sm text-gray-500 max-w-xs mb-8">Invite more players to your network and never play solo again.</p>
-            <button onclick="alert('Invitation link copied to clipboard!')" class="bg-primary hover:bg-primary/90 text-black px-10 py-3 rounded-lg text-xs font-black tracking-[0.2em] uppercase transition-all shadow-[0_0_20px_rgba(242,150,13,0.2)]">
-                Send Invitation
+    <div class="p-8 max-w-7xl w-full mx-auto" id="friends-app">
+        <!-- Dashboard Navigation -->
+        <div class="flex gap-4 mb-8 overflow-x-auto pb-2 hide-scrollbar border-b border-white/10">
+            <button onclick="switchTab('friends')" id="tab-friends" class="tab-btn px-6 py-2 bg-primary text-black rounded-t-lg text-[10px] font-black uppercase tracking-widest transition-all">All Friends</button>
+            <button onclick="switchTab('search')" id="tab-search" class="tab-btn px-6 py-2 bg-white/5 text-white/40 hover:bg-white/10 rounded-t-lg text-[10px] font-black uppercase tracking-widest transition-all">Find Squadmates</button>
+            <button onclick="switchTab('requests')" id="tab-requests" class="tab-btn px-6 py-2 bg-white/5 text-white/40 hover:bg-white/10 rounded-t-lg text-[10px] font-black uppercase tracking-widest transition-all">
+                Pending Requests <span id="pending-count" class="ml-2 px-1.5 py-0.5 bg-red-500 text-white rounded-full text-[9px] hidden">0</span>
             </button>
         </div>
+
+        <!-- All Friends Tab -->
+        <div id="view-friends" class="tab-content transition-all duration-300">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                @foreach (var friend in Model.Where(u => u.IsOnline))
+                {
+                    <a asp-action="FriendProfile" asp-route-id="@friend.Username" class="group relative bg-white dark:bg-card-dark border-l-4 border-primary p-4 rounded-lg flex items-center justify-center sm:justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <img src="@(friend.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + friend.Username)" class="size-12 rounded-lg bg-black/20" alt="Avatar" />
+                                <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-primary status-pulse border-2 border-card-dark"></div>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Username</p>
+                                <p class="text-[10px] text-primary/80 font-bold uppercase tracking-tighter">@(friend.GameLibrary?.FirstOrDefault() ?? "Online")</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-gray-500 group-hover:text-primary transition-colors">more_vert</span>
+                    </a>
+                }
+                
+                @foreach (var friend in Model.Where(u => !u.IsOnline))
+                {
+                    <a asp-action="FriendProfile" asp-route-id="@friend.Username" class="group bg-white dark:bg-card-dark border-l-4 border-gray-600 p-4 rounded-lg flex items-center justify-center sm:justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer opacity-60">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <img src="@(friend.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + friend.Username)" class="size-12 rounded-lg bg-black/20 grayscale" alt="Avatar" />
+                                <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-gray-600 border-2 border-card-dark"></div>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Username</p>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">Offline</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-gray-600">more_vert</span>
+                    </a>
+                }
+            </div>
+            
+            @if (!Model.Any())
+            {
+                <div class="mt-12 p-12 border-2 border-dashed border-white/5 rounded-xl flex flex-col items-center justify-center text-center bg-card-dark/50">
+                    <div class="size-16 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-4xl text-white/20">group_off</span>
+                    </div>
+                    <h3 class="text-lg font-bold uppercase tracking-widest mb-2 italic text-white font-display">No Squadmates Yet</h3>
+                    <button onclick="switchTab('search')" class="mt-4 bg-primary hover:bg-primary/90 text-black px-8 py-2 rounded-lg text-xs font-black tracking-[0.1em] uppercase transition-all">
+                        Find Friends
+                    </button>
+                </div>
+            }
+        </div>
+
+        <!-- Search Tab -->
+        <div id="view-search" class="tab-content hidden transition-all duration-300">
+            <div class="max-w-2xl mx-auto flex flex-col gap-6">
+                <div class="relative group">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
+                    <input id="user-search-input" onkeyup="if(event.key === 'Enter') searchUsers()" class="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-sm font-bold tracking-wide focus:border-primary focus:ring-1 focus:ring-primary outline-none text-white transition-all shadow-lg" placeholder="ENTER USERNAME TO SEARCH..." type="text"/>
+                    <button onclick="searchUsers()" class="absolute right-2 top-2 bottom-2 px-6 bg-white/10 hover:bg-primary hover:text-black rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
+                        Search
+                    </button>
+                </div>
+
+                <div id="search-results" class="flex flex-col gap-3">
+                    <!-- Results populated by JS -->
+                    <div class="text-center py-12 text-white/30 text-xs font-bold uppercase tracking-widest">
+                        Enter a username to begin search protocol
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Tab -->
+        <div id="view-requests" class="tab-content hidden transition-all duration-300">
+            <div id="requests-container" class="max-w-2xl mx-auto flex flex-col gap-3">
+                <!-- Requests populated by JS -->
+                <div class="text-center py-12">
+                     <div class="inline-block size-8 border-2 border-white/20 border-t-primary rounded-full animate-spin"></div>
+                </div>
+            </div>
+        </div>
     </div>
+</main>
+
+@section Scripts {
+    <script>
+        const currentUserId = '@Context.Session.GetString("UserId")';
+
+        function switchTab(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if(btn.id === `tab-${tabName}`) {
+                    btn.classList.add('bg-primary', 'text-black');
+                    btn.classList.remove('bg-white/5', 'text-white/40');
+                } else {
+                    btn.classList.remove('bg-primary', 'text-black');
+                    btn.classList.add('bg-white/5', 'text-white/40');
+                }
+            });
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                 content.classList.add('hidden');
+            });
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+            if (tabName === 'requests') {
+                loadPendingRequests();
+            }
+        }
+
+        async function searchUsers() {
+            const query = document.getElementById('user-search-input').value;
+            if (!query) return;
+
+            const container = document.getElementById('search-results');
+            container.innerHTML = '<div class="text-center py-8"><div class="inline-block size-6 border-2 border-white/20 border-t-primary rounded-full animate-spin"></div></div>';
+
+            try {
+                const response = await fetch(`/api/UserApi/search?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.users.length === 0) {
+                        container.innerHTML = '<div class="text-center py-12 text-white/30 text-xs font-bold uppercase tracking-widest">No operatives found with that ID</div>';
+                        return;
+                    }
+
+                    container.innerHTML = data.users.map(u => `
+                        <div class="bg-card-dark border border-white/5 p-4 rounded-lg flex items-center justify-between hover:border-white/10 transition-all">
+                            <div class="flex items-center gap-4">
+                                <img src="${u.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username}" class="size-10 rounded bg-black/20" />
+                                <div>
+                                    <p class="font-bold text-sm tracking-wide uppercase text-white">${u.username}</p>
+                                    <p class="text-[10px] text-primary font-bold uppercase">Karma: ${u.karmaScore}</p>
+                                </div>
+                            </div>
+                            ${u.id === currentUserId ? '<span class="text-xs text-white/30 font-bold uppercase">YOU</span>' : 
+                              `<button onclick="sendFriendRequest('${u.id}')" class="px-4 py-2 bg-white/5 hover:bg-primary hover:text-black border border-white/10 rounded text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">person_add</span> Add
+                              </button>`}
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `<div class="text-center text-red-500 text-xs font-bold uppercase">${data.error}</div>`;
+                }
+            } catch (err) {
+                container.innerHTML = '<div class="text-center text-red-500 text-xs font-bold uppercase">Transmission Failed</div>';
+            }
+        }
+
+        async function sendFriendRequest(toUserId) {
+            try {
+                const response = await fetch('/api/UserApi/friend-request/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fromUserId: currentUserId, toUserId: toUserId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Friend request transmitted successfully.');
+                } else {
+                    alert('Transmission failed: ' + data.error);
+                }
+            } catch (err) {
+                alert('Network error during transmission.');
+            }
+        }
+
+        async function loadPendingRequests() {
+            const container = document.getElementById('requests-container');
+            if(!currentUserId) return;
+
+            try {
+                const response = await fetch(`/api/UserApi/${currentUserId}/friend-requests`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const countBadge = document.getElementById('pending-count');
+                    if(data.requests.length > 0) {
+                        countBadge.innerText = data.requests.length;
+                        countBadge.classList.remove('hidden');
+                    } else {
+                        countBadge.classList.add('hidden');
+                    }
+
+                    if (data.requests.length === 0) {
+                        container.innerHTML = '<div class="text-center py-12 text-white/30 text-xs font-bold uppercase tracking-widest">No pending transmission requests</div>';
+                        return;
+                    }
+
+                    container.innerHTML = data.requests.map(r => `
+                        <div class="bg-card-dark border border-white/5 p-4 rounded-lg flex items-center justify-between hover:border-white/10 transition-all">
+                            <div class="flex items-center gap-4">
+                                <img src="${r.fromUserAvatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + r.fromUserName}" class="size-10 rounded bg-black/20" />
+                                <div>
+                                    <p class="font-bold text-sm tracking-wide uppercase text-white">${r.fromUserName}</p>
+                                    <p class="text-[10px] text-white/40 font-bold uppercase">Requested: ${new Date(r.createdAt).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="handleRequest('${r.id}', 'accept')" class="px-4 py-2 bg-primary text-black rounded text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all">Accept</button>
+                                <button onclick="handleRequest('${r.id}', 'reject')" class="px-4 py-2 bg-red-500/20 text-red-500 border border-red-500/30 rounded text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Reject</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                container.innerHTML = '<div class="text-center text-red-500 text-xs font-bold uppercase">Sync Error</div>';
+            }
+        }
+
+        async function handleRequest(requestId, action) {
+            try {
+                const response = await fetch(`/api/UserApi/friend-request/${action}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ requestId: requestId, userId: currentUserId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    loadPendingRequests(); // Refresh list
+                    // If accepted, maybe refresh friends tab too or just notify
+                    if(action === 'accept') {
+                        // Ideally reload page or fetch friends again
+                    }
+                } else {
+                    alert('Action failed: ' + data.error);
+                }
+            } catch (err) {
+                alert('Action failed network error.');
+            }
+        }
+
+        // Auto load count on page load
+        document.addEventListener('DOMContentLoaded', () => {
+             loadPendingRequests();
+        });
+    </script>
+}
 </main>
 
 <style>

@@ -11,16 +11,46 @@ namespace GamerLFG.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IEndorsementRepository _endorsementRepository;
+        private readonly IFriendRequestRepository _friendRequestRepository;
         private readonly KarmaService _karmaService;
+        private readonly NotificationService _notificationService;
 
         public UserApiController(
             IUserRepository userRepository, 
             IEndorsementRepository endorsementRepository, 
-            KarmaService karmaService)
+            IFriendRequestRepository friendRequestRepository,
+            KarmaService karmaService,
+            NotificationService notificationService)
         {
             _userRepository = userRepository;
             _endorsementRepository = endorsementRepository;
+            _friendRequestRepository = friendRequestRepository;
             _karmaService = karmaService;
+            _notificationService = notificationService;
+        }
+
+
+
+        /// <summary>
+        /// Search users by username
+        /// </summary>
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUsers([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest(new { success = false, error = "Query is required" });
+
+            var users = await _userRepository.SearchUsersAsync(query);
+            return Ok(new { 
+                success = true, 
+                users = users.Select(u => new {
+                    u.Id,
+                    u.Username,
+                    u.AvatarUrl,
+                    u.KarmaScore,
+                    u.IsOnline
+                })
+            });
         }
 
         /// <summary>
@@ -142,6 +172,106 @@ namespace GamerLFG.Controllers
         }
 
         /// <summary>
+        /// Send a friend request
+        /// </summary>
+        [HttpPost("friend-request/send")]
+        public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequestDto request)
+        {
+            var fromUser = await _userRepository.GetUserAsync(request.FromUserId);
+            var toUser = await _userRepository.GetUserAsync(request.ToUserId);
+
+            if (fromUser == null || toUser == null)
+                return NotFound(new { success = false, error = "User not found" });
+
+            if (fromUser.FriendIds.Contains(request.ToUserId))
+                return BadRequest(new { success = false, error = "Already friends" });
+
+            var existingRequest = await _friendRequestRepository.GetByUsersAsync(request.FromUserId, request.ToUserId);
+            if (existingRequest != null && existingRequest.Status == "Pending")
+                return BadRequest(new { success = false, error = "Request already pending" });
+
+            var newRequest = new FriendRequest
+            {
+                FromUserId = request.FromUserId,
+                ToUserId = request.ToUserId,
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _friendRequestRepository.CreateAsync(newRequest);
+            
+            // Notify recipient
+            await _notificationService.NotifyUserAsync(request.ToUserId, "FriendRequest", $"You have a friend request from {fromUser.Username}", newRequest.Id);
+
+            return Ok(new { success = true, message = "Friend request sent" });
+        }
+
+        /// <summary>
+        /// Accept a friend request
+        /// </summary>
+        [HttpPost("friend-request/accept")]
+        public async Task<IActionResult> AcceptFriendRequest([FromBody] RequestActionDto request)
+        {
+            var friendRequest = await _friendRequestRepository.GetByIdAsync(request.RequestId);
+            if (friendRequest == null) return NotFound(new { success = false, error = "Request not found" });
+
+            if (friendRequest.ToUserId != request.UserId)
+                return Unauthorized(new { success = false, error = "Not authorized" });
+
+            await _friendRequestRepository.UpdateStatusAsync(request.RequestId, "Accepted");
+
+            // Add to both users' friend lists
+            await _userRepository.AddFriendAsync(friendRequest.FromUserId, friendRequest.ToUserId);
+            await _userRepository.AddFriendAsync(friendRequest.ToUserId, friendRequest.FromUserId);
+
+            // Notify sender
+            var user = await _userRepository.GetUserAsync(request.UserId);
+            await _notificationService.NotifyUserAsync(friendRequest.FromUserId, "FriendRequest", $"{user?.Username ?? "Unknown"} accepted your friend request", request.RequestId);
+
+            return Ok(new { success = true, message = "Friend request accepted" });
+        }
+
+        /// <summary>
+        /// Reject a friend request
+        /// </summary>
+        [HttpPost("friend-request/reject")]
+        public async Task<IActionResult> RejectFriendRequest([FromBody] RequestActionDto request)
+        {
+            var friendRequest = await _friendRequestRepository.GetByIdAsync(request.RequestId);
+            if (friendRequest == null) return NotFound(new { success = false, error = "Request not found" });
+
+            if (friendRequest.ToUserId != request.UserId)
+                return Unauthorized(new { success = false, error = "Not authorized" });
+
+            await _friendRequestRepository.UpdateStatusAsync(request.RequestId, "Rejected");
+            return Ok(new { success = true, message = "Friend request rejected" });
+        }
+
+        /// <summary>
+        /// Get pending friend requests
+        /// </summary>
+        [HttpGet("{userId}/friend-requests")]
+        public async Task<IActionResult> GetPendingRequests(string userId)
+        {
+            var requests = await _friendRequestRepository.GetPendingByUserIdAsync(userId);
+            
+            // Enrich with FromUser details
+            var fromUserIds = requests.Select(r => r.FromUserId).ToList();
+            var fromUsers = await _userRepository.GetUsersAsync(fromUserIds);
+            var userMap = fromUsers.ToDictionary(u => u.Id, u => u);
+
+            var result = requests.Select(r => new {
+                r.Id,
+                r.FromUserId,
+                r.CreatedAt,
+                FromUserName = userMap.ContainsKey(r.FromUserId) ? userMap[r.FromUserId].Username : "Unknown",
+                FromUserAvatar = userMap.ContainsKey(r.FromUserId) ? userMap[r.FromUserId].AvatarUrl : ""
+            });
+
+            return Ok(new { success = true, requests = result });
+        }
+
+        /// <summary>
         /// Get all endorsements given to a user
         /// </summary>
         [HttpGet("{id}/endorsements")]
@@ -200,5 +330,17 @@ namespace GamerLFG.Controllers
         public string FromUserId { get; set; } = string.Empty;
         public string Type { get; set; } = "Positive";
         public string? Comment { get; set; }
+    }
+
+    public class FriendRequestDto
+    {
+        public string FromUserId { get; set; } = string.Empty;
+        public string ToUserId { get; set; } = string.Empty;
+    }
+
+    public class RequestActionDto
+    {
+        public string RequestId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty; // User performing the action (ToUserId)
     }
 }

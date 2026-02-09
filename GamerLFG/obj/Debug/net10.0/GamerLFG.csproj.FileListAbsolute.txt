@@ -95,7 +95,6 @@
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/Debug/net10.0/GamerLFG.genruntimeconfig.cache
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/Debug/net10.0/ref/GamerLFG.dll
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/Debug/net10.0/compressed/uvw4xu4fv2-{0}-tv8hdrubzq-tv8hdrubzq.gz
-/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/Debug/net10.0/compressed/6v4vd0z1nd-{0}-gu02vzh83s-gu02vzh83s.gz
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/Debug/net10.0/GamerLFG.csproj.AssemblyReference.cache
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/bin/Debug/net10.0/DnsClient.dll
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/bin/Debug/net10.0/MongoDB.Bson.dll
@@ -109,3 +108,4 @@
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll
 /Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/Debug/net10.0/GamerLFG.MvcApplicationPartsAssemblyInfo.cs
+/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/Debug/net10.0/compressed/6v4vd0z1nd-{0}-l8664mj0vy-l8664mj0vy.gz

@@ -13,5 +13,6 @@ namespace GamerLFG.Repositories
         Task UpdateUserAsync(User user);
         Task AddFriendAsync(string userId, string friendId);
         Task<List<User>> GetUsersAsync(List<string> ids);
+        Task<List<User>> SearchUsersAsync(string query);
     }
 }
