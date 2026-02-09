@@ -1,3 +1,4 @@
+@model List<GamerLFG.Models.User>
 @{
     ViewData["Title"] = "Squad Database";
 }
@@ -13,9 +14,9 @@
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
                 <input class="bg-gray-100 dark:bg-white/5 border-none rounded-lg pl-10 pr-4 py-2 text-xs font-bold tracking-widest focus:ring-1 focus:ring-primary w-64 transition-all text-white" placeholder="SEARCH SQUADMATES..." type="text"/>
             </div>
-            <button class="bg-primary hover:bg-primary/90 text-black px-6 py-2 rounded-lg text-xs font-black tracking-widest uppercase transition-transform active:scale-95">
+            <a asp-controller="Lobby" asp-action="Index" class="bg-primary hover:bg-primary/90 text-black px-6 py-2 rounded-lg text-xs font-black tracking-widest uppercase transition-transform active:scale-95 block text-center">
                 Find Squad
-            </button>
+            </a>
         </div>
     </header>
 
@@ -29,39 +30,41 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <!-- Friend Card (Online) -->
-            @foreach (var friend in new[] { ("ShadowWalker", "Cyberpunk 2077"), ("NeonViper", "Valorant"), ("ZeroSum", "Away"), ("Glitch_Fixer", "Elden Ring") })
+            <!-- Friend Card (Online) -->
+            @foreach (var friend in Model.Where(u => u.IsOnline))
             {
-                <div class="group relative bg-white dark:bg-card-dark border-l-4 border-primary p-4 rounded-lg flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer">
+                <a asp-action="FriendProfile" asp-route-id="@friend.Username" class="group relative bg-white dark:bg-card-dark border-l-4 border-primary p-4 rounded-lg flex items-center justify-center sm:justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer">
                     <div class="flex items-center gap-4">
                         <div class="relative">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@friend.Item1" class="size-12 rounded-lg bg-black/20" alt="Avatar" />
+                            <img src="@friend.AvatarUrl" class="size-12 rounded-lg bg-black/20" alt="Avatar" />
                             <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-primary status-pulse border-2 border-card-dark"></div>
                         </div>
                         <div>
-                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Item1</p>
-                            <p class="text-[10px] text-primary/80 font-bold uppercase tracking-tighter">@friend.Item2</p>
+                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Username</p>
+                            <p class="text-[10px] text-primary/80 font-bold uppercase tracking-tighter">@(friend.GameLibrary.FirstOrDefault() ?? "Online")</p>
                         </div>
                     </div>
                     <span class="material-symbols-outlined text-gray-500 group-hover:text-primary transition-colors">more_vert</span>
-                </div>
+                </a>
             }
 
             <!-- Offline Friends -->
-            @foreach (var friend in new[] { ("GhostRider", "Offline - 4h ago"), ("Retro_88", "Offline - 2d ago") })
+            <!-- Offline Friends -->
+            @foreach (var friend in Model.Where(u => !u.IsOnline))
             {
-                <div class="group bg-white dark:bg-card-dark border-l-4 border-gray-600 p-4 rounded-lg flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer opacity-60">
+                <a asp-action="FriendProfile" asp-route-id="@friend.Username" class="group bg-white dark:bg-card-dark border-l-4 border-gray-600 p-4 rounded-lg flex items-center justify-center sm:justify-between hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer opacity-60">
                     <div class="flex items-center gap-4">
                         <div class="relative">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@friend.Item1" class="size-12 rounded-lg bg-black/20 grayscale" alt="Avatar" />
+                            <img src="@friend.AvatarUrl" class="size-12 rounded-lg bg-black/20 grayscale" alt="Avatar" />
                             <div class="absolute -bottom-1 -right-1 size-3 rounded-full bg-gray-600 border-2 border-card-dark"></div>
                         </div>
                         <div>
-                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Item1</p>
-                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">@friend.Item2</p>
+                            <p class="font-bold text-sm tracking-wide uppercase text-white font-display">@friend.Username</p>
+                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">Offline</p>
                         </div>
                     </div>
                     <span class="material-symbols-outlined text-gray-600">more_vert</span>
-                </div>
+                </a>
             }
         </div>
 
@@ -72,7 +75,7 @@
             </div>
             <h3 class="text-lg font-bold uppercase tracking-widest mb-2 italic text-white font-display">Expand your SQUAD</h3>
             <p class="text-sm text-gray-500 max-w-xs mb-8">Invite more players to your network and never play solo again.</p>
-            <button class="bg-primary hover:bg-primary/90 text-black px-10 py-3 rounded-lg text-xs font-black tracking-[0.2em] uppercase transition-all shadow-[0_0_20px_rgba(242,150,13,0.2)]">
+            <button onclick="alert('Invitation link copied to clipboard!')" class="bg-primary hover:bg-primary/90 text-black px-10 py-3 rounded-lg text-xs font-black tracking-[0.2em] uppercase transition-all shadow-[0_0_20px_rgba(242,150,13,0.2)]">
                 Send Invitation
             </button>
         </div>

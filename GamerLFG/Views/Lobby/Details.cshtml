@@ -1,223 +1,929 @@
+@model GamerLFG.Models.Lobby
 @{
     ViewData["Title"] = "Mission Briefing";
+    var hostName = ViewData["HostName"] as string ?? "Unknown";
+    var memberMap = ViewData["MemberMap"] as Dictionary<string, GamerLFG.Models.User> ?? new Dictionary<string, GamerLFG.Models.User>();
 }
 
-<main class="flex-1 max-w-[1400px] mx-auto w-full px-6 py-8">
-    <div class="grid grid-cols-12 gap-8">
-        <!-- Main Column: Hero and Composition -->
-        <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
-            <!-- Hero Section -->
-            <div class="relative w-full h-[400px] rounded-lg overflow-hidden group border border-white/10">
-                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style='background-image: url("https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1400");'></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 p-8 w-full z-10">
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider">Active Transmission</span>
-                        <span class="px-2 py-0.5 bg-black/60 border border-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">Valorant</span>
-                    </div>
-                    <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none mb-2 italic">Ascendant 3 Grind - Need IGL</h1>
-                    <p class="text-white/60 mt-4 text-base max-w-2xl font-medium">Looking for a mature team leader who knows their strats. Professionalism required. High stakes infiltration mission on the rank ladder.</p>
-                </div>
-            </div>
+@{
+    var currentUserId = Context.Session.GetString("UserId");
+    var isHost = !string.IsNullOrEmpty(currentUserId) && Model.HostId == currentUserId;
+    var isMember = ViewData["IsMember"] as bool? ?? false;
+    var pendingApp = ViewData["PendingApplication"] as GamerLFG.Models.Application;
+    var pendingApps = ViewData["PendingApplications"] as List<GamerLFG.Models.Application> ?? new List<GamerLFG.Models.Application>();
+    var applicantMap = ViewData["ApplicantMap"] as Dictionary<string, GamerLFG.Models.User> ?? new Dictionary<string, GamerLFG.Models.User>();
+}
 
-            <!-- Squad Composition -->
-            <div class="bg-card-dark border border-white/10 rounded-lg p-6">
-                <div class="flex justify-between items-end mb-6">
-                    <div>
-                        <h3 class="text-xl font-bold uppercase tracking-tight text-white">Squad Composition</h3>
-                        <p class="text-xs text-white/40 mt-1 uppercase tracking-wider">2 SLOTS REMAINING • BALANCED TEAM PREFERRED</p>
+@if (isHost)
+{
+    // HOST DASHBOARD VIEW (Full Tactical Layout)
+    <main class="flex-1 max-w-[1400px] mx-auto w-full px-6 py-8">
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Main Column: Hero and Management -->
+            <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+                <!-- Hero Section -->
+                <div class="relative w-full h-[300px] rounded-lg overflow-hidden group border border-white/10 shadow-2xl">
+                    <img alt="@Model.Game" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="@(string.IsNullOrEmpty(Model.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80" : Model.PictureUrl)" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                    
+                    <div class="absolute top-4 right-4 flex gap-2 z-20">
+                        <button onclick="toggleRecruitment('@Model.Id')" class="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded uppercase tracking-widest border border-white/20 transition-all flex items-center gap-2" id="toggleRecruitHero">
+                            <span class="material-symbols-outlined text-sm status-icon">@(Model.IsRecruiting ? "lock_open" : "lock")</span> 
+                            <span class="status-text">@(Model.IsRecruiting ? "Close Recruitment" : "Open Recruitment")</span>
+                        </button>
+                        <button onclick="quickChangeBackground()" class="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded uppercase tracking-widest border border-white/20 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">image</span> Quick Change
+                        </button>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="bg-primary hover:bg-primary/90 text-black text-[10px] font-black px-3 py-1.5 rounded uppercase tracking-widest transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm font-bold">edit</span> Edit Mission
+                        </a>
                     </div>
-                    <div class="text-right">
-                        <span class="text-3xl font-black text-white">3<span class="text-white/30">/5</span></span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <!-- Host -->
-                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-white/5 hover:border-white/20 transition-all">
-                        <div class="relative aspect-square rounded overflow-hidden border border-primary/50">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=SentinelMain" alt="Host" class="h-full w-full object-cover" />
-                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary text-[9px] font-bold text-black uppercase">Host</div>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-wide text-white">SentinelMain</p>
-                            <p class="text-[10px] text-primary uppercase font-mono mt-0.5">[LEADER] ONLINE</p>
-                        </div>
-                    </div>
-                    <!-- Member 1 -->
-                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-white/5 hover:border-white/20 transition-all">
-                        <div class="relative aspect-square rounded overflow-hidden border border-white/10">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User2" alt="Member" class="h-full w-full object-cover" />
-                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-white/20 backdrop-blur-md text-[9px] font-bold text-white uppercase">Duelist</div>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-wide text-white">JettMain_V</p>
-                            <p class="text-[10px] text-white/40 uppercase font-mono mt-0.5">READY</p>
-                        </div>
-                    </div>
-                    <!-- Member 2 -->
-                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-white/5 hover:border-white/20 transition-all">
-                        <div class="relative aspect-square rounded overflow-hidden border border-white/10">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User3" alt="Member" class="h-full w-full object-cover" />
-                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-white/20 backdrop-blur-md text-[9px] font-bold text-white uppercase">Smokes</div>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-wide text-white">OmenKing</p>
-                            <p class="text-[10px] text-white/40 uppercase font-mono mt-0.5">READY</p>
-                        </div>
-                    </div>
-                    <!-- Open Slot 1 -->
-                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-dashed border-white/20 hover:border-primary/50 hover:bg-primary/[0.02] transition-all cursor-pointer">
-                        <div class="relative aspect-square rounded overflow-hidden bg-black/40 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-3xl text-primary/80">shield</span>
-                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary/20 text-primary text-[9px] font-bold uppercase">INITIATOR</div>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-wide text-primary">SCANNING...</p>
-                            <p class="text-[10px] text-white/30 uppercase font-mono mt-0.5">VACANT</p>
-                        </div>
-                    </div>
-                    <!-- Open Slot 2 -->
-                    <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-dashed border-white/20 hover:border-primary/50 hover:bg-primary/[0.02] transition-all cursor-pointer">
-                        <div class="relative aspect-square rounded overflow-hidden bg-black/40 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-3xl text-primary/80">medical_services</span>
-                            <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary/20 text-primary text-[9px] font-bold uppercase">FLEX</div>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-wide text-primary">SCANNING...</p>
-                            <p class="text-[10px] text-white/30 uppercase font-mono mt-0.5">VACANT</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Access Restriction Warning -->
-            <div class="bg-card-dark border border-primary/30 rounded-lg p-6 flex flex-col md:flex-row items-start gap-5 shadow-[0_0_30px_rgba(242,150,13,0.05)] relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-                <div class="p-3 bg-primary/10 rounded border border-primary/20 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-primary text-2xl">lock</span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-2">
-                        <h4 class="text-base font-bold uppercase text-white tracking-wide">Secure Communications Channel</h4>
-                        <span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded uppercase font-bold">Encrypted</span>
-                    </div>
-                    <p class="text-sm text-white/60 leading-relaxed mb-4 max-w-2xl">
-                        Voice channels and external links (Discord, TeamSpeak) are restricted to prevent unauthorized access. Tactical links will be automatically revealed once you are officially recruited by the squad host.
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-black border border-white/10 rounded text-[10px] uppercase font-bold text-white/30 flex items-center gap-1.5 select-none">
-                            <span class="material-symbols-outlined text-sm">chat</span> Discord Hidden
-                        </span>
-                        <span class="px-2 py-1 bg-black border border-white/10 rounded text-[10px] uppercase font-bold text-white/30 flex items-center gap-1.5 select-none">
-                            <span class="material-symbols-outlined text-sm">mic</span> Tactical Comms Locked
-                        </span>
+                    <div class="absolute bottom-0 left-0 p-8 w-full z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="px-2 py-0.5 bg-primary text-black text-[9px] font-black uppercase tracking-wider">Host Command Center</span>
+                            <span class="px-2 py-0.5 bg-black/60 border border-white/10 backdrop-blur-md text-white text-[9px] font-bold uppercase tracking-wider">@Model.Game</span>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase italic leading-none">@Model.Title</h1>
                     </div>
                 </div>
-            </div>
 
-            <!-- Action Button -->
-            <button class="w-full h-16 bg-primary hover:bg-primary/90 text-black text-xl font-black uppercase tracking-[0.1em] rounded-lg transition-all active:scale-[0.99] flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(242,150,13,0.3)] group" id="joinBtn">
-                <span class="material-symbols-outlined font-bold group-hover:animate-pulse">bolt</span>
-                REQUEST DEPLOYMENT
-            </button>
-        </div>
-
-        <!-- Sidebar: Host and Requirements -->
-        <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
-            <div class="sticky top-24 bg-card-dark border border-white/10 rounded-lg overflow-hidden">
-                <div class="p-5 border-b border-white/10 bg-white/[0.02]">
-                    <div class="flex items-center gap-4 mb-4">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=SentinelMain" alt="Host" class="size-12 rounded bg-cover bg-center border border-primary/30" />
+                <!-- Personnel Management -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-6">
+                    <div class="flex justify-between items-end mb-6">
                         <div>
-                            <h4 class="font-bold text-base text-white leading-none">SentinelMain</h4>
-                            <div class="flex items-center gap-1 mt-1.5">
-                                <div class="flex">
-                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
-                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
-                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
-                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
-                                    <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                            <h3 class="text-xl font-black uppercase tracking-tight text-white italic">Personnel Management</h3>
+                            <p class="text-[10px] text-white/30 mt-1 uppercase font-bold tracking-widest">Manage your active squad and recruits</p>
+                        </div>
+                        <div class="text-right flex flex-col items-end gap-2">
+                            <span class="text-2xl font-black text-white">@Model.CurrentPlayers<span class="text-white/20">/@Model.MaxPlayers</span></span>
+                            <button onclick="toggleRecruitment('@Model.Id')" class="px-2 py-1 @(Model.IsRecruiting ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-red-500/10 text-red-500 border-red-500/20") border rounded text-[8px] font-black uppercase tracking-widest status-badge">
+                                @(Model.IsRecruiting ? "RECRUITING ACTIVE" : "RECRUITING PAUSED")
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Current Squad Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        @foreach (var member in Model.Members)
+                        {
+                            var user = memberMap.ContainsKey(member.UserId) ? memberMap[member.UserId] : null;
+                            <div class="p-3 bg-black/40 rounded border @(member.IsHost ? "border-primary/30" : "border-white/5") group relative">
+                                @if (!member.IsHost) {
+                                    <button onclick="kickMember('@member.UserId', this)" class="absolute top-2 right-2 p-1 rounded hover:bg-red-500/20 text-white/10 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                                        <span class="material-symbols-outlined text-xs">close</span>
+                                    </button>
+                                }
+                                <div class="flex items-center gap-3">
+                                    <img src="@(user?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + member.UserId)" class="size-10 rounded-lg border border-white/10 object-cover" />
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-black text-white uppercase truncate">@(user?.Username ?? "Unknown")</p>
+                                        <p class="text-[9px] text-primary uppercase font-bold">@member.AssignedRole</p>
+                                    </div>
                                 </div>
-                                <span class="text-[10px] font-mono ml-1 text-white/50">(4.9 karma)</span>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Pending Applications -->
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3 border-b border-white/10 pb-3">
+                             <span class="material-symbols-outlined text-primary text-sm">person_add</span>
+                             <h4 class="text-xs font-black text-white uppercase tracking-widest">Deployment Requests (@pendingApps.Count)</h4>
+                        </div>
+                        
+                        @if (pendingApps.Any())
+                        {
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach (var app in pendingApps)
+                                {
+                                    var applicant = applicantMap.ContainsKey(app.UserId) ? applicantMap[app.UserId] : null;
+                                    <div class="bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col gap-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="@(applicant?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + app.UserId)" class="size-10 rounded-lg object-cover" />
+                                            <div class="flex-1 min-w-0">
+                                                <h5 class="text-sm font-black text-white uppercase truncate">@(applicant?.Username ?? "Unknown")</h5>
+                                                <p class="text-[10px] text-white/40 italic truncate">"@app.Message"</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button onclick="rejectApplicant('@app.Id', this)" class="flex-1 py-2 bg-white/5 hover:bg-red-500/10 text-white/40 hover:text-red-500 border border-white/10 rounded text-[10px] font-black uppercase transition-all">Reject</button>
+                                            <button onclick="recruitApplicant('@app.Id', this)" class="flex-1 py-2 bg-primary hover:bg-primary-hover text-black border border-primary rounded text-[10px] font-black uppercase transition-all">Recruit</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="py-8 text-center bg-black/20 rounded-lg border border-dashed border-white/10">
+                                <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">No pending recruitment requests</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Column: Command Stats -->
+            <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <!-- Tactical Timeline Card -->
+                <div class="bg-card-dark border border-white/10 rounded-lg overflow-hidden">
+                    <div class="p-6 border-b border-white/10 bg-white/[0.02]">
+                        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-base">analytics</span> Mission Intelligence
+                        </h3>
+                        
+                        <div class="flex flex-col gap-6">
+                            @if (Model.IsCompleted)
+                            {
+                                <div class="bg-green-500/10 border border-green-500/20 p-4 rounded text-center">
+                                    <span class="material-symbols-outlined text-green-500 mb-2">check_circle</span>
+                                    <p class="text-xs font-black text-green-500 uppercase tracking-widest leading-none">MISSION COMPLETED</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    <p class="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-3 ml-1">Tactical Timeline</p>
+                                    <div class="bg-black/40 border border-primary/20 p-4 rounded flex flex-col gap-4">
+                                        <div class="flex flex-col items-center">
+                                            <p class="text-[8px] uppercase text-primary font-black tracking-[0.2em] mb-1">Recruit Until</p>
+                                            <p class="text-sm font-black text-white">@(Model.RecruitmentDeadline?.ToLocalTime().ToString("f") ?? "TBD")</p>
+                                            @if (Model.RecruitmentDeadline.HasValue && Model.RecruitmentDeadline > DateTime.UtcNow)
+                                            {
+                                                <div id="countdown" data-deadline="@Model.RecruitmentDeadline.Value.ToString("O")" class="mt-3 px-3 py-1 bg-primary/10 rounded border border-primary/20">
+                                                    <p class="text-[11px] font-black text-primary font-mono tabular-nums leading-none">00:00:00</p>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="h-px bg-white/5 w-1/2 mx-auto"></div>
+                                        <div class="flex flex-col items-center">
+                                            <p class="text-[8px] uppercase text-green-500 font-black tracking-[0.2em] mb-1">Session Duration</p>
+                                            <p class="text-sm font-black text-white">
+                                                @(Model.SessionStartTime?.ToLocalTime().ToString("HH:mm") ?? "??:??") - @(Model.SessionEndTime?.ToLocalTime().ToString("HH:mm") ?? "??:??")
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Tactical Tags -->
+                            <div class="flex flex-wrap gap-2">
+                                @foreach(var mood in Model.Moods) {
+                                    <span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] font-black text-white/60 uppercase tracking-widest">
+                                        @mood
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-black/40 flex flex-col gap-3">
+                        @if (!Model.IsCompleted)
+                        {
+                            <button onclick="completeSession('@Model.Id')" class="w-full h-12 bg-green-600/10 hover:bg-green-600 text-green-500 hover:text-black border border-green-600/30 rounded flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(34,197,94,0.1)]">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                COMPLETE MISSION
+                            </button>
+                        }
+                        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('TERMINATE TRANSMISSION? This will permanently delete the lobby.');" class="w-full">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="w-full h-12 bg-white/5 hover:bg-red-500/10 text-white/20 hover:text-red-500 border border-white/10 rounded flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest transition-all">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                                TERMINATE LOBBY
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Host Intel -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-6">
+                    <div class="flex items-center gap-4">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" class="size-12 rounded-lg border border-primary/20" />
+                        <div>
+                            <h4 class="text-sm font-black text-white uppercase">@hostName</h4>
+                            <p class="text-[10px] text-primary font-bold uppercase tracking-widest">Mission Commander</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+}
+else
+{
+    // MEMBER / GUEST VIEW
+    <main class="flex-1 max-w-[1400px] mx-auto w-full px-6 py-8">
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Main Column: Hero and Composition -->
+            <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+                <!-- Hero Section -->
+                <div class="relative w-full h-[400px] rounded-lg overflow-hidden group border border-white/10">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style='background-image: url("@(string.IsNullOrEmpty(Model.PictureUrl) ? $"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80" : Model.PictureUrl)");'></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-8 w-full z-10">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider">Active Transmission</span>
+                            <span class="px-2 py-0.5 bg-black/60 border border-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">@Model.Game</span>
+                        </div>
+                        <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none mb-2 italic">@Model.Title</h1>
+                        <p class="text-white/60 mt-4 text-base max-w-2xl font-medium">@Model.Description</p>
+                    </div>
+                </div>
+
+                <!-- Squad Composition -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-6">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold uppercase tracking-tight text-white">Squad Composition</h3>
+                            <p class="text-xs text-white/40 mt-1 uppercase tracking-wider">@(Model.MaxPlayers - Model.CurrentPlayers) SLOTS REMAINING</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-black text-white">@Model.PlayerIds.Count<span class="text-white/30">/@Model.MaxPlayers</span></span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        @foreach (var playerId in Model.PlayerIds)
+                        {
+                            var player = memberMap.ContainsKey(playerId) ? memberMap[playerId] : null;
+                            var playerIsHost = playerId == Model.HostId;
+                            <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-white/5 hover:border-white/20 transition-all">
+                                <div class="relative aspect-square rounded overflow-hidden border @(playerIsHost ? "border-primary/50" : "border-white/10")">
+                                    <img src="@(player?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + playerId)" alt="Member" class="h-full w-full object-cover" />
+                                    @if (playerIsHost) {
+                                        <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary text-[9px] font-bold text-black uppercase">Host</div>
+                                    }
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wide text-white">@(player?.Username ?? "Unknown")</p>
+                                    <p class="text-[10px] text-primary uppercase font-mono mt-0.5">@(playerIsHost ? "[LEADER] ONLINE" : "READY")</p>
+                                </div>
+                            </div>
+                        }
+                        
+                        @for (int i = 0; i < (Model.MaxPlayers - Model.PlayerIds.Count); i++)
+                        {
+                             <div class="flex flex-col gap-3 group p-3 bg-white/[0.03] rounded border border-dashed border-white/20 hover:border-primary/50 hover:bg-primary/[0.02] transition-all cursor-pointer">
+                                <div class="relative aspect-square rounded overflow-hidden bg-black/40 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-3xl text-primary/80">group_add</span>
+                                    <div class="absolute top-0 right-0 px-1.5 py-0.5 bg-primary/20 text-primary text-[9px] font-bold uppercase">OPEN</div>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wide text-primary">SCANNING...</p>
+                                    <p class="text-[10px] text-white/30 uppercase font-mono mt-0.5">VACANT</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @if (Model.IsCompleted && isMember)
+                {
+                    <div class="mt-8 bg-card-dark border border-primary/30 rounded-xl p-8 shadow-[0_0_50px_rgba(242,150,13,0.05)]">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="material-symbols-outlined text-primary">military_tech</span>
+                            <h3 class="text-xl font-black uppercase text-white italic tracking-tighter">DEBRIEFING & KARMA EVALUATION</h3>
+                        </div>
+                        <p class="text-sm text-white/50 mb-8 max-w-2xl">
+                            Operation concluded. Evaluate your teammates based on their performance and attitude to maintain community integrity.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach (var memberId in Model.PlayerIds)
+                            {
+                                if (memberId == currentUserId) continue;
+                                var player = memberMap.ContainsKey(memberId) ? memberMap[memberId] : null;
+                                <div class="p-4 bg-black/40 rounded-lg border border-white/5 flex flex-col items-center gap-4 text-center">
+                                    <img src="@(player?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + memberId)" class="size-16 rounded-lg border border-white/10" />
+                                    <div>
+                                        <p class="text-sm font-bold text-white uppercase">@(player?.Username ?? "Unknown")</p>
+                                        <p class="text-[10px] text-white/30 uppercase mt-0.5">Teammate</p>
+                                    </div>
+                                    <div class="flex gap-2 w-full">
+                                        <button onclick="endorseMember('@Model.Id', '@memberId', 'Positive', this)" class="flex-1 py-1.5 bg-green-500/10 hover:bg-green-500 text-green-500 hover:text-black border border-green-500/20 rounded text-[10px] font-black uppercase transition-all">
+                                            Good Vibe
+                                        </button>
+                                        <button onclick="endorseMember('@Model.Id', '@memberId', 'Negative', this)" class="flex-1 py-1.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded text-[10px] font-black uppercase transition-all">
+                                            Toxic
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Access Restriction / Granted Info -->
+                @if (isMember)
+                {
+                    <div class="bg-card-dark border border-green-500/30 rounded-lg p-6 flex flex-col md:flex-row items-start gap-5 shadow-[0_0_30px_rgba(34,197,94,0.05)] relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+                        <div class="p-3 bg-green-500/10 rounded border border-green-500/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-green-500 text-2xl">lock_open</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="text-base font-bold uppercase text-white tracking-wide">Tactical Comms Established</h4>
+                                <span class="text-[10px] bg-green-500/20 text-green-500 px-1.5 py-0.5 rounded uppercase font-bold">Authorized</span>
+                            </div>
+                            <p class="text-sm text-white/60 leading-relaxed mb-4 max-w-2xl">
+                                Welcome to the squad. All secure channels have been decrypted for your deployment. Use the links below to coordinate with your teammates.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                @if (!string.IsNullOrEmpty(Model.DiscordLink))
+                                {
+                                    <a href="@Model.DiscordLink" target="_blank" class="px-3 py-2 bg-indigo-600/20 border border-indigo-600/40 rounded text-xs uppercase font-bold text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-base">chat</span> DISCORD CHANNEL
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="px-3 py-2 bg-white/5 border border-white/10 rounded text-xs uppercase font-bold text-white/20 flex items-center gap-2 cursor-not-allowed" title="Host hasn't set a Discord link yet">
+                                        <span class="material-symbols-outlined text-base">chat_off</span> NO DISCORD LINK
+                                    </span>
+                                }
+                                <button class="px-3 py-2 bg-green-600/20 border border-green-600/40 rounded text-xs uppercase font-bold text-green-400 hover:bg-green-600 hover:text-white transition-all flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base">mic</span> VOICE COMMS
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (pendingApp != null)
+                {
+                    <div class="bg-card-dark border border-yellow-500/30 rounded-lg p-6 flex flex-col md:flex-row items-start gap-5 shadow-[0_0_30px_rgba(234,179,8,0.05)] relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-yellow-500"></div>
+                        <div class="p-3 bg-yellow-500/10 rounded border border-yellow-500/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-yellow-500 text-2xl">hourglass_empty</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="text-base font-bold uppercase text-white tracking-wide">Recruitment verification in Progress</h4>
+                                <span class="text-[10px] bg-yellow-500/20 text-yellow-500 px-1.5 py-0.5 rounded uppercase font-bold">Waitlist</span>
+                            </div>
+                            <p class="text-sm text-white/60 leading-relaxed max-w-2xl">
+                                Your application has been logged into the tactical network. The squad leader is currently reviewing your credentials. Tactical comms will remain offline until your recruitment is confirmed.
+                            </p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-card-dark border border-primary/30 rounded-lg p-6 flex flex-col md:flex-row items-start gap-5 shadow-[0_0_30px_rgba(242,150,13,0.05)] relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+                        <div class="p-3 bg-primary/10 rounded border border-primary/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-2xl">lock</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="text-base font-bold uppercase text-white tracking-wide">Secure Communications Channel</h4>
+                                <span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded uppercase font-bold">Encrypted</span>
+                            </div>
+                            <p class="text-sm text-white/60 leading-relaxed mb-4 max-w-2xl">
+                                Voice channels and external links (Discord, TeamSpeak) are restricted to prevent unauthorized access. Tactical links will be automatically revealed once you are officially recruited by the squad host.
+                            </p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-black border border-white/10 rounded text-[10px] uppercase font-bold text-white/30 flex items-center gap-1.5 select-none">
+                                    <span class="material-symbols-outlined text-sm">chat</span> Discord Hidden
+                                </span>
+                                <span class="px-2 py-1 bg-black border border-white/10 rounded text-[10px] uppercase font-bold text-white/30 flex items-center gap-1.5 select-none">
+                                    <span class="material-symbols-outlined text-sm">mic</span> Tactical Comms Locked
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Action Button -->
+                @if (string.IsNullOrEmpty(currentUserId))
+                {
+                    <a asp-controller="Auth" asp-action="Login" class="w-full h-16 bg-primary hover:bg-primary/90 text-black text-xl font-black uppercase tracking-[0.1em] rounded-lg transition-all active:scale-[0.99] flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(242,150,13,0.3)] group">
+                        <span class="material-symbols-outlined font-bold group-hover:animate-pulse">login</span>
+                        LOGIN TO DEPLOY
+                    </a>
+                }
+                else if (isMember)
+                {
+                    <button class="w-full h-16 bg-green-500/20 text-green-500 border border-green-500/30 text-xl font-black uppercase tracking-[0.1em] rounded-lg transition-all flex items-center justify-center gap-3 cursor-default">
+                        <span class="material-symbols-outlined font-bold">check_circle</span>
+                        RECRUITED
+                    </button>
+                    
+                    <button onclick="leaveLobby()" class="w-full mt-2 py-3 bg-white/5 hover:bg-red-500/20 text-white/40 hover:text-red-500 text-[10px] font-bold uppercase tracking-widest rounded transition-all border border-white/5 hover:border-red-500/30">
+                        ABANDON MISSION
+                    </button>
+                }
+                else if (pendingApp != null)
+                {
+                    <button class="w-full h-16 bg-yellow-500/20 text-yellow-500 border border-yellow-500/30 text-xl font-black uppercase tracking-[0.1em] rounded-lg transition-all flex items-center justify-center gap-3 cursor-default" id="joinBtn" disabled>
+                        <span class="material-symbols-outlined font-bold animate-pulse">hourglass_empty</span>
+                        PENDING APPROVAL
+                    </button>
+                    
+                    <button onclick="cancelApplication('@pendingApp.Id')" class="w-full mt-2 py-3 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white text-[10px] font-bold uppercase tracking-widest rounded transition-all border border-white/5 hover:border-white/20">
+                        CANCEL REQUEST
+                    </button>
+                }
+                else
+                {
+                    @if (Model.Roles != null && Model.Roles.Any())
+                    {
+                        <div class="mb-6 p-4 bg-white/[0.03] border border-white/10 rounded-lg">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[14px]">checklist</span> Select your role
+                            </p>
+                            <div class="grid grid-cols-1 gap-2">
+                                @foreach (var role in Model.Roles)
+                                {
+                                    bool isFull = role.Filled >= role.Count;
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="selectedRole" value="@role.Name" class="peer sr-only" @(isFull ? "disabled" : "") />
+                                        <div class="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg transition-all group-hover:bg-white/10 peer-checked:bg-primary/20 peer-checked:border-primary peer-disabled:opacity-40 peer-disabled:cursor-not-allowed">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-2 h-2 rounded-full @(isFull ? "bg-red-500" : "bg-green-500")"></div>
+                                                <span class="text-xs font-bold text-white uppercase tracking-wide">@role.Name</span>
+                                            </div>
+                                            <span class="text-[10px] font-mono text-white/40">@role.Filled/@role.Count</span>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                @if (!Model.IsRecruiting && !isMember && pendingApp == null)
+                {
+                    <div class="bg-card-dark border border-red-500/30 rounded-lg p-6 flex flex-col md:flex-row items-start gap-5 shadow-[0_0_30px_rgba(239,68,68,0.05)] relative overflow-hidden mb-6">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+                        <div class="p-3 bg-red-500/10 rounded border border-red-500/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-red-500 text-2xl">lock</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="text-base font-bold uppercase text-white tracking-wide">Recruitment Halted</h4>
+                                <span class="text-[10px] bg-red-500/20 text-red-500 px-1.5 py-0.5 rounded uppercase font-bold">Closed</span>
+                            </div>
+                            <p class="text-sm text-white/60 leading-relaxed max-w-2xl">
+                                The squad leader has temporarily closed recruitment for this mission. Transmission is still active, but new deployment requests are currently not being accepted.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="w-full h-16 bg-white/5 text-white/20 border border-white/10 text-xl font-black uppercase tracking-[0.1em] rounded-lg cursor-not-allowed flex items-center justify-center gap-3" disabled>
+                        <span class="material-symbols-outlined font-bold">block</span>
+                        RECRUITMENT CLOSED
+                    </button>
+                }
+                else
+                {
+                    <button class="w-full h-16 bg-primary hover:bg-primary/90 text-black text-xl font-black uppercase tracking-[0.1em] rounded-lg transition-all active:scale-[0.99] flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(242,150,13,0.3)] group" id="joinBtn">
+                        <span class="material-symbols-outlined font-bold group-hover:animate-pulse">bolt</span>
+                        REQUEST DEPLOYMENT
+                    </button>
+                }
+            }
+            </div>
+
+            <!-- Sidebar: Host and Requirements -->
+            <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <div class="sticky top-24 bg-card-dark border border-white/10 rounded-lg overflow-hidden">
+                    <div class="p-5 border-b border-white/10 bg-white/[0.02]">
+                        <div class="flex items-center gap-4 mb-4">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="size-12 rounded bg-cover bg-center border border-primary/30" />
+                            <div>
+                                <h4 class="font-bold text-base text-white leading-none">@hostName</h4>
+                                <div class="flex items-center gap-1 mt-1.5 border-b border-white/5 pb-2 mb-2">
+                                    <div class="flex">
+                                        <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                        <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                        <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                        <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                        <span class="material-symbols-outlined text-primary text-[14px] fill-1">star</span>
+                                    </div>
+                                    <span class="text-[10px] font-mono ml-1 text-white/50">(4.9 karma)</span>
+                                </div>
+                                @{
+                                    var hostUser = memberMap.ContainsKey(Model.HostId) ? memberMap[Model.HostId] : null;
+                                }
+                                @if (hostUser != null)
+                                {
+                                    <div class="flex gap-2">
+                                        @if (!string.IsNullOrEmpty(hostUser.DiscordUserId)) {
+                                            <span class="size-6 rounded bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20" title="Discord: @hostUser.DiscordUserId">
+                                                <i class="material-symbols-outlined text-[14px] text-indigo-400">chat_bubble</i>
+                                            </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(hostUser.SteamId)) {
+                                            <span class="size-6 rounded bg-blue-500/10 flex items-center justify-center border border-blue-500/20" title="Steam ID: @hostUser.SteamId">
+                                                <i class="material-symbols-outlined text-[14px] text-blue-400">sports_esports</i>
+                                            </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(hostUser.TwitchChannel)) {
+                                            <a href="https://twitch.tv/@hostUser.TwitchChannel" target="_blank" class="size-6 rounded bg-purple-500/10 flex items-center justify-center border border-purple-500/20 hover:bg-purple-500/20 transition-colors" title="Twitch: @hostUser.TwitchChannel">
+                                                <i class="material-symbols-outlined text-[14px] text-purple-400">live_tv</i>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex flex-col gap-6">
+                        @if (Model.IsCompleted)
+                        {
+                            <div class="bg-card-dark border border-white/10 p-4 rounded text-center">
+                                <span class="material-symbols-outlined text-gray-500 mb-2">check_circle</span>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">MISSION COMPLETED</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Tactical Timeline</p>
+                                <div class="bg-black/40 border border-primary/20 p-3 rounded flex flex-col gap-3">
+                                    <div class="flex flex-col items-center">
+                                        <p class="text-[9px] uppercase text-primary font-bold tracking-wider mb-1">Recruit Until</p>
+                                        <p class="text-xs font-bold text-white">@(Model.RecruitmentDeadline?.ToLocalTime().ToString("f") ?? "TBD")</p>
+                                        @if (Model.RecruitmentDeadline.HasValue && Model.RecruitmentDeadline > DateTime.UtcNow)
+                                        {
+                                            <div id="countdown" data-deadline="@Model.RecruitmentDeadline.Value.ToString("O")" class="mt-2 px-2 py-0.5 bg-primary/20 rounded-full">
+                                                <p class="text-[10px] font-black text-primary font-mono tabular-nums leading-none">00:00:00</p>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="h-px bg-white/5 w-1/2 mx-auto"></div>
+                                    <div class="flex flex-col items-center">
+                                        <p class="text-[9px] uppercase text-green-500 font-bold tracking-wider mb-1">Session Duration</p>
+                                        <p class="text-xs font-bold text-white">
+                                            @(Model.SessionStartTime?.ToLocalTime().ToString("HH:mm") ?? "??:??") - @(Model.SessionEndTime?.ToLocalTime().ToString("HH:mm") ?? "??:??")
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.Moods != null && Model.Moods.Any())
+                        {
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-3">Mission Protocols</p>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach (var mood in Model.Moods)
+                                    {
+                                        <span class="px-2.5 py-1 bg-white/5 border border-white/10 text-white/70 rounded text-[10px] font-bold uppercase tracking-wider">@mood</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <div class="h-px bg-white/10 w-full"></div>
+
+                        @if (Model.Roles != null && Model.Roles.Any())
+                        {
+                            <div class="flex flex-col gap-3">
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Squad Roles</p>
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <div class="flex items-center justify-between gap-3 bg-black/20 p-2 rounded border border-white/5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-primary text-sm">label</span>
+                                            <p class="text-xs text-white/80 font-medium uppercase">@role.Name</p>
+                                        </div>
+                                        <span class="text-[10px] font-mono text-white/40">@role.Filled/@role.Count</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="mt-2 p-3 rounded bg-black/40 border border-white/5 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-white/40 text-lg">public</span>
+                                <div>
+                                    <p class="text-[10px] font-bold uppercase text-white/40 leading-none">Terminal</p>
+                                    <p class="text-xs text-white font-bold mt-1">NA-EAST DISCOVERY</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 rounded border border-green-500/20">
+                                <div class="size-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-[9px] font-bold text-green-500 uppercase">Latency Ok</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="p-5 flex flex-col gap-6">
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Protocol Starts In</p>
-                        <div class="bg-black/40 border border-primary/20 p-3 rounded text-center relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-                            <p class="text-2xl font-black text-white font-mono tracking-tighter tabular-nums">00:15:00</p>
-                            <p class="text-[9px] uppercase text-primary font-bold tracking-wider mt-1 animate-pulse">Live Link</p>
-                        </div>
-                    </div>
-
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-3">Lobby Parameters</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="px-2.5 py-1 bg-primary/10 border border-primary/30 text-primary rounded text-[10px] font-bold uppercase tracking-wider">Competitive</span>
-                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 text-white/70 rounded text-[10px] font-bold uppercase tracking-wider">Tryhard</span>
-                            <span class="px-2.5 py-1 bg-white/5 border border-white/10 text-white/70 rounded text-[10px] font-bold uppercase tracking-wider">Mic Only</span>
-                        </div>
-                    </div>
-
-                    <div class="h-px bg-white/10 w-full"></div>
-
-                    <div class="flex flex-col gap-3">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Squad Requirements</p>
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-primary text-base">check_circle</span>
-                            <p class="text-xs text-white/80 font-medium uppercase">Min Rank: <span class="text-white">Diamond 3</span></p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-primary text-base">check_circle</span>
-                            <p class="text-xs text-white/80 font-medium uppercase">Comms: English</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-primary text-base">check_circle</span>
-                            <p class="text-xs text-white/80 font-medium uppercase">Region: NA-EAST</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-2 p-3 rounded bg-black/40 border border-white/5 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-white/40 text-lg">public</span>
-                            <div>
-                                <p class="text-[10px] font-bold uppercase text-white/40 leading-none">Terminal</p>
-                                <p class="text-xs text-white font-bold mt-1">NA-EAST DISCOVERY</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 rounded border border-green-500/20">
-                            <div class="size-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                            <span class="text-[9px] font-bold text-green-500 uppercase">Latency Ok</span>
-                        </div>
-                    </div>
+                <div class="px-2 flex flex-wrap gap-x-6 gap-y-2 opacity-30 hover:opacity-100 transition-opacity justify-center lg:justify-start">
+                    <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors cursor-pointer" onclick="alert('Rules module loading...')">Rules</a>
+                    <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors cursor-pointer" onclick="alert('Security protocols active.')">Security</a>
+                    <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors cursor-pointer" onclick="alert('Report submitted to admins.')">Report Transmission</a>
                 </div>
             </div>
-            
-            <div class="px-2 flex flex-wrap gap-x-6 gap-y-2 opacity-30 hover:opacity-100 transition-opacity justify-center lg:justify-start">
-                <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors" href="#">Rules</a>
-                <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors" href="#">Security</a>
-                <a class="text-[10px] font-bold uppercase tracking-wider text-white hover:text-primary transition-colors" href="#">Report Transmission</a>
-            </div>
         </div>
-    </div>
-</main>
+    </main>
+}
 
 @section Scripts {
     <script>
-        document.getElementById('joinBtn').addEventListener('click', function() {
-            this.disabled = true;
-            this.innerHTML = '<span class="material-symbols-outlined animate-spin-slow">sync</span> REQUESTING...';
-            setTimeout(() => {
-                alert('Deployment request transmitted to host. Awaiting authorization.');
-                this.innerHTML = '<span class="material-symbols-outlined">check_circle</span> REQUEST SENT';
-                this.classList.remove('bg-primary');
-                this.classList.add('bg-green-500/20', 'text-green-500', 'border', 'border-green-500/30');
-            }, 1500);
+        document.getElementById('joinBtn')?.addEventListener('click', function() {
+            var btn = this;
+            var selectedRole = document.querySelector('input[name="selectedRole"]:checked')?.value || "";
+            
+            @if (Model.Roles != null && Model.Roles.Any())
+            {
+                <text>
+                if(!selectedRole) {
+                    alert("Please select a role before applying.");
+                    return;
+                }
+                </text>
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin-slow">sync</span> REQUESTING...';
+            
+            var url = '@Url.Action("Apply", "Lobby", new { id = Model.Id })';
+            if(selectedRole) {
+                url += (url.includes('?') ? '&' : '?') + 'role=' + encodeURIComponent(selectedRole);
+            }
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> PENDING';
+                    btn.classList.remove('bg-primary');
+                    btn.classList.add('bg-yellow-500/20', 'text-yellow-500', 'border', 'border-yellow-500/30');
+                    setTimeout(() => location.reload(), 1000);
+                }
+ else {
+                    alert(data.error);
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-symbols-outlined font-bold">bolt</span> REQUEST DEPLOYMENT';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined font-bold">bolt</span> REQUEST DEPLOYMENT';
+            });
         });
+
+        function recruitApplicant(appId, btn) {
+            // Confirm logic if needed
+            btn.innerHTML = 'Processing...';
+            btn.disabled = true;
+
+            fetch('/Lobby/Recruit/' + appId, {
+                method: 'POST',
+                headers: {
+                   'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error);
+                    btn.disabled = false;
+                    btn.innerHTML = 'Recruit';
+                }
+            });
+        }
+
+        function rejectApplicant(appId, btn) {
+            if(!confirm('Are you sure you want to reject this applicant?')) return;
+            btn.innerHTML = 'Processing...';
+            btn.disabled = true;
+
+            fetch('/Lobby/Reject/' + appId, {
+                method: 'POST',
+                headers: {
+                   'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error);
+                    btn.disabled = false;
+                    btn.innerHTML = 'Decline';
+                }
+            });
+        }
+
+        function kickMember(userId, btn) {
+            if(!confirm('Are you sure you want to remove this member from the squad?')) return;
+            
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin-slow">sync</span>';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('lobbyId', '@Model.Id');
+            formData.append('userId', userId);
+
+            fetch('/Lobby/Kick', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                   'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error);
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+            });
+        }
+
+        function quickChangeBackground() {
+            const images = [
+                "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1560253023-3ee5d6446bd4?auto=format&fit=crop&w=1200&q=80"
+            ];
+            
+            // Pick a random one that isn't the current one if possible
+            const current = "@Model.PictureUrl";
+            let next = images[Math.floor(Math.random() * images.length)];
+            if(next === current) next = images[(images.indexOf(next) + 1) % images.length];
+
+            if(!confirm('Apply new tactical background? This will be visible to all recruits.')) return;
+
+            // We can reuse the Edit logic but we'll need a simplified endpoint or just call Edit via fetch
+            // For now, let's assume we want a specialized quick update endpoint in LobbyController
+            
+            const formData = new FormData();
+            formData.append('PictureUrl', next);
+            // We need to send other required fields for the Edit action if we reuse it...
+            // or better, add a Patch-like action.
+
+            fetch('/Lobby/UpdateBackground/@Model.Id', {
+                method: 'POST',
+                body: JSON.stringify({ pictureUrl: next }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error || "Failed to update background");
+                }
+            });
+        }
+
+        function cancelApplication(appId) {
+            if(!confirm('Abort recruitment request?')) return;
+            
+            fetch('/Lobby/CancelApplication/' + '@Model.Id', {
+                method: 'DELETE',
+                headers: {
+                   'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error);
+                }
+            });
+        }
+
+        function leaveLobby() {
+            if(!confirm('Abandon this squad and leave the mission?')) return;
+
+            fetch('/Lobby/CancelApplication/' + '@Model.Id', {
+                method: 'DELETE',
+                headers: {
+                   'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error);
+                }
+            });
+        }
+        function toggleRecruitment(id) {
+            fetch('/Lobby/ToggleRecruitment/' + id, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload(); // Refresh to update all UI parts
+                } else {
+                    alert(data.message || "Failed to toggle recruitment");
+                }
+            });
+        }
+
+        function completeSession(id) {
+            if(!confirm('Mark this mission as COMPLETED? Members will be asked to debrief and rate their teammates.')) return;
+            
+            fetch('/Lobby/CompleteSession/' + id, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message || "Failed to complete mission");
+                }
+            });
+        }
+
+        function endorseMember(lobbyId, targetUserId, type, btn) {
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[10px] animate-spin-slow">sync</span>';
+            
+            fetch(`/Lobby/EndorseMember?lobbyId=${lobbyId}&targetUserId=${targetUserId}&type=${type}`, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    btn.closest('.flex.gap-2').innerHTML = '<span class="text-[10px] font-bold text-primary uppercase">EVALUATION LOGGED</span>';
+                } else {
+                    alert(data.message || "Failed to log evaluation");
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+        }
+
+        // Countdown Timer
+        function initCountdown() {
+            const el = document.getElementById('countdown');
+            if (!el) return;
+
+            const deadline = new Date(el.dataset.deadline);
+            const display = el.querySelector('p');
+
+            function update() {
+                const now = new Date();
+                const diff = deadline - now;
+
+                if (diff <= 0) {
+                    display.innerText = "EXPIRED";
+                    el.classList.replace('bg-primary/20', 'bg-red-500/20');
+                    display.classList.replace('text-primary', 'text-red-500');
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                display.innerText = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            setInterval(update, 1000);
+            update();
+        }
+
+        document.addEventListener('DOMContentLoaded', initCountdown);
     </script>
     <style>
         @@keyframes spin-slow {

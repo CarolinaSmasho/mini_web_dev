@@ -1,9 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 
+using GamerLFG.Models;
+using GamerLFG.Repositories;
+
 namespace GamerLFG.Controllers
 {
     public class AuthController : Controller
     {
+        private readonly IUserRepository _userRepository;
+
+        public AuthController(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+
         // GET: /Auth/Login
         public IActionResult Login()
         {
@@ -20,16 +30,19 @@ namespace GamerLFG.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
         {
-            // TODO: Implement Firebase authentication
-            // For now, create a mock session
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
             {
-                // Mock user session (replace with Firebase auth)
-                HttpContext.Session.SetString("UserId", Guid.NewGuid().ToString());
-                HttpContext.Session.SetString("Username", email.Split('@')[0]);
-                HttpContext.Session.SetString("Email", email);
+                var user = await _userRepository.GetUserByEmailAsync(email);
                 
-                return RedirectToAction("Index", "Home");
+                if (user != null && user.Password == password)
+                {
+                    // Set session
+                    HttpContext.Session.SetString("UserId", user.Id);
+                    HttpContext.Session.SetString("Username", user.Username);
+                    HttpContext.Session.SetString("Email", user.Email);
+                    
+                    return RedirectToAction("Index", "Home");
+                }
             }
             
             ViewData["Error"] = "Invalid email or password";
@@ -59,8 +72,22 @@ namespace GamerLFG.Controllers
                 return View();
             }
 
-            // TODO: Implement Firebase user creation
-            // For now, redirect to login
+            var existingUser = await _userRepository.GetUserByEmailAsync(email);
+            if (existingUser != null)
+            {
+                ViewData["Error"] = "Email already registered";
+                return View();
+            }
+
+            var newUser = new User 
+            { 
+                Username = username, 
+                Email = email, 
+                Password = password 
+            };
+            
+            await _userRepository.CreateUserAsync(newUser);
+
             TempData["Success"] = "Account created successfully! Please log in.";
             return RedirectToAction("Login");
         }

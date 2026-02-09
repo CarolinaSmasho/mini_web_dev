@@ -46,6 +46,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9iYnkvRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Lobby/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9iYnkvRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/Lobby/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9iYnkvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -68,6 +72,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/User/Friends.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9GcmllbmRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/User/KarmaHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlci9LYXJtYUhpc3RvcnkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/Views/User/Profile.cshtml]

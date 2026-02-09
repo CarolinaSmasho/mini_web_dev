@@ -1,142 +1,250 @@
+@model GamerLFG.Models.Lobby
 @{
-    ViewData["Title"] = "Establish Link";
+    ViewData["Title"] = "Initialize Mission";
 }
 
-<main class="flex-1 max-w-[800px] mx-auto w-full px-6 py-12">
-    <div class="mb-10 text-center">
-        <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase mb-2">ESTABLISH SQUAD LINK</h1>
-        <p class="text-white/40 font-bold uppercase tracking-widest text-sm">Configure your tactical recruitment parameters</p>
-    </div>
-
-    <form asp-action="Create" method="post" class="flex flex-col gap-8">
+<main class="flex-1 max-w-[1400px] mx-auto w-full px-6 py-8">
+    <form asp-action="Create" method="post" id="createForm">
         @Html.AntiForgeryToken()
         
-        <!-- Primary Config -->
-        <section class="bg-card-dark border border-white/10 rounded-lg p-8 flex flex-col gap-6">
-            <h2 class="text-lg font-bold text-primary uppercase tracking-widest flex items-center gap-3">
-                <span class="size-2 bg-primary rounded-full animate-pulse"></span>
-                CORE PARAMETERS
-            </h2>
-
-            <div class="flex flex-col gap-2">
-                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="title">Transmission Title</label>
-                <input type="text" id="title" name="title" required 
-                       class="bg-black border border-white/10 rounded px-4 py-3 text-white placeholder:text-white/20 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                       placeholder="e.g., RANKED GRIND TO ASCENDANT" />
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="game">Target Game</label>
-                    <select id="game" name="game" required
-                            class="bg-black border border-white/10 rounded px-4 py-3 text-white focus:border-primary outline-none transition-all appearance-none cursor-pointer">
-                        <option value="Valorant">VALORANT</option>
-                        <option value="Elden Ring">ELDEN RING</option>
-                        <option value="Apex Legends">APEX LEGENDS</option>
-                        <option value="Minecraft">MINECRAFT</option>
-                        <option value="Other">OTHER PROTOCOL</option>
-                    </select>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="maxPlayers">Squad Size</label>
-                    <input type="number" id="maxPlayers" name="maxPlayers" min="2" max="20" value="5" required
-                           class="bg-black border border-white/10 rounded px-4 py-3 text-white focus:border-primary outline-none transition-all" />
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="description">Mission Objectives</label>
-                <textarea id="description" name="description" rows="4"
-                          class="bg-black border border-white/10 rounded px-4 py-3 text-white placeholder:text-white/20 focus:border-primary outline-none transition-all resize-none"
-                          placeholder="Detail your requirements, strats, and mission goals..."></textarea>
-            </div>
-        </section>
-
-        <!-- Tactical Tags -->
-        <section class="bg-card-dark border border-white/10 rounded-lg p-8">
-            <h2 class="text-lg font-bold text-primary uppercase tracking-widest flex items-center gap-3 mb-6">
-                <span class="size-2 bg-primary rounded-full"></span>
-                TACTICAL TAGS
-            </h2>
-            
-            <div class="flex flex-wrap gap-3">
-                @foreach (var mood in new[] { "TRYHARD", "CHILL", "COMPETITIVE", "CASUAL", "MIC REQ", "18+", "NO TOXIC" })
-                {
-                    <label class="relative cursor-pointer group">
-                        <input type="checkbox" name="moods" value="@mood" class="peer sr-only" />
-                        <span class="px-4 py-2 bg-white/5 border border-white/10 rounded text-[10px] font-bold text-white/40 uppercase tracking-widest transition-all group-hover:bg-white/10 peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary">
-                            @mood
-                        </span>
-                    </label>
-                }
-            </div>
-        </section>
-
-        <!-- Personnel Requirements -->
-        <section class="bg-card-dark border border-white/10 rounded-lg p-8">
-            <h2 class="text-lg font-bold text-primary uppercase tracking-widest flex items-center gap-3 mb-6">
-                <span class="size-2 bg-primary rounded-full"></span>
-                PERSONNEL REQUIREMENTS
-            </h2>
-
-            <div id="rolesContainer" class="flex flex-col gap-4">
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                    <div class="md:col-span-8 flex flex-col gap-2">
-                        <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Role Designation</label>
-                        <input type="text" name="roleNames[]" class="bg-black border border-white/10 rounded px-4 py-2 text-white placeholder:text-white/20 focus:border-primary outline-none" placeholder="e.g., IGL, ENTRY, TANK" />
-                    </div>
-                    <div class="md:col-span-3 flex flex-col gap-2">
-                        <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Count</label>
-                        <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black border border-white/10 rounded px-4 py-2 text-white focus:border-primary outline-none" />
-                    </div>
-                    <div class="md:col-span-1">
-                        <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-10 flex items-center justify-center bg-white/5 hover:bg-red-500/20 text-white/20 hover:text-red-500 border border-white/10 rounded transition-all">
-                            <span class="material-symbols-outlined text-xl">close</span>
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Main Column: Hero and Detailed Config -->
+            <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+                
+                <!-- Hero Section (Preview & Title Edit) -->
+                <div class="relative w-full min-h-[400px] rounded-lg overflow-hidden group border border-white/10 shadow-2xl bg-black">
+                    <div id="heroPreview" class="absolute inset-0 bg-cover bg-center transition-transform duration-700" 
+                         style='background-image: url("https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80");'></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                    
+                    <div class="absolute top-4 right-4 z-20">
+                        <button type="button" onclick="setRandomImage()" class="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded text-[10px] font-black text-white uppercase tracking-widest hover:bg-primary hover:text-black transition-all">
+                            Randomize Visuals
                         </button>
                     </div>
+
+                    <div class="absolute bottom-0 left-0 p-8 w-full z-10">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider">New Transmission</span>
+                            <div class="relative">
+                                <select id="game" name="Game" required
+                                        class="bg-black/60 border border-white/20 backdrop-blur-md rounded px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wider outline-none appearance-none cursor-pointer pr-8 focus:border-primary transition-all">
+                                    <option value="Valorant">VALORANT</option>
+                                    <option value="Elden Ring">ELDEN RING</option>
+                                    <option value="Apex Legends">APEX LEGENDS</option>
+                                    <option value="Minecraft">MINECRAFT</option>
+                                    <option value="Other">OTHER PROTOCOL</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-white/50 text-xs pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2 max-w-2xl">
+                            <input type="text" id="title" name="Title" required 
+                                   class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic bg-transparent border-b border-white/20 focus:border-primary outline-none py-2 transition-all"
+                                   placeholder="Mission Designation..." />
+                            
+                            <textarea id="description" name="Description" rows="3" 
+                                      class="text-white/60 mt-4 text-base bg-transparent border border-white/10 rounded p-3 focus:border-primary outline-none transition-all resize-none font-medium h-auto"
+                                      placeholder="Brief your recruits on mission objectives..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personnel Requirements Section -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-xl font-black uppercase text-white tracking-tight italic">Personnel Requirements</h2>
+                            <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest mt-1">Assign specific roles for the squad</p>
+                        </div>
+                        <button type="button" onclick="addRole()" class="px-4 py-2 bg-primary/10 border border-primary/30 rounded text-[10px] font-black text-primary uppercase tracking-widest hover:bg-primary hover:text-black transition-all flex items-center gap-2">
+                             <span class="material-symbols-outlined text-sm">add</span> Add Role
+                        </button>
+                    </div>
+
+                    <div id="rolesContainer" class="flex flex-col gap-4">
+                        <!-- Default empty row -->
+                        <div class="grid grid-cols-12 gap-4 items-end bg-black/40 p-4 rounded border border-white/5">
+                            <div class="col-span-8 flex flex-col gap-1.5">
+                                <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Role Designation</label>
+                                <input type="text" name="roleNames[]" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" placeholder="e.g., IGL, ENTRY, TANK" />
+                            </div>
+                            <div class="col-span-3 flex flex-col gap-1.5">
+                                <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Count</label>
+                                <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tactical Tags Section -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-8">
+                    <h2 class="text-xl font-black uppercase text-white tracking-tight italic mb-6">Tactical Protocol Tags</h2>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (var mood in new[] { "TRYHARD", "CHILL", "COMPETITIVE", "CASUAL", "MIC REQ", "18+", "NO TOXIC" })
+                        {
+                            <label class="relative cursor-pointer group">
+                                <input type="checkbox" name="moods" value="@mood" class="peer sr-only" />
+                                <span class="px-6 py-3 bg-white/5 border border-white/10 rounded text-[11px] font-black text-white/40 uppercase tracking-widest transition-all group-hover:bg-white/10 peer-checked:bg-primary peer-checked:border-primary peer-checked:text-black peer-checked:shadow-[0_0_20px_rgba(242,150,13,0.3)]">
+                                    @mood
+                                </span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <!-- Visuals & Comms -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-card-dark border border-white/10 rounded-lg p-6 flex flex-col gap-4">
+                        <h3 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-lg">image</span> Tactical Visuals
+                        </h3>
+                        <input type="text" id="pictureUrl" name="PictureUrl"
+                               class="w-full bg-black/60 border border-white/10 rounded px-4 py-3 text-xs text-white placeholder:text-white/20 focus:border-primary outline-none transition-all"
+                               onchange="updateHeroPreview(this.value)"
+                               placeholder="Direct Image URL" />
+                        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                            @foreach (var img in new[] { 
+                                "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
+                                "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
+                                "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80",
+                                "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80"
+                            })
+                            {
+                                <img src="@img" onclick="updateHeroPreview('@img')" class="h-10 w-16 object-cover rounded cursor-pointer border-2 border-transparent hover:border-primary transition-all shrink-0" />
+                            }
+                        </div>
+                    </div>
+
+                    <div class="bg-card-dark border border-indigo-500/20 rounded-lg p-6 flex flex-col gap-4">
+                        <h3 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-400 text-lg">chat</span> Discord link
+                        </h3>
+                        <div class="relative">
+                            <input type="text" id="discordLink" name="DiscordLink"
+                                   class="w-full bg-black/60 border border-white/10 rounded px-4 py-3 text-xs text-white placeholder:text-white/20 focus:border-indigo-500 outline-none transition-all"
+                                   placeholder="https://discord.gg/invite-code" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-indigo-400 text-sm opacity-50">lock</span>
+                        </div>
+                        <p class="text-[9px] text-white/30 font-bold uppercase">Restricted to recruited members only</p>
+                    </div>
                 </div>
             </div>
 
-            <button type="button" onclick="addRole()" class="mt-6 w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-[10px] font-bold text-white uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-lg">add</span>
-                ADD ROLE REQUIREMENT
-            </button>
-        </section>
+            <!-- Sidebar Column: Mission Parameters -->
+            <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <!-- Deployment Stats -->
+                <div class="bg-card-dark border border-white/10 rounded-lg overflow-hidden">
+                    <div class="p-6 border-b border-white/10 bg-white/[0.02]">
+                        <h2 class="text-lg font-black text-white uppercase italic tracking-tight mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">settings</span> Parameters
+                        </h2>
+                        
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="maxPlayers">Squad Size Capacity</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="maxPlayersRange" min="2" max="24" value="5" oninput="document.getElementById('maxPlayers').value = this.value"
+                                           class="flex-1 accent-primary bg-white/5 h-2 rounded-lg appearance-none cursor-pointer" />
+                                    <input type="number" id="maxPlayers" name="MaxPlayers" value="5" readonly
+                                           class="w-12 bg-black/60 border border-primary/20 rounded text-center py-2 text-sm font-black text-primary outline-none" />
+                                </div>
+                            </div>
 
-        <!-- Actions -->
-        <div class="flex flex-col md:flex-row gap-4">
-            <a asp-action="Index" class="flex-1 h-14 bg-white/5 hover:bg-white/10 border border-white/10 rounded flex items-center justify-center text-xs font-bold text-white uppercase tracking-widest transition-all">
-                ABORT TRANSMISSION
-            </a>
-            <button type="submit" class="flex-[2] h-14 bg-primary hover:bg-primary/90 rounded flex items-center justify-center text-sm font-black text-black uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(242,150,13,0.3)] transition-all active:scale-[0.98]">
-                ESTABLISH LINK <span class="material-symbols-outlined ml-2">rocket_launch</span>
-            </button>
+                            <div class="h-px bg-white/10 w-full"></div>
+
+                            <div class="flex flex-col gap-4">
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="recruitmentDeadline">Recruitment Deadline</label>
+                                    <input type="datetime-local" id="recruitmentDeadline" name="RecruitmentDeadline" required
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                </div>
+
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionStartTime">Session Starts</label>
+                                    <input type="datetime-local" id="sessionStartTime" name="SessionStartTime" required
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                </div>
+
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionEndTime">Expected End</label>
+                                    <input type="datetime-local" id="sessionEndTime" name="SessionEndTime"
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-black/40 flex flex-col gap-4">
+                        <button type="submit" class="w-full h-14 bg-primary hover:bg-primary-hover text-black text-sm font-black uppercase tracking-[0.2em] rounded shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                            <span class="material-symbols-outlined font-bold">bolt</span>
+                            INITIALIZE TRANSMISSION
+                        </button>
+                        <a asp-action="Index" class="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/40 hover:text-white rounded text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
+                             <span class="material-symbols-outlined text-sm">close</span> ABORT MISSION
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 </main>
 
 @section Scripts {
     <script>
+        function updateHeroPreview(url) {
+            if(!url) return;
+            document.getElementById('heroPreview').style.backgroundImage = `url("${url}")`;
+            document.getElementById('pictureUrl').value = url;
+        }
+
+        function setRandomImage() {
+            const images = [
+                "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80"
+            ];
+            const random = images[Math.floor(Math.random() * images.length)];
+            updateHeroPreview(random);
+        }
+
         function addRole() {
             const container = document.getElementById('rolesContainer');
             const div = document.createElement('div');
-            div.className = 'grid grid-cols-1 md:grid-cols-12 gap-4 items-end';
+            div.className = 'grid grid-cols-12 gap-4 items-end bg-black/40 p-4 rounded border border-white/5 animate-fade-in';
             div.innerHTML = `
-                <div class="md:col-span-8 flex flex-col gap-2">
-                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Role Designation</label>
-                    <input type="text" name="roleNames[]" class="bg-black border border-white/10 rounded px-4 py-2 text-white placeholder:text-white/20 focus:border-primary outline-none" placeholder="e.g., IGL, ENTRY, TANK" />
+                <div class="col-span-8 flex flex-col gap-1.5">
+                    <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Role Designation</label>
+                    <input type="text" name="roleNames[]" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" placeholder="e.g., IGL, ENTRY, TANK" />
                 </div>
-                <div class="md:col-span-3 flex flex-col gap-2">
-                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Count</label>
-                    <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black border border-white/10 rounded px-4 py-2 text-white focus:border-primary outline-none" />
+                <div class="col-span-3 flex flex-col gap-1.5">
+                    <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Count</label>
+                    <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
                 </div>
-                <div class="md:col-span-1">
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-10 flex items-center justify-center bg-white/5 hover:bg-red-500/20 text-white/20 hover:text-red-500 border border-white/10 rounded transition-all">
-                        <span class="material-symbols-outlined text-xl">close</span>
+                <div class="col-span-1">
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded transition-all">
+                        <span class="material-symbols-outlined text-lg font-bold">close</span>
                     </button>
                 </div>
             `;
             container.appendChild(div);
         }
+
+        // Initialize with a few default tags if needed
+        document.addEventListener('DOMContentLoaded', () => {
+             // Optional auto-init
+        });
     </script>
+    <style>
+        @@keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out forwards;
+        }
+    </style>
 }

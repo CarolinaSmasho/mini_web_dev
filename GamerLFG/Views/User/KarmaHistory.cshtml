@@ -1,0 +1,83 @@
+@model List<GamerLFG.Models.KarmaHistory>
+@{
+    var targetUser = ViewData["TargetUser"] as GamerLFG.Models.User;
+    ViewData["Title"] = $"{targetUser?.Username}'s Karma History";
+}
+
+<main class="flex-1 px-4 py-8 md:px-10 lg:px-20 max-w-4xl mx-auto w-full">
+    <div class="bg-card-dark rounded-xl p-8 border border-white/10">
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-8">
+            <a href="@Url.Action("FriendProfile", "User", new { id = targetUser?.Username })" class="text-white/50 hover:text-white transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold uppercase tracking-tight text-white">Karma History</h1>
+                <p class="text-sm text-white/50">@targetUser?.Username • Total: <span class="text-primary font-bold">@targetUser?.KarmaScore.ToString("0") pts</span></p>
+            </div>
+        </div>
+
+        <!-- Karma Tier Badge -->
+        @{
+            var karmaScore = targetUser?.KarmaScore ?? 0;
+            var karmaTier = karmaScore >= 50 ? "Elite" : karmaScore >= 20 ? "Trusted" : karmaScore >= 0 ? "Standard" : karmaScore >= -30 ? "Caution" : "Restricted";
+            var tierColor = karmaScore >= 50 ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : 
+                            karmaScore >= 20 ? "bg-green-500/20 text-green-400 border-green-500/30" : 
+                            karmaScore >= 0 ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : 
+                            karmaScore >= -30 ? "bg-orange-500/20 text-orange-400 border-orange-500/30" : 
+                            "bg-red-500/20 text-red-400 border-red-500/30";
+        }
+        <div class="flex items-center gap-3 mb-6">
+            <div class="px-4 py-2 rounded-lg border @tierColor">
+                <span class="text-xs font-bold uppercase tracking-widest">@karmaTier Tier</span>
+            </div>
+            <div class="text-sm text-white/50">
+                @Model.Count() total records
+            </div>
+        </div>
+
+        <!-- History List -->
+        @if (Model.Any())
+        {
+            <div class="flex flex-col gap-3">
+                @foreach (var entry in Model)
+                {
+                    var isPositive = entry.Points >= 0;
+                    var pointColor = isPositive ? "text-green-400" : "text-red-400";
+                    var bgColor = isPositive ? "bg-green-500/5 border-green-500/10" : "bg-red-500/5 border-red-500/10";
+                    var pointSign = isPositive ? "+" : "";
+                    
+                    <div class="flex items-center justify-between p-4 rounded-lg border @bgColor">
+                        <div class="flex items-center gap-3">
+                            <div class="size-10 rounded-lg flex items-center justify-center @(isPositive ? "bg-green-500/10" : "bg-red-500/10")">
+                                <span class="material-symbols-outlined @pointColor">
+                                    @(isPositive ? "trending_up" : "trending_down")
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-white">@entry.Description</p>
+                                <p class="text-xs text-white/40">
+                                    @entry.ActionType.Replace("_", " ") • @entry.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-bold @pointColor">@pointSign@entry.Points</p>
+                            @if (!string.IsNullOrEmpty(entry.ReferenceType))
+                            {
+                                <p class="text-[10px] text-white/30 uppercase">@entry.ReferenceType</p>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-12 text-white/40">
+                <span class="material-symbols-outlined text-4xl mb-2">history</span>
+                <p>No karma history yet</p>
+            </div>
+        }
+    </div>
+</main>
