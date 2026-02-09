@@ -7,40 +7,42 @@
     var joinedLobbies = ViewData["JoinedLobbies"] as List<GamerLFG.Models.Lobby> ?? new List<GamerLFG.Models.Lobby>();
 }
 
-<main class="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-6 py-8">
+<link rel="stylesheet" href="~/css/lobby.css" asp-append-version="true" />
+
+<main class="lobby-discovery-container">
     <!-- Search and Filters -->
-    <section class="flex flex-col gap-6 bg-card-dark p-6 rounded-xl border border-white/10">
-        <div class="flex flex-col md:flex-row gap-4">
-            <div class="flex-1 relative group">
-                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 group-focus-within:text-primary transition-colors">search</span>
-                <input type="text" placeholder="SEARCH SQUADS OR GAMES..." class="w-full bg-black/50 border border-white/10 rounded-lg py-4 pl-12 pr-4 text-sm font-bold tracking-widest text-white focus:outline-none focus:ring-1 focus:ring-primary transition-all uppercase placeholder:text-white/20" />
+    <section class="filter-panel">
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input type="text" placeholder="SEARCH SQUADS OR GAMES..." class="search-input" />
             </div>
-            <a asp-action="Create" class="flex items-center justify-center gap-2 px-8 py-4 bg-primary text-black font-black uppercase tracking-tighter rounded-lg hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20">
+            <a asp-action="Create" class="deploy-btn">
                 <span class="material-symbols-outlined">add_box</span>
                 DEPLOY SQUAD
             </a>
         </div>
 
-        <div class="flex flex-wrap gap-3">
-            <button onclick="filterLobbies('all')" class="filter-btn active flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold text-white uppercase tracking-widest cursor-pointer hover:border-primary/50 transition-colors">
-                <span class="material-symbols-outlined text-sm">grid_view</span>
+        <div class="filter-tags-row">
+            <button onclick="filterLobbies('all')" class="filter-btn active">
+                <span class="material-symbols-outlined">grid_view</span>
                 All Terminals
             </button>
-            <button onclick="filterLobbies('pc')" class="filter-btn flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold text-[#cbb390] uppercase tracking-widest cursor-pointer hover:border-primary/50 transition-colors">
-                <span class="material-symbols-outlined text-sm">desktop_windows</span>
+            <button onclick="filterLobbies('pc')" class="filter-btn">
+                <span class="material-symbols-outlined">desktop_windows</span>
                 PC Systems
             </button>
-            <button onclick="filterLobbies('console')" class="filter-btn flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold text-[#cbb390] uppercase tracking-widest cursor-pointer hover:border-primary/50 transition-colors">
-                <span class="material-symbols-outlined text-sm">stadia_controller</span>
+            <button onclick="filterLobbies('console')" class="filter-btn">
+                <span class="material-symbols-outlined">stadia_controller</span>
                 Console Link
             </button>
-            <div class="ml-auto flex items-center gap-4">
-                <select class="bg-transparent border-none text-[10px] font-bold text-[#cbb390] uppercase tracking-widest focus:ring-0 cursor-pointer hover:text-white transition-colors">
+            <div class="filter-controls-right">
+                <select class="region-select">
                     <option>Region: Global</option>
                     <option>Region: NA-East</option>
                     <option>Region: EU-West</option>
                 </select>
-                <button onclick="alert('Advanced filters module not installed.')" class="material-symbols-outlined text-white/40 hover:text-white transition-colors">filter_list</button>
+                <button onclick="alert('Advanced filters module not installed.')" class="material-symbols-outlined filter-action-icon">filter_list</button>
             </div>
         </div>
     </section>
@@ -48,49 +50,47 @@
     @if (createdLobbies.Any())
     {
         <!-- Created Lobbies Section -->
-        <div class="flex items-center gap-3 mt-4">
-            <span class="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)] animate-pulse"></span>
-            <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">MY COMMANDS (@createdLobbies.Count)</h2>
+        <div class="lobby-section-header">
+            <span class="status-dot blue animate-pulse"></span>
+            <h2 class="section-title">MY COMMANDS (@createdLobbies.Count)</h2>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-8">
+        <div class="lobby-grid">
             @foreach (var lobby in createdLobbies)
             {
                 var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
-                <article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-blue-500/30 transition-all hover:-translate-y-1 hover:border-blue-500 hover:shadow-[0_4px_30px_-10px_rgba(59,130,246,0.15)] relative">
-                    <div class="absolute top-3 right-3 z-20">
-                        <span class="flex items-center justify-center bg-blue-500/20 backdrop-blur-md px-2 py-1 rounded border border-blue-500/50 text-[10px] font-bold text-blue-500 uppercase tracking-wider">
-                            HOSTING
-                        </span>
+                <article class="lobby-card hosting">
+                    <div class="card-badge hosting">
+                        HOSTING
                     </div>
-                    <div class="relative h-40 w-full overflow-hidden">
-                        <img alt="@lobby.Game background" class="h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? $"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-card-dark via-card-dark/40 to-transparent"></div>
-                        <div class="absolute bottom-3 left-4 flex gap-2">
-                             <span class="rounded-sm bg-black/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-widest">@lobby.Game</span>
+                    <div class="card-image-container">
+                        <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                        <div class="card-overlay"></div>
+                        <div class="card-tags">
+                             <span class="card-tag">@lobby.Game</span>
                         </div>
                     </div>
-                    <div class="flex flex-1 flex-col p-5">
-                        <h3 class="mb-3 text-lg font-bold text-white leading-tight group-hover:text-blue-500 transition-colors uppercase tracking-tight">@lobby.Title</h3>
-                        <p class="mb-4 text-xs text-[#cbb390]/60 line-clamp-2">@lobby.Description</p>
+                    <div class="card-content">
+                        <h3 class="card-title">@lobby.Title</h3>
+                        <p class="card-description">@lobby.Description</p>
                         
-                        <div class="mb-4 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="h-6 w-6 rounded-full border border-blue-500/40" />
-                                <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">@hostName</span>
+                        <div class="card-footer-info">
+                            <div class="host-info">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                                <span class="host-name">@hostName</span>
                             </div>
-                            <div class="flex gap-0.5">
+                            <div class="player-slots">
                                 @for (int i = 0; i < lobby.MaxPlayers; i++)
                                 {
-                                    <span class="material-symbols-outlined text-[14px] @(i < lobby.CurrentPlayers ? "text-blue-500" : "text-white/10")">person</span>
+                                    <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
                                 }
                             </div>
                         </div>
 
-                        <div class="mt-auto pt-4 border-t border-white/5">
-                            <a asp-action="Details" asp-route-id="@lobby.Id" class="flex w-full items-center justify-center gap-2 py-3 bg-white/5 hover:bg-blue-500 text-white/60 hover:text-black font-black text-[10px] uppercase tracking-[0.2em] rounded-md transition-all">
+                        <div class="card-action-area">
+                            <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
                                 MANAGE LOBBY
-                                <span class="material-symbols-outlined text-sm">settings</span>
+                                <span class="material-symbols-outlined">settings</span>
                             </a>
                         </div>
                     </div>
@@ -98,55 +98,53 @@
             }
         </div>
         
-        <div class="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4"></div>
+        <div class="divider-gradient"></div>
     }
 
     @if (joinedLobbies.Any())
     {
         <!-- Joined Lobbies Section -->
-        <div class="flex items-center gap-3 mt-4">
-            <span class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse"></span>
-            <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">ACTIVE SQUADS (@joinedLobbies.Count)</h2>
+        <div class="lobby-section-header">
+            <span class="status-dot green animate-pulse"></span>
+            <h2 class="section-title">ACTIVE SQUADS (@joinedLobbies.Count)</h2>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-8">
+        <div class="lobby-grid">
             @foreach (var lobby in joinedLobbies)
             {
                 var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
-                <article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-green-500/30 transition-all hover:-translate-y-1 hover:border-green-500 hover:shadow-[0_4px_30px_-10px_rgba(34,197,94,0.15)] relative">
-                    <div class="absolute top-3 right-3 z-20">
-                        <span class="flex items-center justify-center bg-green-500/20 backdrop-blur-md px-2 py-1 rounded border border-green-500/50 text-[10px] font-bold text-green-500 uppercase tracking-wider">
-                            JOINED
-                        </span>
+                <article class="lobby-card joined">
+                    <div class="card-badge joined">
+                        JOINED
                     </div>
-                    <div class="relative h-40 w-full overflow-hidden">
-                        <img alt="@lobby.Game background" class="h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? $"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-card-dark via-card-dark/40 to-transparent"></div>
-                        <div class="absolute bottom-3 left-4 flex gap-2">
-                             <span class="rounded-sm bg-black/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-widest">@lobby.Game</span>
+                    <div class="card-image-container">
+                        <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                        <div class="card-overlay"></div>
+                        <div class="card-tags">
+                             <span class="card-tag">@lobby.Game</span>
                         </div>
                     </div>
-                    <div class="flex flex-1 flex-col p-5">
-                        <h3 class="mb-3 text-lg font-bold text-white leading-tight group-hover:text-green-500 transition-colors uppercase tracking-tight">@lobby.Title</h3>
-                        <p class="mb-4 text-xs text-[#cbb390]/60 line-clamp-2">@lobby.Description</p>
+                    <div class="card-content">
+                        <h3 class="card-title">@lobby.Title</h3>
+                        <p class="card-description">@lobby.Description</p>
                         
-                        <div class="mb-4 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="h-6 w-6 rounded-full border border-green-500/40" />
-                                <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">@hostName</span>
+                        <div class="card-footer-info">
+                            <div class="host-info">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                                <span class="host-name">@hostName</span>
                             </div>
-                            <div class="flex gap-0.5">
+                            <div class="player-slots">
                                 @for (int i = 0; i < lobby.MaxPlayers; i++)
                                 {
-                                    <span class="material-symbols-outlined text-[14px] @(i < lobby.CurrentPlayers ? "text-green-500" : "text-white/10")">person</span>
+                                    <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
                                 }
                             </div>
                         </div>
 
-                        <div class="mt-auto pt-4 border-t border-white/5">
-                            <a asp-action="Details" asp-route-id="@lobby.Id" class="flex w-full items-center justify-center gap-2 py-3 bg-white/5 hover:bg-green-500 text-white/60 hover:text-black font-black text-[10px] uppercase tracking-[0.2em] rounded-md transition-all">
+                        <div class="card-action-area">
+                            <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
                                 REPORT IN
-                                <span class="material-symbols-outlined text-sm">login</span>
+                                <span class="material-symbols-outlined">login</span>
                             </a>
                         </div>
                     </div>
@@ -154,55 +152,53 @@
             }
         </div>
         
-        <div class="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4"></div>
+        <div class="divider-gradient"></div>
     }
 
     @if (pendingLobbies.Any())
     {
         <!-- Pending Lobbies Section -->
-        <div class="flex items-center gap-3 mt-4">
-            <span class="h-2 w-2 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)] animate-pulse"></span>
-            <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">PENDING DEPLOYMENTS (@pendingLobbies.Count)</h2>
+        <div class="lobby-section-header">
+            <span class="status-dot yellow animate-pulse"></span>
+            <h2 class="section-title">PENDING DEPLOYMENTS (@pendingLobbies.Count)</h2>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-8">
+        <div class="lobby-grid">
             @foreach (var lobby in pendingLobbies)
             {
                 var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
-                <article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-yellow-500/30 transition-all hover:-translate-y-1 hover:border-yellow-500 hover:shadow-[0_4px_30px_-10px_rgba(234,179,8,0.15)] relative">
-                    <div class="absolute top-3 right-3 z-20">
-                        <span class="flex items-center justify-center bg-yellow-500/20 backdrop-blur-md px-2 py-1 rounded border border-yellow-500/50 text-[10px] font-bold text-yellow-500 uppercase tracking-wider">
-                            PENDING
-                        </span>
+                <article class="lobby-card pending">
+                    <div class="card-badge pending">
+                        PENDING
                     </div>
-                    <div class="relative h-40 w-full overflow-hidden">
-                        <img alt="@lobby.Game background" class="h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? $"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-card-dark via-card-dark/40 to-transparent"></div>
-                        <div class="absolute bottom-3 left-4 flex gap-2">
-                             <span class="rounded-sm bg-black/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-widest">@lobby.Game</span>
+                    <div class="card-image-container">
+                        <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                        <div class="card-overlay"></div>
+                        <div class="card-tags">
+                             <span class="card-tag">@lobby.Game</span>
                         </div>
                     </div>
-                    <div class="flex flex-1 flex-col p-5">
-                        <h3 class="mb-3 text-lg font-bold text-white leading-tight group-hover:text-yellow-500 transition-colors uppercase tracking-tight">@lobby.Title</h3>
-                        <p class="mb-4 text-xs text-[#cbb390]/60 line-clamp-2">@lobby.Description</p>
+                    <div class="card-content">
+                        <h3 class="card-title">@lobby.Title</h3>
+                        <p class="card-description">@lobby.Description</p>
                         
-                        <div class="mb-4 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="h-6 w-6 rounded-full border border-yellow-500/40" />
-                                <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">@hostName</span>
+                        <div class="card-footer-info">
+                            <div class="host-info">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                                <span class="host-name">@hostName</span>
                             </div>
-                            <div class="flex gap-0.5">
+                            <div class="player-slots">
                                 @for (int i = 0; i < lobby.MaxPlayers; i++)
                                 {
-                                    <span class="material-symbols-outlined text-[14px] @(i < lobby.CurrentPlayers ? "text-yellow-500" : "text-white/10")">person</span>
+                                    <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
                                 }
                             </div>
                         </div>
 
-                        <div class="mt-auto pt-4 border-t border-white/5">
-                            <a asp-action="Details" asp-route-id="@lobby.Id" class="flex w-full items-center justify-center gap-2 py-3 bg-white/5 hover:bg-yellow-500 text-white/60 hover:text-black font-black text-[10px] uppercase tracking-[0.2em] rounded-md transition-all">
+                        <div class="card-action-area">
+                            <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
                                 VIEW STATUS
-                                <span class="material-symbols-outlined text-sm">hourglass_empty</span>
+                                <span class="material-symbols-outlined">hourglass_empty</span>
                             </a>
                         </div>
                     </div>
@@ -210,58 +206,58 @@
             }
         </div>
         
-        <div class="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4"></div>
+        <div class="divider-gradient"></div>
     }
 
     <!-- Results Count -->
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <span class="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(255,163,26,0.6)]"></span>
-            <h2 class="text-sm font-black text-white uppercase tracking-[0.2em]">Active Transmissions (@Model.Count)</h2>
+    <div class="results-header">
+        <div class="results-count-row">
+            <span class="status-dot primary"></span>
+            <h2 class="section-title">Active Transmissions (@Model.Count)</h2>
         </div>
-        <div class="flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest">
-            Sort by: <span class="text-primary cursor-pointer hover:underline">Newest</span>
+        <div class="sort-info">
+            Sort by: <span class="sort-link">Newest</span>
         </div>
     </div>
 
     <!-- Grid -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="lobbiesGrid">
+    <div class="lobby-grid" id="lobbiesGrid">
         @foreach (var lobby in Model)
         {
             var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
-            <article class="group flex flex-col overflow-hidden rounded-lg bg-card-dark border border-white/5 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_4px_30px_-10px_rgba(255,163,26,0.15)] relative">
-                <div class="absolute top-3 right-3 z-20">
-                    <span class="flex h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
+            <article class="lobby-card">
+                <div class="online-pulse-container">
+                    <span class="online-indicator animate-pulse"></span>
                 </div>
-                <div class="relative h-40 w-full overflow-hidden">
-                    <img alt="@lobby.Game background" class="h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? $"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-card-dark via-card-dark/40 to-transparent"></div>
-                    <div class="absolute bottom-3 left-4 flex gap-2">
-                        <span class="rounded-sm bg-black/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-widest">@lobby.Game</span>
-                        <span class="rounded-sm bg-primary/20 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-primary border border-primary/20 uppercase tracking-widest">@lobby.Status</span>
+                <div class="card-image-container">
+                    <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                    <div class="card-overlay"></div>
+                    <div class="card-tags">
+                        <span class="card-tag">@lobby.Game</span>
+                        <span class="card-tag status">@lobby.Status</span>
                     </div>
                 </div>
-                <div class="flex flex-1 flex-col p-5">
-                    <h3 class="mb-3 text-lg font-bold text-white leading-tight group-hover:text-primary transition-colors uppercase tracking-tight">@lobby.Title</h3>
-                    <p class="mb-4 text-xs text-[#cbb390]/60 line-clamp-2">@lobby.Description</p>
+                <div class="card-content">
+                    <h3 class="card-title">@lobby.Title</h3>
+                    <p class="card-description">@lobby.Description</p>
                     
-                    <div class="mb-4 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="h-6 w-6 rounded-full border border-primary/40" />
-                            <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">@hostName</span>
+                    <div class="card-footer-info">
+                        <div class="host-info">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                            <span class="host-name">@hostName</span>
                         </div>
-                        <div class="flex gap-0.5">
+                        <div class="player-slots">
                             @for (int i = 0; i < lobby.MaxPlayers; i++)
                             {
-                                <span class="material-symbols-outlined text-[14px] @(i < lobby.CurrentPlayers ? "text-primary" : "text-white/10")">person</span>
+                                <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
                             }
                         </div>
                     </div>
 
-                    <div class="mt-auto pt-4 border-t border-white/5">
-                        <a asp-action="Details" asp-route-id="@lobby.Id" class="flex w-full items-center justify-center gap-2 py-3 bg-white/5 hover:bg-primary text-white/60 hover:text-black font-black text-[10px] uppercase tracking-[0.2em] rounded-md transition-all">
+                    <div class="card-action-area">
+                        <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
                             ANALYZE DETAILS
-                            <span class="material-symbols-outlined text-sm">monitoring</span>
+                            <span class="material-symbols-outlined">monitoring</span>
                         </a>
                     </div>
                 </div>
@@ -270,30 +266,17 @@
     </div>
 </main>
 
-<style>
-    @@keyframes spin-slow {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-    .animate-spin-slow {
-        animation: spin-slow 3s linear infinite;
-    }
-</style>
-
 @section Scripts {
     <script>
         function filterLobbies(category) {
             // Visual toggle
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active', 'text-white');
-                btn.classList.add('text-[#cbb390]');
+                btn.classList.remove('active');
             });
-            event.currentTarget.classList.add('active', 'text-white');
-            event.currentTarget.classList.remove('text-[#cbb390]');
+            event.currentTarget.classList.add('active');
             
             // Mock filter logic
             console.log("Filtering by category: " + category);
-            // In a real app, this would hide/show elements or trigger an AJAX call
         }
     </script>
 }
