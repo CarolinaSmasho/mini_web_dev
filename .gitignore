@@ -1,3 +1,2 @@
-GamerLFG/bin/Debug
-GamerLFG/obj/Debug
-.agent
+obj/Debug/
+bin/Debug/

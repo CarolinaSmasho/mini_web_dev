@@ -1,182 +1,49 @@
 ﻿<!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Gamer LFG</title>
-    
-    <!-- Google Fonts - Inter & Space Grotesk -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#f2960d",
-                        "background-light": "#f8f7f5",
-                        "background-dark": "#000000",
-                        "card-dark": "#121212",
-                        "accent-dark": "#1a1a1a",
-                    },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"],
-                        "body": ["Inter", "sans-serif"],
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "sm": "0.125rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                    },
-                },
-            },
-        }
-    </script>
-    
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000000;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
-    
+    <title>@ViewData["Title"] - GamerLFG</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GamerLFG.styles.css" asp-append-version="true" />
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col overflow-x-hidden">
-    <!-- Top Navigation -->
-    <header class="sticky top-0 z-50 w-full border-b border-white/10 bg-black/95 backdrop-blur-md px-6 py-4">
-        <div class="mx-auto flex max-w-[1440px] items-center justify-between gap-8">
-            <!-- Logo -->
-            <a href="/" class="flex items-center gap-1 text-white select-none">
-                <span class="text-xl font-black tracking-tighter">GAMER</span>
-                <span class="bg-primary text-black px-1.5 py-0.5 text-xl font-black tracking-tighter rounded-sm">LFG</span>
-            </a>
-            
-            <!-- Search Bar (Desktop Only) -->
-            <div class="hidden md:flex flex-1 max-w-xl">
-                <label class="relative flex w-full items-center">
-                    <div class="absolute left-3 text-gray-500">
-                        <span class="material-symbols-outlined text-[20px]">search</span>
-                    </div>
-                    <input class="h-10 w-full rounded bg-card-dark border border-white/5 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all" placeholder="Search lobbies, games, or players..." type="text"/>
-                </label>
-            </div>
-            
-            <!-- Actions -->
-            <div class="flex items-center gap-4">
-                @if (Context.Session.GetString("UserId") != null)
-                {
-                    <a asp-controller="Lobby" asp-action="Create" class="hidden md:flex h-10 items-center justify-center gap-2 rounded bg-primary px-5 text-sm font-bold text-black transition-transform hover:scale-105 hover:shadow-[0_0_15px_rgba(255,153,0,0.4)] active:scale-95">
-                        <span class="material-symbols-outlined text-[20px]">add</span>
-                        CREATE LOBBY
-                    </a>
-                    
-                    <div class="flex items-center gap-2 border-l border-white/10 pl-4">
-                        <div class="relative group" id="notificationDropdown">
-                            <button class="flex size-9 items-center justify-center rounded-full bg-card-dark text-gray-400 hover:bg-white/10 hover:text-white transition-colors relative" onclick="toggleNotifications()">
-                                <span class="material-symbols-outlined text-[20px]">notifications</span>
-                                <span id="unreadCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 rounded-full hidden">0</span>
-                            </button>
-                            
-                            <!-- Dropdown -->
-                             <div id="notificationList" class="absolute right-0 top-full mt-2 w-80 bg-card-dark border border-white/10 rounded-lg shadow-xl opacity-0 invisible transition-all z-50 max-h-96 overflow-y-auto hidden">
-                                <div class="p-3 border-b border-white/10 flex justify-between items-center">
-                                    <h3 class="text-xs font-bold text-white uppercase">Notifications</h3>
-                                    <button onclick="markAllRead()" class="text-[10px] text-primary hover:underline">Mark all read</button>
-                                </div>
-                                <div id="notificationItems" class="flex flex-col">
-                                    <!-- Items will be injected here -->
-                                    <div class="p-4 text-center text-xs text-white/50">Loading...</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="relative ml-2 cursor-pointer group">
-                            <div class="size-9 overflow-hidden rounded-full border-2 border-card-dark ring-2 ring-transparent group-hover:ring-primary transition-all">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@Context.Session.GetString("Username")" alt="Avatar" class="h-full w-full object-cover" />
-                            </div>
-                            <div class="absolute bottom-0 right-0 size-2.5 rounded-full bg-green-500 ring-2 ring-black"></div>
-                            
-                            <!-- Dropdown Menu -->
-                            <div class="absolute right-0 top-full mt-2 w-48 bg-card-dark border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                                <div class="p-2 space-y-1">
-                                    <a asp-controller="User" asp-action="Profile" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded transition-colors">
-                                        <span class="material-symbols-outlined text-sm">person</span>
-                                        Profile
-                                    </a>
-                                    <a asp-controller="User" asp-action="Friends" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded transition-colors">
-                                        <span class="material-symbols-outlined text-sm">group</span>
-                                        Friends
-                                    </a>
-                                    <a asp-controller="User" asp-action="Settings" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded transition-colors">
-                                        <span class="material-symbols-outlined text-sm">settings</span>
-                                        Settings
-                                    </a>
-                                    <div class="h-px bg-white/5 my-1"></div>
-                                    <a asp-controller="Auth" asp-action="LogoutGet" class="flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/5 rounded transition-colors">
-                                        <span class="material-symbols-outlined text-sm">logout</span>
-                                        Logout
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="flex items-center gap-3">
-                        <a asp-controller="Auth" asp-action="Login" class="text-sm font-bold text-gray-300 hover:text-white transition-colors">LOG IN</a>
-                        <a asp-controller="Auth" asp-action="Register" class="h-10 flex items-center justify-center rounded bg-primary px-6 text-sm font-bold text-black transition-transform hover:scale-105 active:scale-95">JOIN THE HUB</a>
-                    </div>
-                }
-                
-                <!-- Mobile Menu Toggle -->
-                <button class="flex md:hidden size-10 items-center justify-center rounded bg-card-dark text-white border border-white/5" id="mobileMenuToggle">
-                    <span class="material-symbols-outlined">menu</span>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GamerLFG</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
+        </nav>
     </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 
-    @RenderBody()
-
-    <!-- Footer -->
-    <footer class="mt-auto border-t border-white/5 bg-black/50 py-10">
-        <div class="mx-auto max-w-[1440px] px-6 text-center">
-            <div class="flex flex-col items-center gap-6">
-                <div class="flex items-center gap-1 text-white select-none opacity-50">
-                    <span class="text-lg font-black tracking-tighter">GAMER</span>
-                    <span class="bg-gray-500 text-black px-1.5 py-0.5 text-lg font-black tracking-tighter rounded-sm">LFG</span>
-                </div>
-                <div class="flex gap-8 text-xs font-bold text-gray-500 uppercase tracking-widest">
-                    <a href="#" class="hover:text-primary transition-colors">About</a>
-                    <a href="#" class="hover:text-primary transition-colors">Privacy</a>
-                    <a href="#" class="hover:text-primary transition-colors">Terms</a>
-                    <a href="#" class="hover:text-primary transition-colors">Help</a>
-                </div>
-                <p class="text-[10px] text-gray-600 tracking-widest uppercase">
-                    &copy; 2026 Gamer LFG - All Rights Reserved // System Node 04
-                </p>
-            </div>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - GamerLFG - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
