@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mobile Manage Lobby Dashboard Fixed</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ff9900",
+                        "primary-hover": "#e68a00",
+                        "background-light": "#1a1610", 
+                        "background-dark": "#000000",
+                        "surface-dark": "#1B1B1B",
+                        "surface-darker": "#0a0806",
+                        "border-dark": "#3a2d1d",
+                        "discord": "#5865F2",
+                        "whatsapp": "#25D366",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "sm": "0.125rem", "md": "0.25rem", "lg": "0.375rem", "xl": "0.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display min-h-screen flex flex-col pb-24">
+<header class="flex items-center justify-between px-4 py-4 bg-background-dark/95 backdrop-blur-sm sticky top-0 z-50 border-b border-white/5">
+<div class="flex items-center gap-2">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">sports_esports</span>
+</div>
+<h2 class="text-white text-lg font-black tracking-tighter uppercase">GAMER LFG</h2>
+</div>
+<button class="text-white p-2 -mr-2">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button>
+</header>
+<main class="flex-1 flex flex-col gap-6 p-4 overflow-y-auto scrollbar-hide">
+<section class="bg-surface-dark border border-white/10 rounded-xl overflow-hidden shadow-lg">
+<div class="relative h-40 w-full group">
+<img alt="Futuristic cyberpunk gaming artwork" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARq3eAktmivE2fBbFQmesDkdu-Gbc2u2lwrPLrrm2KIpuXJj5rpu5UmuWbdDLTirnxtBjellyz3VrW7pMtwUYMDxAxm4GJlVl_wVMbKmjs5O3FVQeVfG3SfEKF8AZu4mfG2ROaoivY4tF_SKl9fb5hDRf4RUla-Ykms9dvhm2Fs45WTtHbKQN02E-5Ff-TPlInlx6yy8Fr0adIRqUCX-T1ouTXXaZjm5fSPurUWCl3ZBgjc8eLFYT4u76wzLM0R23zcAXJ5vS-hL8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="bg-black/60 backdrop-blur text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider border border-primary/20">Ranked</span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-xl font-black text-white leading-tight mb-1">Diamond Rank Grind</h1>
+<p class="text-primary font-medium text-xs uppercase tracking-wide">Apex Legends</p>
+</div>
+<button class="text-gray-400">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex gap-4 text-xs text-gray-400 overflow-x-auto scrollbar-hide pb-1">
+<div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded whitespace-nowrap">
+<span class="material-symbols-outlined text-base">public</span>
+<span>NA East</span>
+</div>
+<div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded whitespace-nowrap">
+<span class="material-symbols-outlined text-base">mic</span>
+<span>Mic Req</span>
+</div>
+<div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded whitespace-nowrap">
+<span class="material-symbols-outlined text-base">hotel_class</span>
+<span>Dia IV+</span>
+</div>
+</div>
+<div class="flex items-center justify-between bg-black/40 p-3 rounded-lg border border-white/5">
+<div class="flex flex-col">
+<span class="text-xs font-bold text-gray-300 uppercase tracking-wider">Recruitment</span>
+<span class="text-[10px] text-green-500">Open for applications</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-10 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex flex-col gap-2 pt-2 border-t border-white/5">
+<h3 class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Social Links</h3>
+<div class="flex gap-2">
+<div class="flex-1 flex items-center justify-between bg-black/40 p-2.5 rounded-lg border border-white/5 group hover:border-discord/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-discord text-lg">chat</span>
+<span class="text-xs font-bold text-gray-300">Discord</span>
+</div>
+<span class="text-[10px] text-gray-500 bg-white/5 px-1.5 py-0.5 rounded group-hover:text-white transition-colors">Edit</span>
+</div>
+<div class="flex-1 flex items-center justify-between bg-black/40 p-2.5 rounded-lg border border-white/5 group hover:border-whatsapp/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-whatsapp text-lg">chat</span>
+<span class="text-xs font-bold text-gray-300">WhatsApp</span>
+</div>
+<span class="text-[10px] text-gray-500 bg-white/5 px-1.5 py-0.5 rounded group-hover:text-white transition-colors">Edit</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface-dark border border-white/10 p-3 rounded-lg flex items-center justify-between">
+<div>
+<div class="text-xs text-gray-500 uppercase font-bold tracking-wider">Players</div>
+<div class="text-xl font-black text-white">3<span class="text-gray-600 text-sm font-semibold">/5</span></div>
+</div>
+<div class="size-8 rounded-full bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-400 text-lg">group</span>
+</div>
+</div>
+<div class="bg-surface-dark border border-white/10 p-3 rounded-lg flex items-center justify-between">
+<div>
+<div class="text-xs text-gray-500 uppercase font-bold tracking-wider">Rating</div>
+<div class="text-xl font-black text-primary">4.8</div>
+</div>
+<div class="size-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">star</span>
+</div>
+</div>
+</div>
+<section>
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                    Current Squad
+                </h3>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+<div class="min-w-[140px] bg-surface-dark border border-primary/30 p-3 rounded-lg flex flex-col gap-3 relative overflow-hidden shrink-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-primary text-xs" title="Lobby Host">crown</span>
+</div>
+<div class="size-10 rounded-full bg-gray-700 bg-cover bg-center border-2 border-primary/20" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAtW0yT3O_CDQ-AnF7sC4ircxLq49bfLep0ztu56KX_3ATt8ZHzqgEV-XFeBcj1HWT1itnCQo7PBfVp8KH5rUIdoOQTUg6WZ4Rg8vNIEHkt6lecmzanq4o8tN4fW3CVckKriNw16sQuZnHx4lhNrEQV4nvxHI42wlSWh6af4-lzzUA9afjLRw2mbnw6Xu63N2W6QnyoZOpuBTV3kvCoaUOFKHC11yiCiwi1rfh-vhsrIS_jJvDpR_HNaTPTbAhuvNAz2yBhFpapZMQ')"></div>
+<div>
+<p class="text-white font-bold text-sm truncate">ProGamer123</p>
+<p class="text-[10px] text-gray-500 uppercase tracking-wide">Tank • Host</p>
+</div>
+</div>
+<div class="min-w-[140px] bg-surface-dark border border-white/10 p-3 rounded-lg flex flex-col gap-3 shrink-0">
+<div class="size-10 rounded-full bg-gray-700 bg-cover bg-center border-2 border-transparent" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCp0SCto3gAe5TdsvmZh6UXdCDXjpikMM4KWLSzhg_ZNLhZooLJpMvdKcW1ZDMmEcNOiup6VF9eQy6T1Xo4_FDVQdnPyqAicRLMWK5XuqSv3MWESBIonNLqIl8sFzGHzJzMF96rHZJAlIQrQrOCRSi5zOVrPuRPVv06h9UouCo88SCGNOKCR8SL46u7EZhc89O334rYkwzoDpVhK-ApysecRysZkbmMc1M-kgNiymdxLGx_MDVZGWyl4QRUHDdmBkml6DI-LOhKaX8')"></div>
+<div>
+<p class="text-white font-bold text-sm truncate">SniperElite</p>
+<p class="text-[10px] text-gray-500 uppercase tracking-wide">DPS • Ready</p>
+</div>
+</div>
+<div class="min-w-[140px] bg-surface-dark border border-white/10 p-3 rounded-lg flex flex-col gap-3 shrink-0">
+<div class="size-10 rounded-full bg-gray-700 bg-cover bg-center border-2 border-transparent" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDf1khCBg6tRuJBUgRSdHL-j6gkFkKBW7e1cN2WkUbRy3Z-AemWwYA54w7Pl1AohB55Abyr6AFYEkW1ppECLyMFIe0-R_I2eqchtydRLzSsE-V_5GASwiPW_ColmaFXVapNiBtfeZkDTmq9J8GDFpKfrCYaVsH5Wd5ab0l1RQVM-zG0XVg0lJz6QGrn-D5ALK_RZqTOJVlxTeNlHzYyq3WHPtNIMSXXaZKN-cOjbCiiZrP_M2KchbshfFRHjm_ySOUgIbYrK7aCXls')"></div>
+<div>
+<p class="text-white font-bold text-sm truncate">MedicMain</p>
+<p class="text-[10px] text-gray-500 uppercase tracking-wide">Support • Ready</p>
+</div>
+</div>
+<div class="min-w-[140px] border border-dashed border-white/10 p-3 rounded-lg flex flex-col items-center justify-center gap-2 shrink-0 bg-white/[0.02]">
+<div class="size-8 rounded-full bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-600">add</span>
+</div>
+<p class="text-[10px] text-gray-600 uppercase tracking-wide font-bold">Open Slot</p>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                    Pending Applicants <span class="bg-primary text-black text-[10px] px-1.5 rounded-full font-bold">2</span>
+</h3>
+<button class="text-[10px] text-primary font-bold uppercase tracking-wider">History</button>
+</div>
+<div class="bg-surface-dark border border-white/10 rounded-xl p-4 flex flex-col gap-4 shadow-lg">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="size-12 rounded-lg bg-gray-700 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDzUUNvxBOhvVcYk2IOs05hie1w1sEUgd__jiY7HSMZcUJJv2iPlTvToB7eaaTJE9aADd0PXBiI2ijWCT1-WFmoKNu-ql_tKUdgkoPHiON_uXHVpzD6gH06SVHuHXwsFE1EQ7V0aM3fYhDcMkZP8YY_zsSKmUZVOhHd-Wju1m7kv6IZPrl8k2nhkSBF0mCAON33q5li7XujBnmLnSjlQM-Eq5GMWtxBta6cOSd6ByUGighlLiumMDSB1DaOc4SW71I9t_q_D00gbzk')"></div>
+<div class="absolute -bottom-1 -right-1 bg-black border border-white/10 rounded-full p-0.5">
+<span class="material-symbols-outlined text-[10px] text-green-500 block">mic</span>
+</div>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h4 class="text-white font-bold text-base">WraithMain99</h4>
+<div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded border border-white/10">
+<span class="text-[10px] font-bold text-primary uppercase tracking-tight">Karma</span>
+<div class="flex items-center gap-0.5 text-primary">
+<span class="material-symbols-outlined text-[12px] fill-current">bolt</span>
+<span class="text-xs font-black">850</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 mt-1.5">
+<div class="flex flex-col gap-1.5">
+<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Matching Games:</span>
+<div class="flex gap-2">
+<div class="size-6 rounded bg-cover bg-center border border-primary/50 shadow-[0_0_10px_rgba(255,153,0,0.2)]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuARq3eAktmivE2fBbFQmesDkdu-Gbc2u2lwrPLrrm2KIpuXJj5rpu5UmuWbdDLTirnxtBjellyz3VrW7pMtwUYMDxAxm4GJlVl_wVMbKmjs5O3FVQeVfG3SfEKF8AZu4mfG2ROaoivY4tF_SKl9fb5hDRf4RUla-Ykms9dvhm2Fs45WTtHbKQN02E-5Ff-TPlInlx6yy8Fr0adIRqUCX-T1ouTXXaZjm5fSPurUWCl3ZBgjc8eLFYT4u76wzLM0R23zcAXJ5vS-hL8')" title="Apex Legends"></div>
+<div class="size-6 rounded bg-cover bg-center border border-primary/50 shadow-[0_0_10px_rgba(255,153,0,0.2)]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDCpuwaU-U5DcwP-DM8K5R3g3FEYDTpCRJk3pp9cnvhVoH_LkK3gC1sQxche9iuw-IAtAJ-UpKs-GI-PkcVfhpclw2mKuQlbanCTQZ8ZLwBXUO__YoiCKSS-7x1hso48RvNju4DH03GxQzouIDIJ8CuuR1I3Eto8q8QF63ZYtvcos_LQE3jORFN72CYT1X9e1wkV-WpfQcjc1EWjHvTOEX0T7yDgBcMh2pHUo3WKrQAZhl3FQcXrETUQ41ZAouVsmpSLRl_QEfoFc')" title="Valorant"></div>
+<div class="size-6 rounded bg-cover bg-center border border-primary/50 shadow-[0_0_10px_rgba(255,153,0,0.2)]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCCwsNKgFsR56jK_osIuABBjAipdOFUdrft0FDSvaffCmfmgH7VWz_7am9LvmBJQ-115nZOIeD5LWlwWnfo2a2Dns-my3_jJD2F0wXSZmi3AKhmpgP2qVFAGKiriKHRmHEbnxssmHSkhTN-Mfxpcej65pG5rW46uIx5GWj07pheenALgNxdQMwxXV0r7CvKwiRE-I4x5GqbsOS3WS6-LrI_qNlZvNH16tVxA_eoiFSGhcLPS_JoGl6wBG0ZeHUorV71jcjQnpNiN8')" title="Call of Duty"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-3 rounded-lg border border-white/10 bg-white/5 text-gray-400 font-bold text-xs uppercase tracking-wide hover:bg-red-900/20 hover:text-red-500 hover:border-red-900/50 transition-colors">
+                        Decline
+                    </button>
+<button class="flex-1 py-3 bg-primary text-black font-black text-xs uppercase tracking-wide rounded-lg shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                        Recruit
+                    </button>
+</div>
+</div>
+<div class="bg-surface-dark border border-white/10 rounded-xl p-4 flex flex-col gap-4 shadow-lg">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="size-12 rounded-lg bg-gray-700 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCeuCZicuCGgYfcIohJu5kJHZGCP8Zag7Ww8Xy4tg_NA9rzNzD_2lZ3zTCCsZXy1ixfXorJ2TQv8FhJEdSPT1fCghW0RFv1eOeiSS8q0bcqWhokUWC48eTNItsK_DkevFIux2Jn8u-vfd1_-O6Y_wSMHfYHSEYA4s3LAcPF6yCoWldxzIa5DIFzZLriGGMtO3j8BoS2_2qIli1AIxPTsETWF3SzOHB-PTR_Ja4HUi05MH9zYNSxqZhnROtIzaswYj05WEWAIbTJl9Y')"></div>
+<div class="absolute -bottom-1 -right-1 bg-black border border-white/10 rounded-full p-0.5">
+<span class="material-symbols-outlined text-[10px] text-gray-500 block">mic_off</span>
+</div>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h4 class="text-white font-bold text-base">SilentShadow</h4>
+<div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded border border-white/10">
+<span class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Karma</span>
+<div class="flex items-center gap-0.5 text-gray-300">
+<span class="material-symbols-outlined text-[12px] fill-current">bolt</span>
+<span class="text-xs font-black">420</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 mt-1.5">
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Vibe Tags:</span>
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 bg-white/5 border border-white/5 rounded text-[10px] text-gray-300 font-medium">Strategist</span>
+<span class="px-1.5 py-0.5 bg-white/5 border border-white/5 rounded text-[10px] text-gray-300 font-medium">Serious</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 mt-1">
+<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Matching Games:</span>
+<div class="flex gap-2">
+<div class="size-6 rounded bg-cover bg-center border border-primary/50 shadow-[0_0_10px_rgba(255,153,0,0.2)]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuARq3eAktmivE2fBbFQmesDkdu-Gbc2u2lwrPLrrm2KIpuXJj5rpu5UmuWbdDLTirnxtBjellyz3VrW7pMtwUYMDxAxm4GJlVl_wVMbKmjs5O3FVQeVfG3SfEKF8AZu4mfG2ROaoivY4tF_SKl9fb5hDRf4RUla-Ykms9dvhm2Fs45WTtHbKQN02E-5Ff-TPlInlx6yy8Fr0adIRqUCX-T1ouTXXaZjm5fSPurUWCl3ZBgjc8eLFYT4u76wzLM0R23zcAXJ5vS-hL8')" title="Apex Legends"></div>
+<div class="size-6 rounded bg-cover bg-center border border-primary/50 shadow-[0_0_10px_rgba(255,153,0,0.2)]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDzWApD4b-1u8vpgs1UZDji8uCzcWWUXL2TzXMRlqaxYkb4OSdwkuXsR961hDP66pSrs5YKxvwJFm9UiSq6d2huj8vjOpUCSCHD_82ocdVykSML0trRzfBavJlLBLjuEpT6dE11saYv0aOTaO-HJ9Sr39fBmp69W4dgWJaNQdfm79-IphkETvO5J7CJB13iVMyvhwB0RNE1ghBjybxwWqmsiNegwq6UY-lBuqi3wfHhhlQShatjkxHXjfXIEa98LMgnF2CzKzibB-M')" title="Call of Duty"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-3 rounded-lg border border-white/10 bg-white/5 text-gray-400 font-bold text-xs uppercase tracking-wide hover:bg-red-900/20 hover:text-red-500 hover:border-red-900/50 transition-colors">
+                        Decline
+                    </button>
+<button class="flex-1 py-3 bg-primary text-black font-black text-xs uppercase tracking-wide rounded-lg shadow-[0_0_15px_rgba(255,153,0,0.3)]">
+                        Recruit
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-surface-dark border-t border-white/10 px-6 py-3 z-50 safe-area-bottom">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 w-16" href="#">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Feed</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary w-16" href="#">
+<span class="material-symbols-outlined text-2xl fill-current">groups</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Lobbies</span>
+</a>
+<div class="relative -top-6">
+<button class="size-14 bg-primary rounded-full flex items-center justify-center text-black shadow-[0_0_15px_rgba(255,153,0,0.4)] border-4 border-background-dark active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 w-16" href="#">
+<div class="size-6 rounded-full bg-gray-700 overflow-hidden border border-gray-600">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB87q7YTF-GhbxPkOp7mgzh-Tmxgynie3ZD6NG5r_7V3QmD9pnIMXgqV0aOs0GQnFor9-l_SS2QrS9ZNnBCOTxAcgqKudNLrmB7SuoNJFOFeukEF2-vpaZR42MmJSyGkJpJ2jvs8m5ATfWoyWGNIXGuXZp1Ml8-VkyWDI_ykuIAVkcgo_2iDqHttUQ8oG5P03XjWLqqVc4mHPMBAyu9iQpfns-1HLE3BLwDNy6YkmDburr07naXxbuC-yXto1hBEdHZA6QBPFL0QVY"/>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-wide">Profile</span>
+</a>
+</div>
+</nav>
+</body></html>

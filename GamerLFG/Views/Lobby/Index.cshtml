@@ -1,0 +1,282 @@
+@model List<GamerLFG.Models.Lobby>
+@{
+    ViewData["Title"] = "Squad Discovery";
+    var hostMap = ViewData["HostMap"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+    var pendingLobbies = ViewData["PendingLobbies"] as List<GamerLFG.Models.Lobby> ?? new List<GamerLFG.Models.Lobby>();
+    var createdLobbies = ViewData["CreatedLobbies"] as List<GamerLFG.Models.Lobby> ?? new List<GamerLFG.Models.Lobby>();
+    var joinedLobbies = ViewData["JoinedLobbies"] as List<GamerLFG.Models.Lobby> ?? new List<GamerLFG.Models.Lobby>();
+}
+
+<link rel="stylesheet" href="~/css/lobby.css" asp-append-version="true" />
+
+<main class="lobby-discovery-container">
+    <!-- Search and Filters -->
+    <section class="filter-panel">
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input type="text" placeholder="SEARCH SQUADS OR GAMES..." class="search-input" />
+            </div>
+            <a asp-action="Create" class="deploy-btn">
+                <span class="material-symbols-outlined">add_box</span>
+                DEPLOY SQUAD
+            </a>
+        </div>
+
+        <div class="filter-tags-row">
+            <button onclick="filterLobbies('all')" class="filter-btn active">
+                <span class="material-symbols-outlined">grid_view</span>
+                All Terminals
+            </button>
+            <button onclick="filterLobbies('pc')" class="filter-btn">
+                <span class="material-symbols-outlined">desktop_windows</span>
+                PC Systems
+            </button>
+            <button onclick="filterLobbies('console')" class="filter-btn">
+                <span class="material-symbols-outlined">stadia_controller</span>
+                Console Link
+            </button>
+            <div class="filter-controls-right">
+                <select class="region-select">
+                    <option>Region: Global</option>
+                    <option>Region: NA-East</option>
+                    <option>Region: EU-West</option>
+                </select>
+                <button onclick="alert('Advanced filters module not installed.')" class="material-symbols-outlined filter-action-icon">filter_list</button>
+            </div>
+        </div>
+    </section>
+
+    @if (createdLobbies.Any())
+    {
+        <!-- Created Lobbies Section -->
+        <div class="lobby-section-header">
+            <span class="status-dot blue animate-pulse"></span>
+            <h2 class="section-title">MY COMMANDS (@createdLobbies.Count)</h2>
+        </div>
+
+        <div class="lobby-grid">
+            @foreach (var lobby in createdLobbies)
+            {
+                var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
+                <article class="lobby-card hosting">
+                    <div class="card-badge hosting">
+                        HOSTING
+                    </div>
+                    <div class="card-image-container">
+                        <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                        <div class="card-overlay"></div>
+                        <div class="card-tags">
+                             <span class="card-tag">@lobby.Game</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">@lobby.Title</h3>
+                        <p class="card-description">@lobby.Description</p>
+                        
+                        <div class="card-footer-info">
+                            <div class="host-info">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                                <span class="host-name">@hostName</span>
+                            </div>
+                            <div class="player-slots">
+                                @for (int i = 0; i < lobby.MaxPlayers; i++)
+                                {
+                                    <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-action-area">
+                            <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
+                                MANAGE LOBBY
+                                <span class="material-symbols-outlined">settings</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+        
+        <div class="divider-gradient"></div>
+    }
+
+    @if (joinedLobbies.Any())
+    {
+        <!-- Joined Lobbies Section -->
+        <div class="lobby-section-header">
+            <span class="status-dot green animate-pulse"></span>
+            <h2 class="section-title">ACTIVE SQUADS (@joinedLobbies.Count)</h2>
+        </div>
+
+        <div class="lobby-grid">
+            @foreach (var lobby in joinedLobbies)
+            {
+                var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
+                <article class="lobby-card joined">
+                    <div class="card-badge joined">
+                        JOINED
+                    </div>
+                    <div class="card-image-container">
+                        <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                        <div class="card-overlay"></div>
+                        <div class="card-tags">
+                             <span class="card-tag">@lobby.Game</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">@lobby.Title</h3>
+                        <p class="card-description">@lobby.Description</p>
+                        
+                        <div class="card-footer-info">
+                            <div class="host-info">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                                <span class="host-name">@hostName</span>
+                            </div>
+                            <div class="player-slots">
+                                @for (int i = 0; i < lobby.MaxPlayers; i++)
+                                {
+                                    <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-action-area">
+                            <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
+                                REPORT IN
+                                <span class="material-symbols-outlined">login</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+        
+        <div class="divider-gradient"></div>
+    }
+
+    @if (pendingLobbies.Any())
+    {
+        <!-- Pending Lobbies Section -->
+        <div class="lobby-section-header">
+            <span class="status-dot yellow animate-pulse"></span>
+            <h2 class="section-title">PENDING DEPLOYMENTS (@pendingLobbies.Count)</h2>
+        </div>
+
+        <div class="lobby-grid">
+            @foreach (var lobby in pendingLobbies)
+            {
+                var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
+                <article class="lobby-card pending">
+                    <div class="card-badge pending">
+                        PENDING
+                    </div>
+                    <div class="card-image-container">
+                        <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                        <div class="card-overlay"></div>
+                        <div class="card-tags">
+                             <span class="card-tag">@lobby.Game</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">@lobby.Title</h3>
+                        <p class="card-description">@lobby.Description</p>
+                        
+                        <div class="card-footer-info">
+                            <div class="host-info">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                                <span class="host-name">@hostName</span>
+                            </div>
+                            <div class="player-slots">
+                                @for (int i = 0; i < lobby.MaxPlayers; i++)
+                                {
+                                    <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-action-area">
+                            <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
+                                VIEW STATUS
+                                <span class="material-symbols-outlined">hourglass_empty</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+        
+        <div class="divider-gradient"></div>
+    }
+
+    <!-- Results Count -->
+    <div class="results-header">
+        <div class="results-count-row">
+            <span class="status-dot primary"></span>
+            <h2 class="section-title">Active Transmissions (@Model.Count)</h2>
+        </div>
+        <div class="sort-info">
+            Sort by: <span class="sort-link">Newest</span>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="lobby-grid" id="lobbiesGrid">
+        @foreach (var lobby in Model)
+        {
+            var hostName = hostMap.ContainsKey(lobby.HostId) ? hostMap[lobby.HostId] : "Unknown";
+            <article class="lobby-card">
+                <div class="online-pulse-container">
+                    <span class="online-indicator animate-pulse"></span>
+                </div>
+                <div class="card-image-container">
+                    <img alt="@lobby.Game background" class="card-image" src="@(string.IsNullOrEmpty(lobby.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" : lobby.PictureUrl)" />
+                    <div class="card-overlay"></div>
+                    <div class="card-tags">
+                        <span class="card-tag">@lobby.Game</span>
+                        <span class="card-tag status">@lobby.Status</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">@lobby.Title</h3>
+                    <p class="card-description">@lobby.Description</p>
+                    
+                    <div class="card-footer-info">
+                        <div class="host-info">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" alt="Host" class="host-avatar" />
+                            <span class="host-name">@hostName</span>
+                        </div>
+                        <div class="player-slots">
+                            @for (int i = 0; i < lobby.MaxPlayers; i++)
+                            {
+                                <span class="material-symbols-outlined slot-icon @(i < lobby.CurrentPlayers ? "filled" : "empty")">person</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="card-action-area">
+                        <a asp-action="Details" asp-route-id="@lobby.Id" class="card-btn">
+                            ANALYZE DETAILS
+                            <span class="material-symbols-outlined">monitoring</span>
+                        </a>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        function filterLobbies(category) {
+            // Visual toggle
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Mock filter logic
+            console.log("Filtering by category: " + category);
+        }
+    </script>
+}

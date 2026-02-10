@@ -1,0 +1,243 @@
+@model GamerLFG.Models.User
+@{
+    ViewData["Title"] = "User Profile";
+    var currentUserId = Context.Session.GetString("UserId");
+    var isOwnProfile = Model.Id == currentUserId;
+}
+
+<main class="flex-1 px-4 py-8 md:px-10 lg:px-20 max-w-7xl mx-auto w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Column: Profile Card & Quick Stats -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            <!-- Identity Card -->
+            <div class="bg-card-dark rounded-xl p-6 border border-white/10 flex flex-col items-center text-center">
+                <div class="relative group cursor-pointer" @(isOwnProfile ? "onclick=\"alert('Avatar upload module disabled in trial mode.')\"" : "")>
+                    <div class="size-32 rounded-xl bg-center bg-cover border-2 border-primary/30 group-hover:border-primary transition-all overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@Model.Username" alt="Avatar" class="h-full w-full object-cover" />
+                    </div>
+                    @if (isOwnProfile)
+                    {
+                        <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                            <span class="material-symbols-outlined text-white mb-1">photo_camera</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-white">Update Avatar</span>
+                        </div>
+                    }
+                </div>
+                <div class="mt-4 w-full">
+                    <h2 class="text-2xl font-bold text-white uppercase tracking-tight">@Model.Username</h2>
+                    <p class="text-primary text-xs font-bold uppercase tracking-widest mt-1">Elite Member Status: Active</p>
+                </div>
+            </div>
+
+            <!-- Karma Gauge Widget -->
+            <div class="bg-card-dark rounded-xl p-6 border border-white/10">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-white/50">Karma Score</h3>
+                    <span class="material-symbols-outlined text-primary text-lg">verified_user</span>
+                </div>
+                 <div class="flex flex-col items-center gap-2">
+                    @{
+                        var karmaScore = Model.KarmaScore;
+                        var karmaPercentage = Math.Min(100, Math.Max(0, (karmaScore + 100) / 2)); // Scale -100 to 100 → 0% to 100%
+                        var karmaTier = karmaScore >= 50 ? "Elite" : karmaScore >= 20 ? "Trusted" : karmaScore >= 0 ? "Standard" : karmaScore >= -30 ? "Caution" : "Restricted";
+                        var tierColor = karmaScore >= 50 ? "text-yellow-400" : karmaScore >= 20 ? "text-green-400" : karmaScore >= 0 ? "text-blue-400" : karmaScore >= -30 ? "text-orange-400" : "text-red-400";
+                    }
+                    <div class="text-4xl font-black text-white flex items-baseline gap-1">
+                        @karmaScore.ToString("0")<span class="text-lg text-white/30">pts</span>
+                    </div>
+                    <div class="px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                        <span class="text-xs font-bold uppercase tracking-widest @tierColor">@karmaTier</span>
+                    </div>
+                    <p class="text-xs text-center text-white/60 mt-2">Karma is based on your activity and teammate feedback.</p>
+                    <div class="w-full mt-4 bg-white/5 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full" style="width: @(karmaPercentage)%; box-shadow: 0 0 10px #f2960d;"></div>
+                    </div>
+                    <a href="@Url.Action("KarmaHistory", "User", new { id = Model.Id })" class="mt-3 text-xs text-primary hover:underline flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">history</span>
+                        View Full History
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Karma History -->
+            @{
+                var karmaHistory = ViewData["KarmaHistory"] as List<GamerLFG.Models.KarmaHistory> ?? new List<GamerLFG.Models.KarmaHistory>();
+            }
+            @if (karmaHistory.Any())
+            {
+                <div class="bg-card-dark rounded-xl p-6 border border-white/10">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-white/50 mb-4">Recent Karma Activity</h3>
+                    <div class="flex flex-col gap-2 max-h-48 overflow-y-auto">
+                        @foreach (var entry in karmaHistory.Take(5))
+                        {
+                            var isPositive = entry.Points >= 0;
+                            var pointColor = isPositive ? "text-green-400" : "text-red-400";
+                            var pointSign = isPositive ? "+" : "";
+                            <div class="flex items-center justify-between p-2 bg-white/5 rounded text-xs">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm @(isPositive ? "text-green-400" : "text-red-400")">
+                                        @(isPositive ? "arrow_upward" : "arrow_downward")
+                                    </span>
+                                    <span class="text-white/70">@entry.Description</span>
+                                </div>
+                                <span class="font-bold @pointColor">@pointSign@entry.Points</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Account Status Summary -->
+            <div class="bg-card-dark rounded-xl p-6 border border-white/10">
+                <!-- ... existing content ... -->
+                <h3 class="text-sm font-bold uppercase tracking-wider text-white/50 mb-4">Tactical Stats</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-3 bg-white/5 rounded">
+                        <p class="text-xs text-white/40 uppercase">Lobbies Joined</p>
+                        <p class="text-xl font-bold text-white">47</p>
+                    </div>
+                    <div class="p-3 bg-white/5 rounded">
+                        <p class="text-xs text-white/40 uppercase">Lobbies Hosted</p>
+                        <p class="text-xl font-bold text-primary">12</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Edit Controls -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+            <form id="profileForm" action="@Url.Action("UpdateProfile", "User")" method="post" class="flex flex-col gap-6">
+                @Html.AntiForgeryToken()
+                <!-- About Me / Bio Section -->
+                <div class="bg-card-dark rounded-xl p-8 border border-white/10">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="material-symbols-outlined text-primary">@(isOwnProfile ? "edit_note" : "assignment_ind")</span>
+                        <h2 class="text-xl font-bold uppercase tracking-tight text-white">@(isOwnProfile ? "Edit Profile Hub" : "Agent Dossier")</h2>
+                    </div>
+                    <div class="flex flex-col gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2 ml-1">Identity Codename</label>
+                            <input name="Username" class="w-full bg-black/50 border border-white/10 rounded-lg text-white text-base p-4 focus:border-primary focus:ring-1 focus:ring-primary transition-all uppercase" type="text" value="@Model.Username" @(isOwnProfile ? "" : "readonly") />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2 ml-1">Display Bio</label>
+                            <textarea name="Bio" class="w-full bg-black/50 border border-white/10 rounded-lg text-white placeholder:text-white/20 text-sm p-4 focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none" rows="4" @(isOwnProfile ? "" : "readonly")>@Model.Bio</textarea>
+                        </div>
+                        
+                        <!-- Games Library Section -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2 ml-1">Games Library</label>
+                            @if (isOwnProfile)
+                            {
+                                <textarea name="gamesPlayedInput" class="w-full bg-black/50 border border-white/10 rounded-lg text-white placeholder:text-white/20 text-sm p-4 focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none" rows="2" placeholder="e.g. Valorant, CS:GO, Minecraft">@string.Join(", ", Model.GameLibrary)</textarea>
+                                <p class="text-[10px] text-white/30 mt-1 ml-1">Separate multiple games with commas.</p>
+                            }
+                            else
+                            {
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach(var game in Model.GameLibrary) 
+                                    {
+                                        <span class="px-3 py-1 bg-white/5 border border-white/10 rounded text-xs font-bold text-primary uppercase">@game</span>
+                                    }
+                                    @if(!Model.GameLibrary.Any()) {
+                                        <span class="text-xs text-white/30 italic">No games listed in public record.</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-white/50 mb-4 ml-1">Primary Gaming Roles</label>
+                            <div class="flex flex-wrap gap-2 @(isOwnProfile ? "" : "pointer-events-none opacity-80")">
+                                <button type="button" class="role-btn active flex items-center justify-center gap-2 px-4 py-2 rounded border border-primary bg-primary/10 text-primary font-bold text-sm transition-all">
+                                    <span class="material-symbols-outlined text-lg">shield</span> TANK
+                                </button>
+                                <button type="button" class="role-btn flex items-center justify-center gap-2 px-4 py-2 rounded border border-white/10 bg-white/5 text-white/50 hover:border-white/20 transition-all font-bold text-sm">
+                                    <span class="material-symbols-outlined text-lg">swords</span> DPS
+                                </button>
+                                <button type="button" class="role-btn flex items-center justify-center gap-2 px-4 py-2 rounded border border-white/10 bg-white/5 text-white/50 hover:border-white/20 transition-all font-bold text-sm">
+                                    <span class="material-symbols-outlined text-lg">medical_services</span> SUPPORT
+                                </button>
+                                <button type="button" class="role-btn active flex items-center justify-center gap-2 px-4 py-2 rounded border border-primary bg-primary/10 text-primary font-bold text-sm transition-all">
+                                    <span class="material-symbols-outlined text-lg">military_tech</span> LEADER
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Linked Terminals -->
+                <div class="bg-card-dark rounded-xl p-8 border border-white/10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">link</span>
+                            <h2 class="text-xl font-bold uppercase tracking-tight text-white">Linked Terminals</h2>
+                        </div>
+                        <span class="text-[10px] text-white/30 font-bold uppercase tracking-widest">Protocol: Active</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2 ml-1">Discord Tag/ID</label>
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-indigo-400 text-sm">chat_bubble</span>
+                                <input name="DiscordUserId" class="w-full bg-black/50 border border-white/10 rounded-lg text-white text-xs p-3 pl-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all" type="text" value="@Model.DiscordUserId" placeholder="username#1234" @(isOwnProfile ? "" : "readonly") />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2 ml-1">Steam Profile ID</label>
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-blue-400 text-sm">sports_esports</span>
+                                <input name="SteamId" class="w-full bg-black/50 border border-white/10 rounded-lg text-white text-xs p-3 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" type="text" value="@Model.SteamId" placeholder="SteamID64" @(isOwnProfile ? "" : "readonly") />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2 ml-1">Twitch Channel</label>
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-purple-400 text-sm">live_tv</span>
+                                <input name="TwitchChannel" class="w-full bg-black/50 border border-white/10 rounded-lg text-white text-xs p-3 pl-10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all" type="text" value="@Model.TwitchChannel" placeholder="channel_name" @(isOwnProfile ? "" : "readonly") />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Toolbar -->
+                @if (isOwnProfile)
+                {
+                    <div class="flex items-center justify-end gap-4 pt-4">
+                        <button type="button" onclick="document.getElementById('profileForm').reset()" class="px-6 py-3 rounded border border-white/10 text-white/40 font-bold text-xs uppercase hover:bg-white/5 transition-all tracking-widest">
+                            Revert Changes
+                        </button>
+                        <button type="submit" class="px-8 py-3 rounded bg-primary text-black font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:brightness-110 transition-all shadow-[0_0_20px_rgba(242,150,13,0.3)]">
+                            <span class="material-symbols-outlined text-sm">save</span>
+                            Save Protocol
+                        </button>
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+                if (btn.classList.contains('active')) {
+                    btn.classList.remove('border-white/10', 'bg-white/5', 'text-white/50');
+                    btn.classList.add('border-primary', 'bg-primary/10', 'text-primary');
+                } else {
+                    btn.classList.add('border-white/10', 'bg-white/5', 'text-white/50');
+                    btn.classList.remove('border-primary', 'bg-primary/10', 'text-primary');
+                }
+            });
+        });
+
+        /*
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Profile encryption updated successfully!');
+        });
+        */
+    </script>
+}

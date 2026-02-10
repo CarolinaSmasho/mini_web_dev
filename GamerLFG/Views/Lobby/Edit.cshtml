@@ -1,0 +1,276 @@
+@model GamerLFG.Models.Lobby
+@{
+    ViewData["Title"] = "Configure Mission";
+}
+
+<main class="flex-1 max-w-[1400px] mx-auto w-full px-6 py-8">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" id="editForm">
+        @Html.AntiForgeryToken()
+        
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Main Column: Hero and Detailed Config -->
+            <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+                
+                <!-- Hero Section (Preview & Title Edit) -->
+                <div class="relative w-full min-h-[400px] rounded-lg overflow-hidden group border border-white/10 shadow-2xl">
+                    <div id="heroPreview" class="absolute inset-0 bg-cover bg-center transition-transform duration-700" 
+                         style='background-image: url("@(string.IsNullOrEmpty(Model.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80" : Model.PictureUrl)");'></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                    
+                    <div class="absolute top-4 right-4 z-20">
+                        <button type="button" onclick="setRandomImage()" class="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded text-[10px] font-black text-white uppercase tracking-widest hover:bg-primary hover:text-black transition-all">
+                            Randomize Visuals
+                        </button>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 p-8 w-full z-10">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider">Configure Transmission</span>
+                            <div class="relative">
+                                <select id="game" name="Game" required
+                                        class="bg-black/60 border border-white/20 backdrop-blur-md rounded px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wider outline-none appearance-none cursor-pointer pr-8 focus:border-primary transition-all">
+                                    <option value="Valorant" selected="@(Model.Game == "Valorant")">VALORANT</option>
+                                    <option value="Elden Ring" selected="@(Model.Game == "Elden Ring")">ELDEN RING</option>
+                                    <option value="Apex Legends" selected="@(Model.Game == "Apex Legends")">APEX LEGENDS</option>
+                                    <option value="Minecraft" selected="@(Model.Game == "Minecraft")">MINECRAFT</option>
+                                    <option value="Other" selected="@(Model.Game == "Other")">OTHER PROTOCOL</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-white/50 text-xs pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2 max-w-2xl">
+                            <input type="text" id="title" name="Title" value="@Model.Title" required 
+                                   class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic bg-transparent border-b border-white/20 focus:border-primary outline-none py-2 transition-all"
+                                   placeholder="Mission Designation..." />
+                            
+                            <textarea id="description" name="Description" rows="3" 
+                                      class="text-white/60 mt-4 text-base bg-transparent border border-white/10 rounded p-3 focus:border-primary outline-none transition-all resize-none font-medium h-auto"
+                                      placeholder="Brief your recruits on mission objectives...">@Model.Description</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personnel Requirements Section -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-xl font-black uppercase text-white tracking-tight italic">Personnel Requirements</h2>
+                            <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest mt-1">Assign specific roles for the squad</p>
+                        </div>
+                        <button type="button" onclick="addRole()" class="px-4 py-2 bg-primary/10 border border-primary/30 rounded text-[10px] font-black text-primary uppercase tracking-widest hover:bg-primary hover:text-black transition-all flex items-center gap-2">
+                             <span class="material-symbols-outlined text-sm">add</span> Add Role
+                        </button>
+                    </div>
+
+                    <div id="rolesContainer" class="flex flex-col gap-4">
+                        @if (Model.Roles != null && Model.Roles.Any())
+                        {
+                            @foreach (var role in Model.Roles)
+                            {
+                                <div class="grid grid-cols-12 gap-4 items-end bg-black/40 p-4 rounded border border-white/5">
+                                    <div class="col-span-8 flex flex-col gap-1.5">
+                                        <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Role Designation</label>
+                                        <input type="text" name="roleNames[]" value="@role.Name" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" placeholder="e.g., IGL, ENTRY, TANK" />
+                                    </div>
+                                    <div class="col-span-3 flex flex-col gap-1.5">
+                                        <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Count</label>
+                                        <input type="number" name="roleCounts[]" value="@role.Count" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
+                                    </div>
+                                    <div class="col-span-1">
+                                        <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded transition-all">
+                                            <span class="material-symbols-outlined text-lg font-bold">close</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- Tactical Tags Section -->
+                <div class="bg-card-dark border border-white/10 rounded-lg p-8">
+                    <h2 class="text-xl font-black uppercase text-white tracking-tight italic mb-6">Tactical Protocol Tags</h2>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach (var mood in new[] { "TRYHARD", "CHILL", "COMPETITIVE", "CASUAL", "MIC REQ", "18+", "NO TOXIC" })
+                        {
+                            <label class="relative cursor-pointer group">
+                                <input type="checkbox" name="moods" value="@mood" class="peer sr-only" @(Model.Moods.Contains(mood) ? "checked" : "") />
+                                <span class="px-6 py-3 bg-white/5 border border-white/10 rounded text-[11px] font-black text-white/40 uppercase tracking-widest transition-all group-hover:bg-white/10 peer-checked:bg-primary peer-checked:border-primary peer-checked:text-black peer-checked:shadow-[0_0_20px_rgba(242,150,13,0.3)]">
+                                    @mood
+                                </span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <!-- Visuals & Comms -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-card-dark border border-white/10 rounded-lg p-6 flex flex-col gap-4">
+                        <h3 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-lg">image</span> Tactical Visuals
+                        </h3>
+                        <input type="text" id="pictureUrl" name="PictureUrl" value="@Model.PictureUrl"
+                               class="w-full bg-black/60 border border-white/10 rounded px-4 py-3 text-xs text-white placeholder:text-white/20 focus:border-primary outline-none transition-all"
+                               onchange="updateHeroPreview(this.value)"
+                               placeholder="Direct Image URL (Unsplash recommended)" />
+                        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                            @foreach (var img in new[] { 
+                                "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
+                                "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
+                                "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80",
+                                "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80"
+                            })
+                            {
+                                <img src="@img" onclick="updateHeroPreview('@img')" class="h-10 w-16 object-cover rounded cursor-pointer border-2 border-transparent hover:border-primary transition-all shrink-0" />
+                            }
+                        </div>
+                    </div>
+
+                    <div class="bg-card-dark border border-indigo-500/20 rounded-lg p-6 flex flex-col gap-4">
+                        <h3 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-400 text-lg">chat</span> Discord link
+                        </h3>
+                        <div class="relative">
+                            <input type="text" id="discordLink" name="DiscordLink" value="@Model.DiscordLink"
+                                   class="w-full bg-black/60 border border-white/10 rounded px-4 py-3 text-xs text-white placeholder:text-white/20 focus:border-indigo-500 outline-none transition-all"
+                                   placeholder="https://discord.gg/invite-code" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-indigo-400 text-sm opacity-50">lock</span>
+                        </div>
+                        <p class="text-[9px] text-white/30 font-bold uppercase">Restricted to recruited members only</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Column: Mission Parameters -->
+            <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <!-- Deployment Stats -->
+                <div class="bg-card-dark border border-white/10 rounded-lg overflow-hidden">
+                    <div class="p-6 border-b border-white/10 bg-white/[0.02]">
+                        <h2 class="text-lg font-black text-white uppercase italic tracking-tight mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">settings</span> Parameters
+                        </h2>
+                        
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="maxPlayers">Squad Size Capacity</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="maxPlayersRange" min="2" max="24" value="@Model.MaxPlayers" oninput="document.getElementById('maxPlayers').value = this.value"
+                                           class="flex-1 accent-primary bg-white/5 h-2 rounded-lg appearance-none cursor-pointer" />
+                                    <input type="number" id="maxPlayers" name="MaxPlayers" value="@Model.MaxPlayers" readonly
+                                           class="w-12 bg-black/60 border border-primary/20 rounded text-center py-2 text-sm font-black text-primary outline-none" />
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-white/10 w-full"></div>
+
+                            <div class="flex flex-col gap-4">
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="recruitmentDeadline">Recruitment Deadline</label>
+                                    <input type="datetime-local" id="recruitmentDeadline" name="RecruitmentDeadline" value="@Model.RecruitmentDeadline?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                </div>
+
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionStartTime">Session Starts</label>
+                                    <input type="datetime-local" id="sessionStartTime" name="SessionStartTime" value="@Model.SessionStartTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                </div>
+
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionEndTime">Expected End</label>
+                                    <input type="datetime-local" id="sessionEndTime" name="SessionEndTime" value="@Model.SessionEndTime?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")"
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-black/40 flex flex-col gap-4">
+                        <button type="submit" class="w-full h-14 bg-primary hover:bg-primary-hover text-black text-sm font-black uppercase tracking-[0.2em] rounded shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                            <span class="material-symbols-outlined font-bold">upload</span>
+                            UPDATE TRANSMISSION
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/40 hover:text-white rounded text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
+                             <span class="material-symbols-outlined text-sm">close</span> ABORT CHANGES
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="bg-red-500/5 border border-red-500/20 rounded-lg p-6">
+                    <h3 class="text-xs font-black text-red-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">warning</span> Danger Zone
+                    </h3>
+                    <button type="button" onclick="deleteLobby()" class="w-full py-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded text-[10px] font-black uppercase tracking-widest transition-all">
+                        Terminate Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</main>
+
+<form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script>
+        function updateHeroPreview(url) {
+            if(!url) return;
+            document.getElementById('heroPreview').style.backgroundImage = `url("${url}")`;
+            document.getElementById('pictureUrl').value = url;
+        }
+
+        function setRandomImage() {
+            const images = [
+                "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1560253023-3ee5d6446bd4?auto=format&fit=crop&w=1200&q=1200&q=80"
+            ];
+            const random = images[Math.floor(Math.random() * images.length)];
+            updateHeroPreview(random);
+        }
+
+        function addRole() {
+            const container = document.getElementById('rolesContainer');
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-12 gap-4 items-end bg-black/40 p-4 rounded border border-white/5 animate-fade-in';
+            div.innerHTML = `
+                <div class="col-span-8 flex flex-col gap-1.5">
+                    <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Role Designation</label>
+                    <input type="text" name="roleNames[]" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" placeholder="e.g., IGL, ENTRY, TANK" />
+                </div>
+                <div class="col-span-3 flex flex-col gap-1.5">
+                    <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Count</label>
+                    <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
+                </div>
+                <div class="col-span-1">
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded transition-all">
+                        <span class="material-symbols-outlined text-lg font-bold">close</span>
+                    </button>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function deleteLobby() {
+            if(confirm('TERMINATE TRANSMISSION? This will permanently delete the lobby and all recruitment data.')) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+    <style>
+        @@keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out forwards;
+        }
+    </style>
+}
