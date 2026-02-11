@@ -1,16 +1,8 @@
 h1{
-    background-color: #ffa431;
     width: max-content;
-    border-radius: 10px;
     padding: 3px;
 }
-button{
-    background-color: #ffa431;
-    width: max-content;
-    border-radius: 10px;
-    padding: 3px;
-    
-}
+
 nav{
     background-color: #808080;
     height: 4rem;
@@ -36,6 +28,81 @@ body {
     margin-bottom: 0.5rem;
 }
 
-.header{
-    padding-left: 8px;
+
+.black-button{
+    background-color: #292929;
+    color: #ffffff;
+    height: max-content;
+    width: max-content;
+
+}
+.orange-button{
+    background-color: #ffa431;
+    width: max-content;
+    padding: 3px;
+    color: black;
+    height: max-content;
+}
+
+.nav-bar{
+    position: sticky;
+    top: 0;
+    border: solid gray 0.1px;
+    display: flex;
+    align-items: center;
+    display:fle x;
+    padding-left:1rem;
+    padding-right:1rem;
+    justify-content: space-between;
+}
+
+.mobile-menu{
+    display: block;
+
+}
+
+.hamburger-icon{
+  display: none;
+}
+
+.landscape-menu{
+    display: flex;
+}
+.nav-mobile-hidden{
+    display: none;
+}
+.nav-mobile-active{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: max-content;
+    font-size: large;
+    padding: 2rem;
+    top: 100%;
+    right: 0;
+    left: 0;
+    width: auto;
+    gap: 20px;
+    
+}
+.nav-mobile-active .orange-button{
+    height:3rem;
+    width: auto;
+    font-size: larger;
+
+    }
+.hamburger-icon-hidden{
+        display: none;
+    }
+/* portrait */
+@media screen and (max-width:768px){
+  .landscape-menu{
+    display: none;
+  }
+  .hamburger-icon{
+    display: block;
+    font-size: 2rem;
+    color: white;
+    
+  }
 }
