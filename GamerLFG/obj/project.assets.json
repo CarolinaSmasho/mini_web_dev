@@ -8,19 +8,19 @@
     "net10.0": []
   },
   "packageFolders": {
-    "/Users/notatord/.nuget/packages/": {}
+    "C:\\Users\\kantk\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/GamerLFG.csproj",
+      "projectUniqueName": "C:\\Users\\kantk\\mini_web_dev\\GamerLFG\\GamerLFG.csproj",
       "projectName": "GamerLFG",
-      "projectPath": "/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/GamerLFG.csproj",
-      "packagesPath": "/Users/notatord/.nuget/packages/",
-      "outputPath": "/Users/notatord/Documents/Coding/College/Web dev/mini_webdev/GamerLFG/obj/",
+      "projectPath": "C:\\Users\\kantk\\mini_web_dev\\GamerLFG\\GamerLFG.csproj",
+      "packagesPath": "C:\\Users\\kantk\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kantk\\mini_web_dev\\GamerLFG\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/notatord/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\kantk\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -68,7 +68,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
