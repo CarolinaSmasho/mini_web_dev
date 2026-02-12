@@ -50,6 +50,8 @@ E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\
 E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.pdb
 E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.genruntimeconfig.cache
 E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\ref\GamerLFG.dll
-E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\xcxvclm3lp-{0}-vumzqm7mwx-vumzqm7mwx.gz
-E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vzkbr1puxt-{0}-1f5qhtednq-1f5qhtednq.gz
-E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\unp4cbn1ri-{0}-1f5qhtednq-1f5qhtednq.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vzkbr1puxt-{0}-75sbsu9oix-75sbsu9oix.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\unp4cbn1ri-{0}-75sbsu9oix-75sbsu9oix.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\02kqk02mr7-{0}-nw7t5qnjoc-nw7t5qnjoc.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\xcxvclm3lp-{0}-csopc6z34n-csopc6z34n.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\c254thg1lc-{0}-x2ddhy68xx-x2ddhy68xx.gz

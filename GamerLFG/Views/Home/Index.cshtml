@@ -1,6 +1,57 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@using GamerLFG.Models
+@{
+    
+    Lobby l1 = new Lobby()
+    {   gname="EldenRing",
+        lname = "I am Malenia.Blade of Miquella",
+        details="what da fuck is this chit boss. i stick in this fight for 45 days so pls whoever help me to kill this fucking bitch. thx",
+        gamount=5,
+        mood="GAY?"
+    };
 
+}
+
+
+<link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
 <div class="text-center">
+        <main>
+        <div class="mobile-search" id="mobile-search">
+                <form action="" class="search-form">
+                    <input type="text" placeholder="Search.." name="search" class="search-space">
+                    <button type="submit"><i class="fa fa-search fa-3x"></i></button>
+                </form>
+                <h5 style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">My Lobbies</h5>
+        </div>  
+            <div class="lobbies">
+                <div class="lobby">
+
+                    <div class="fname">
+                        <h5 class="gname">@l1.gname</h5>
+                        <h3 class="lname">@l1.lname</h3>
+                        <p class='details'>@l1.details</p>
+                    </div>
+
+                    <div class="tag-game">
+                        <p class="tag-ele">@l1.mood</p>
+                    </div>
+
+                    <div class='require-de'>
+                        <p>🙅🏾‍♂️: Looking for:</p>
+                        <p style="padding-left:10px;">🕒: hrs</p>
+                    </div>
+
+                    <div class='lobby-status'>
+                        <p>🙅🏾‍♂️: now/@l1.gamount</p>
+                        <time datetime="time" style="height: fit-content;padding-left:10px;">🗓️: time</time>
+                        <button class="btn-lobby">➡️</button>
+                    </div>
+
+                </div>                 
+            </div>
+
+        </main>
+        
 </div>
