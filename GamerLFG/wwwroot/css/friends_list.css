@@ -1,0 +1,120 @@
+body{
+    background-color: black;
+}
+h1{
+    width: fit-content;
+    color: #ffa31a;
+    background-color: #292929;
+    border-radius: 30px;
+    padding: 20px;
+}
+
+.friends-filter{
+    padding: 20px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+    width: fit-content;
+    background-color: #292929;
+}
+
+
+.friends-filter-searchbar-input{
+    background-color: #808080;
+    border-radius: 10px;
+}
+.friends-filter-searchbar-input::placeholder {
+    color: #ffa31a;
+}
+
+.friend-cards {
+    display: flex;
+    flex-wrap: wrap; 
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 10px;
+}
+
+.friend-card {
+    border: 2px solid black;
+    background-color: #808080;
+}
+    
+.rbx-tab{
+    min-width: 25%;
+}
+.nav-tabs{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+
+.friend-card-fullbody {
+    width: 96px;
+    height: 96px;
+    margin: 12px
+}
+
+.friend-card-fullbody img {
+    width: 100%;           /* ขยายรูปให้เต็มกล่องแม่ (96px) */
+    height: 100%;          /* ขยายความสูงให้เต็ม */
+    border-radius: 50%;    /* คำสั่งสำคัญ: ตัดขอบให้เป็นวงกลม */
+    object-fit: cover;     /* ป้องกันรูปเบี้ยว (จะ crop ส่วนเกินออกให้อัตโนมัติ) */
+    
+
+}
+
+.friend-card-content {
+    display: flex;          
+    align-items: center;     
+    padding: 10px;          
+}
+
+.friend-card-caption {
+    flex: 1;                 
+    padding-left: 10px;      
+    min-width: 0;            /* สั่งให้กล่องนี้ยอมหดตัวได้ แม้ข้อความข้างในจะยาวกว่าก็ตาม */
+}
+.text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+}
+
+/* --- 2. ตั้งค่าพื้นฐาน (Landscape / Desktop) - 3 อันต่อแถว --- */
+.friend-cards .friend-card {
+    width: calc(33.33% - 10px); /* 3 อันต่อแถว (หัก gap) */
+}
+
+/* --- 3. หน้าจอปานกลาง (Tablet) - 2 อันต่อแถว --- */
+@media (max-width: 991px) and (min-width: 543px) {
+    .friend-cards .friend-card {
+        width: calc(50% - 10px); /* 2 อันต่อแถว */
+    }
+}
+
+/* --- 4. หน้าจอเล็ก (Mobile / Portrait) - 1 อันต่อแถว --- */
+@media (max-width: 543px) {
+    .friend-cards .friend-card {
+        width: 100%; /* 1 อันต่อแถว */
+    }
+}
+
+
+
+
+
+
+
+/* --- เฉพาะ Portrait (แนวตั้ง) ---
+@media (orientation: portrait) {
+    /* ในแนวตั้ง ถ้าจอแคบมากจริงๆ อาจบังคับให้เหลือแถวละ 1 เพื่อความสวยงาม */
+    /* @media (max-width: 480px) {
+        .friend-card {
+            flex: 1 1 100%;
+        }
+    } */
+/* } */
