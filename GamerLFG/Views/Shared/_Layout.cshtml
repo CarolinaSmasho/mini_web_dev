@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/GamerLFG.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
     <script src="~/js/nav-control.js" asp-append-version="true" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -22,9 +23,12 @@
             </div>
             
             <div class="landscape-menu">
-                <form action="">
-                <input type="text" placeholder="Search.." name="search">
-                </form>
+                <div class="search-bar">
+                    <form action="" class="search-form">
+                    <input type="text" placeholder="Search.." name="search" class="search-space">
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                    </form>
+                </div>
                 <button class="black-button" style='margin-left: 2rem;'>Log In</button>
                 <button onclick="" style="margin-left: 2rem;" class="orange-button">Create Lobby</button>
             </div>

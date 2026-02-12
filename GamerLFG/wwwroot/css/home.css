@@ -34,6 +34,10 @@ body {
     color: #ffffff;
     height: max-content;
     width: max-content;
+    font-size: x-large;
+    padding: 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 
 }
 .orange-button{
@@ -42,15 +46,24 @@ body {
     padding: 3px;
     color: black;
     height: max-content;
+    font-size: x-large;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
+.orange-button:hover{
+    scale: 1.2;
+}
+.black-button:hover{
+    scale: 1.2;
+}
 .nav-bar{
     position: sticky;
     top: 0;
     border: solid gray 0.1px;
     display: flex;
     align-items: center;
-    display:fle x;
+    display:flex;
     padding-left:1rem;
     padding-right:1rem;
     justify-content: space-between;
@@ -67,10 +80,14 @@ body {
 
 .landscape-menu{
     display: flex;
+    min-width:70% ;
+    gap: 15px;
 }
+
 .nav-mobile-hidden{
     display: none;
 }
+
 .nav-mobile-active{
     display: flex;
     flex-direction: column;
@@ -105,4 +122,21 @@ body {
     color: white;
     
   }
+}
+
+.search-bar{
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.search-space{
+    border-radius: 2rem;
+    
+}
+
+.search-form button{
+    background-color: #ffa431;
+    border-radius: 2rem;
+    cursor: pointer;
 }
