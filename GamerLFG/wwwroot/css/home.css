@@ -1,3 +1,12 @@
+.header{
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+}
+.container{
+    z-index: 8;
+    position: relative;
+}
 h1{
     width: max-content;
     padding: 3px;
@@ -82,6 +91,7 @@ body {
     display: flex;
     min-width:70% ;
     gap: 15px;
+    align-items: center;
 }
 
 .nav-mobile-hidden{
@@ -100,6 +110,8 @@ body {
     left: 0;
     width: auto;
     gap: 20px;
+    background-color: #ffffff;
+
     
 }
 .nav-mobile-active .orange-button{
@@ -120,23 +132,53 @@ body {
     display: block;
     font-size: 2rem;
     color: white;
-    
   }
 }
 
-.search-bar{
+
+.search-form{
 display: flex;
 justify-content: center;
 align-items: center;
+position: relative;
+gap: 1rem;
 }
-
 .search-space{
-    border-radius: 2rem;
-    
+    border-radius: 1rem;
 }
 
 .search-form button{
     background-color: #ffa431;
-    border-radius: 2rem;
+    border-radius: 1rem;
     cursor: pointer;
+}
+
+.mobile-search{
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+.mobile-search-hidden{
+    display: none;
+}
+input[type="text"] {
+    padding: 15px 25px; /* บน-ล่าง 15px, ซ้าย-ขวา 25px */
+    font-size: 18px;    /* เพิ่มขนาดตัวอักษรข้างในให้สมดุลกัน */
+}
+
+@media screen and (min-width:768px) {
+     .mobile-search{
+        display: none;
+    }
+    .nav-bar{
+    position: sticky;
+    top: 0;
+    border: solid gray 0.1px;
+    display: flex;
+    align-items: center;
+    display:flex;
+    padding-left:1rem;
+    padding-right:1rem;
+    gap: 2rem;
+}
 }

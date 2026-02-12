@@ -17,23 +17,22 @@
 
     <header class="header">
         <div class="nav-bar">
+
             <div style="display: flex;">
                 <h1 style="color: #ffffff;">Gamer</h1>
                 <h1 style="padding-left: 0%;background-color:#ffa431">Hub</h1>
             </div>
             
             <div class="landscape-menu">
-                <div class="search-bar">
                     <form action="" class="search-form">
                     <input type="text" placeholder="Search.." name="search" class="search-space">
-                    <button type="submit"><i class="fa fa-search"></i></button>
+                    <button type="submit"><i class="fa fa-search fa-3x"></i></button>
                     </form>
-                </div>
                 <button class="black-button" style='margin-left: 2rem;'>Log In</button>
                 <button onclick="" style="margin-left: 2rem;" class="orange-button">Create Lobby</button>
             </div>
 
-             <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>
+            <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>
                 <span>&#9776;</span>
             </div>
 
@@ -42,9 +41,10 @@
                 <button class="orange-button">Create Lobby</button>
             </div>
             
-        </div>
-    </header>
+        </div> 
 
+    </header>
+   
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
