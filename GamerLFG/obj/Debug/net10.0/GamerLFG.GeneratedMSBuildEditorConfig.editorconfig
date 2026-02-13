@@ -22,14 +22,6 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Auth/Login.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxMb2dpbi5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Auth/Register.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxSZWdpc3Rlci5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -38,52 +30,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Lobby/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcQ3JlYXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Lobby/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcRGV0YWlscy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Lobby/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcRWRpdC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Lobby/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9iYnlcSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Shared/_KarmaModal.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9LYXJtYU1vZGFsLmNzaHRtbA==
+[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Shared/_Navbar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9OYXZiYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/User/FriendProfile.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxGcmllbmRQcm9maWxlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/User/Friends.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxGcmllbmRzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/User/KarmaHistory.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxLYXJtYUhpc3RvcnkuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/User/Profile.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxQcm9maWxlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/User/Settings.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxTZXR0aW5ncy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/2nd_Year/WebAppDev/WebAppMiniProject/mini_web_dev/GamerLFG/Views/_ViewImports.cshtml]

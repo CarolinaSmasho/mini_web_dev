@@ -7,6 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v10.0": {
       "GamerLFG/1.0.0": {
+<<<<<<< HEAD
         "dependencies": {
           "MongoDB.Driver": "3.6.0",
           "Swashbuckle.AspNetCore": "10.1.2"
@@ -114,6 +115,11 @@
             "fileVersion": "0.7.3.0"
           }
         }
+=======
+        "runtime": {
+          "GamerLFG.dll": {}
+        }
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
       }
     }
   },
@@ -122,6 +128,7 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+<<<<<<< HEAD
     },
     "DnsClient/1.6.1": {
       "type": "package",
@@ -199,6 +206,8 @@
       "sha512": "sha512-U9Ix4l4cl58Kzz1rJzj5hoVTjmbx1qGMwzAcbv1j/d3NzrFaESIurQyg+ow4mivCgkE3S413y+U9k4WdnEIkRA==",
       "path": "zstdsharp.port/0.7.3",
       "hashPath": "zstdsharp.port.0.7.3.nupkg.sha512"
+=======
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
     }
   }
 }
