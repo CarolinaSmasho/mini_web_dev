@@ -61,12 +61,8 @@ body {
     transition: all 0.3s ease;
 }
 
-.orange-button:hover{
-    scale: 1.2;
-}
-.black-button:hover{
-    scale: 1.2;
-}
+
+
 .nav-bar{
     position: sticky;
     top: 0;
@@ -135,8 +131,20 @@ body {
     color: white;
   }
 }
-
-
+@media (hover: hover) {
+.orange-button:hover{
+    scale: 1.2;
+}
+.black-button:hover{
+    scale: 1.2;
+}
+}
+@media (min-width:768) and (hover:hover){
+    .landscape-menu{
+        justify-content:flex-start;
+        gap: 2rem;
+    }
+}
 .search-form{
 display: flex;
 justify-content: center;
