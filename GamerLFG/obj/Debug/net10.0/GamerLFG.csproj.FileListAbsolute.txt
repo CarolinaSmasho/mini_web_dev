@@ -53,5 +53,5 @@ E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\
 E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vzkbr1puxt-{0}-75sbsu9oix-75sbsu9oix.gz
 E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\unp4cbn1ri-{0}-75sbsu9oix-75sbsu9oix.gz
 E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\02kqk02mr7-{0}-nw7t5qnjoc-nw7t5qnjoc.gz
-E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\xcxvclm3lp-{0}-csopc6z34n-csopc6z34n.gz
 E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\c254thg1lc-{0}-rjhhhgcuf9-rjhhhgcuf9.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\xcxvclm3lp-{0}-xfslzqsigv-xfslzqsigv.gz
