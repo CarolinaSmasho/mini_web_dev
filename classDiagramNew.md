@@ -27,6 +27,7 @@ classDiagram
         +string lobbyId
         +string title
         +string game
+        +string host_id
         +User[] id_pending
         +User[] id_confirm
         +string description

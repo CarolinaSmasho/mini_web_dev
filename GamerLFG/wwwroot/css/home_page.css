@@ -16,8 +16,8 @@ p{
 .lobby{
     background-color: aliceblue;
     width: max-content;
-    max-width: 300px;
-    padding: 0.5rem;
+    width: 300px;
+    padding: 1rem;
     color: aliceblue;
     background-color: #1b1b1b;
 }
@@ -45,10 +45,13 @@ main .mobile-search{
 }
 
 .gname{
-    color:antiquewhite;
+    color:white;
     margin:2px;
     max-width: fit-content;
     padding: 7px;
+    background-color: #000000;
+    margin:10px;
+    border-radius: 20px;
 }
 
 .lname{
@@ -61,6 +64,10 @@ main .mobile-search{
    
     margin: 9px;
 }
+.tag-game{
+display: flex;
+}
+
 .tag-ele{
     color: #ff31c8;
     margin:10px;
@@ -85,4 +92,50 @@ main .mobile-search{
     border-radius: 2rem;
     height: fit-content;
     width: fit-content;
+}
+
+.host-bar div{
+    display: flex;
+    gap:20px
+}
+
+.host-bar{
+    display: flex;
+    justify-content: space-between;
+}
+
+.slots{
+    display: flex;  
+    justify-content: space-between;
+}
+.game-pic {
+    width: 100%;       /* กำหนดให้ container กว้างเท่ากับ Card */
+    overflow: hidden;  /* กันส่วนเกินหลุดออกมา (เผื่อไว้) */
+    border-top-left-radius: 8px;  /* ถ้าอยากให้มุมบนมนตามการ์ด */
+    border-top-right-radius: 8px;
+    height: 200px;
+    object-fit: cover;
+
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.orange-button{
+    background-color: #ffa431;
+    width: max-content;
+    padding: 3px;
+    color: black;
+    height: max-content;
+    font-size: x-large;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+main .orange-button{
+    width: 100%;
+    border-radius: 10px;
+    font-size: medium;
+    padding: 10px;
+    font-weight: bolder;
 }

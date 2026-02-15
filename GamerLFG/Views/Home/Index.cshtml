@@ -5,13 +5,17 @@
 @{
     
     Lobby l1 = new Lobby()
-    {   gname="EldenRing",
-        lname = "I am Malenia.Blade of Miquella",
-        details="what da fuck is this chit boss. i stick in this fight for 45 days so pls whoever help me to kill this fucking bitch. thx",
-        gamount=5,
-        mood="GAY?"
+    {   game="EldenRing",
+        title = "I am Malenia.Blade of Miquella",
+        description="what da fuck is this chit boss. i stick in this fight for 45 days so pls whoever help me to kill this fucking bitch. thx",
+        maxPlayers=5,
+        currentPlayers=2,
+        moods= new string[] {"GAY?","Chils"},
+        scheduleTime = DateTime.Now,
+        hostId = "Dewwy"
+        
     };
-
+    string gamePic = "https://press-start.com.au/wp-content/uploads/2022/02/elden-ring-story-trailer_ccexpress-1314x739.jpeg";
 }
 
 
@@ -27,27 +31,38 @@
         </div>  
             <div class="lobbies">
                 <div class="lobby">
-
-                    <div class="fname">
-                        <h5 class="gname">@l1.gname</h5>
-                        <h3 class="lname">@l1.lname</h3>
-                        <p class='details'>@l1.details</p>
+                    <div class="game-pic" style="background-image: url('@gamePic');">
+                        <div class="gname">
+                            <p>@l1.game</p>
+                        </div>
+                        
                     </div>
-
-                    <div class="tag-game">
-                        <p class="tag-ele">@l1.mood</p>
+                    <div class="host-bar">
+                        <div>
+                            <i class="fa fa-user-o"></i>
+                            <p>Host: @l1.hostId</p>
+                        </div>
+                        <i class="fa fa-circle"></i>
                     </div>
-
-                    <div class='require-de'>
-                        <p>🙅🏾‍♂️: Looking for:</p>
-                        <p style="padding-left:10px;">🕒: hrs</p>
+                    <h3>@l1.title</h3>
+                    <div class="slots">
+                        <div class="icon">
+                            @if(l1.maxPlayers <=10){
+                                @for(int i=0;i< l1.maxPlayers;i++){
+                                    <i class="fa fa-user-o"></i>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <p>@l1.currentPlayers/@l1.maxPlayers SLOTS</p>
+                        </div>
                     </div>
-
-                    <div class='lobby-status'>
-                        <p>🙅🏾‍♂️: now/@l1.gamount</p>
-                        <time datetime="time" style="height: fit-content;padding-left:10px;">🗓️: time</time>
-                        <button class="btn-lobby">➡️</button>
+                   <div class="tag-game">
+                            @foreach (var mood in l1.moods){
+                              <p class="tag-ele">@mood</p>  
+                            }
                     </div>
+                    <button class="orange-button">JOIN LOBBY</button>
 
                 </div>                 
             </div>

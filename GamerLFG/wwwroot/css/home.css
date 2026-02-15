@@ -133,10 +133,10 @@ body {
 }
 @media (hover: hover) {
 .orange-button:hover{
-    scale: 1.2;
+    scale: 1.05;
 }
 .black-button:hover{
-    scale: 1.2;
+    scale: 1.05;
 }
 }
 @media (min-width:768) and (hover:hover){
