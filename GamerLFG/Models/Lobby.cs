@@ -16,5 +16,7 @@ namespace GamerLFG.Models
         public bool isRecruiting {get;set;}
         public DateTime scheduleTime {get;set;}
         public DateTime createdAt {get;set;}
+
+        public string gamePic {get;set;}
     }
 }  
