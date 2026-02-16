@@ -15,7 +15,6 @@ body {
 }
 
 .main-content {
-    flex: 1;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -90,7 +89,7 @@ h1 {
 }
 
 .text-green { 
-    color: #31fa7a; 
+    color: #31fa7a;
 }
 .text-red { 
     color: #ff3636; 
@@ -126,12 +125,10 @@ h1 {
         gap: 10px; }
 
     .item-right { 
-        text-align: left; 
         width: 100%; 
         border-top: 1px solid #333; 
         padding-top: 10px; 
         display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
+        justify-content: right; 
     }
 }
