@@ -1,0 +1,136 @@
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\appsettings.Development.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\appsettings.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\GamerLFG.staticwebassets.runtime.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\GamerLFG.staticwebassets.endpoints.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\GamerLFG.exe
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\GamerLFG.deps.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\GamerLFG.runtimeconfig.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\GamerLFG.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\GamerLFG.pdb
+<<<<<<< HEAD
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\DnsClient.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\Microsoft.OpenApi.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\MongoDB.Bson.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\MongoDB.Driver.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\SharpCompress.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\Snappier.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\bin\Debug\net10.0\ZstdSharp.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.csproj.AssemblyReference.cache
+=======
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\rpswa.dswa.cache.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.GeneratedMSBuildEditorConfig.editorconfig
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.AssemblyInfoInputs.cache
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.AssemblyInfo.cs
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.csproj.CoreCompileInputs.cache
+<<<<<<< HEAD
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.MvcApplicationPartsAssemblyInfo.cs
+=======
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.MvcApplicationPartsAssemblyInfo.cache
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.RazorAssemblyInfo.cache
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.RazorAssemblyInfo.cs
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.sourcelink.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\rjimswa.dswa.cache.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\scopedcss\bundle\GamerLFG.styles.css
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\scopedcss\projectbundle\GamerLFG.bundle.scp.css
+<<<<<<< HEAD
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\5sfpk8d2qh-{0}-vv1z45uelv-vv1z45uelv.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\uvw4xu4fv2-{0}-f78zlp4t2u-f78zlp4t2u.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\up93b3qdje-{0}-61n19gt1b8-61n19gt1b8.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\6v4vd0z1nd-{0}-c9cdcxpqzf-c9cdcxpqzf.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\h5gd28kmo7-{0}-t1cqhe9u97-t1cqhe9u97.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\r1r84656vh-{0}-c2jlpeoesf-c2jlpeoesf.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\v36k4voina-{0}-sejl45xvog-sejl45xvog.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\6hqxbfqs2b-{0}-aexeepp0ev-aexeepp0ev.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\4r8vhlkg1h-{0}-xvp3kq03qx-xvp3kq03qx.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\ljto3lbz5p-{0}-ausgxo2sd3-ausgxo2sd3.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\igwk2stsva-{0}-22vffe00uq-22vffe00uq.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\lds9xsdf4w-{0}-cosvhxvwiu-cosvhxvwiu.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\pzfj34p6n4-{0}-qesaa3a1fm-qesaa3a1fm.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\zhmnihayev-{0}-fvhpjtyr6v-fvhpjtyr6v.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\0psfklpl7a-{0}-tmc1g35s3z-tmc1g35s3z.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\6tqjlb0fma-{0}-fsbi9cje9m-fsbi9cje9m.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\kuic49a5lm-{0}-rxsg74s51o-rxsg74s51o.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\muzql8ia4t-{0}-ee0r1s7dh0-ee0r1s7dh0.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\8i8ro0pslh-{0}-q9ht133ko3-q9ht133ko3.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\8ntg9jilqv-{0}-jd9uben2k1-jd9uben2k1.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\hni3f3umfz-{0}-gye83jo8yx-gye83jo8yx.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\2cfuxlz2up-{0}-r4e9w2rdcm-r4e9w2rdcm.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\cl9tcbjyfi-{0}-wl58j5mj3v-wl58j5mj3v.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\cs3jkobjzf-{0}-c2oey78nd0-c2oey78nd0.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\puuvksixyl-{0}-d4r6k3f320-d4r6k3f320.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\9unqw0w2er-{0}-j5mq2jizvt-j5mq2jizvt.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\1dsowuj3rw-{0}-keugtjm085-keugtjm085.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\6cxhdv31ws-{0}-nvvlpmu67g-nvvlpmu67g.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\7pvtfypu4j-{0}-zub09dkrxp-zub09dkrxp.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\zizlh90is8-{0}-pj5nd1wqec-pj5nd1wqec.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\mu60xpz6tg-{0}-43atpzeawx-43atpzeawx.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\ssxmr4c6bz-{0}-v0zj4ognzu-v0zj4ognzu.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\bstypbafaq-{0}-ynyaa8k90p-ynyaa8k90p.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vngs9abirk-{0}-hrwsygsryq-hrwsygsryq.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\ecau60seqw-{0}-c63t5i9ira-c63t5i9ira.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vbvkbsdkws-{0}-ft3s53vfgj-ft3s53vfgj.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\3aye1bzwis-{0}-4094rpi4f9-4094rpi4f9.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\pkato5vd4y-{0}-6pdc2jztkx-6pdc2jztkx.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\aww25vik4d-{0}-hd3gran6i8-hd3gran6i8.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\iai1mv12lx-{0}-iovd86k7lj-iovd86k7lj.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\0ev3poc40q-{0}-ltid2c489k-ltid2c489k.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\z5xml7z2h2-{0}-kbrnm935zg-kbrnm935zg.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\8p8onk98cg-{0}-8vyfqsqgz1-8vyfqsqgz1.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\giy984o1ya-{0}-y7v9cxd14o-y7v9cxd14o.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\pyv70uea3u-{0}-u9q1upor1n-u9q1upor1n.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\dr97z9e20s-{0}-h1s4sie4z3-h1s4sie4z3.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\1n1vqk03xl-{0}-4d85u1mtcx-4d85u1mtcx.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vnlmkqd84e-{0}-0j3bgjxly4-0j3bgjxly4.gz
+=======
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\uvw4xu4fv2-{0}-b9sayid5wm-b9sayid5wm.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\up93b3qdje-{0}-61n19gt1b8-61n19gt1b8.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\6v4vd0z1nd-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\jnd22te2dm-{0}-03hjc8e09r-03hjc8e09r.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\2fygyg54lr-{0}-48y08845bh-48y08845bh.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\izll55oc8e-{0}-356vix0kms-356vix0kms.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\patar75kz6-{0}-83jwlth58m-83jwlth58m.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\271pjfl0ne-{0}-mrlpezrjn3-mrlpezrjn3.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\fmpygnc4o4-{0}-worgj0nhwm-worgj0nhwm.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\7bh9d3gh2j-{0}-gk0pw8i4co-gk0pw8i4co.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\6ib0jwo4yf-{0}-x0q3zqp4vz-x0q3zqp4vz.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\15omy3h56u-{0}-d6nrnj6jjx-d6nrnj6jjx.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\o1jc9tq5lf-{0}-m9qm4tazc0-m9qm4tazc0.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\wjziqux1hl-{0}-ttgo8qnofa-ttgo8qnofa.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\elixk73ujt-{0}-jjsuc0puko-jjsuc0puko.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\v5ag6jhihb-{0}-9vr69e8ynj-9vr69e8ynj.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\b1dm6rwyme-{0}-87fc7y1x7t-87fc7y1x7t.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\ugsstw70k4-{0}-mlv21k5csn-mlv21k5csn.gz
+<<<<<<< HEAD
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vzkbr1puxt-{0}-iv1tme171n-iv1tme171n.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\unp4cbn1ri-{0}-iv1tme171n-iv1tme171n.gz
+=======
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\staticwebassets.build.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\staticwebassets.build.json.cache
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\staticwebassets.development.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\swae.build.ex.cache
+<<<<<<< HEAD
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.csproj.Up2Date
+=======
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\refint\GamerLFG.dll
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.pdb
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\GamerLFG.genruntimeconfig.cache
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\ref\GamerLFG.dll
+<<<<<<< HEAD
+=======
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\xcxvclm3lp-{0}-vumzqm7mwx-vumzqm7mwx.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\vzkbr1puxt-{0}-1f5qhtednq-1f5qhtednq.gz
+E:\2nd_Year\WebAppDev\WebAppMiniProject\mini_web_dev\GamerLFG\obj\Debug\net10.0\compressed\unp4cbn1ri-{0}-1f5qhtednq-1f5qhtednq.gz
+>>>>>>> de7ed0659a451ff0c6ab9392b904df99ff94c590
