@@ -190,6 +190,12 @@ namespace GamerLFG.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Preserve form data when validation fails
+            ViewBag.SubmittedMoods = moods ?? new List<string>();
+            ViewBag.SubmittedRoleNames = roleNames ?? new List<string>();
+            ViewBag.SubmittedRoleCounts = roleCounts ?? new List<int>();
+            ViewBag.SubmittedHostRole = hostRole;
+            
             return View(lobby);
         }
 

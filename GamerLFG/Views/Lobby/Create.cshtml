@@ -7,6 +7,22 @@
     <form asp-action="Create" method="post" id="createForm">
         @Html.AntiForgeryToken()
         
+        @* Validation Error Summary *@
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="mb-6 bg-red-500/10 border border-red-500/30 rounded-lg p-6">
+                <div class="flex items-start gap-4">
+                    <span class="material-symbols-outlined text-red-500 text-2xl">error</span>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-black text-red-500 uppercase tracking-tight mb-2">Mission Initialization Failed</h3>
+                        <div class="text-sm text-red-400 space-y-1">
+                            @Html.ValidationSummary(false, "", new { @class = "text-red-400" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        
         <div class="grid grid-cols-12 gap-8">
             <!-- Main Column: Hero and Detailed Config -->
             <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
@@ -64,17 +80,52 @@
                     </div>
 
                     <div id="rolesContainer" class="flex flex-col gap-4">
-                        <!-- Default empty row -->
-                        <div class="grid grid-cols-12 gap-4 items-end bg-black/40 p-4 rounded border border-white/5">
-                            <div class="col-span-8 flex flex-col gap-1.5">
-                                <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Role Designation</label>
-                                <input type="text" name="roleNames[]" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" placeholder="e.g., IGL, ENTRY, TANK" />
-                            </div>
-                            <div class="col-span-3 flex flex-col gap-1.5">
-                                <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Count</label>
-                                <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
-                            </div>
-                        </div>
+                        @{
+                            var submittedRoleNames = ViewBag.SubmittedRoleNames as List<string> ?? new List<string>();
+                            var submittedRoleCounts = ViewBag.SubmittedRoleCounts as List<int> ?? new List<int>();
+                            
+                            if (submittedRoleNames.Any())
+                            {
+                                // Restore submitted roles
+                                for (int i = 0; i < submittedRoleNames.Count; i++)
+                                {
+                                    var roleName = submittedRoleNames[i];
+                                    var roleCount = i < submittedRoleCounts.Count ? submittedRoleCounts[i] : 1;
+                                    <div class="grid grid-cols-12 gap-4 items-end bg-black/40 p-4 rounded border border-white/5">
+                                        <div class="col-span-8 flex flex-col gap-1.5">
+                                            <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Role Designation</label>
+                                            <input type="text" name="roleNames[]" value="@roleName" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" placeholder="e.g., IGL, ENTRY, TANK" />
+                                        </div>
+                                        <div class="col-span-3 flex flex-col gap-1.5">
+                                            <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Count</label>
+                                            <input type="number" name="roleCounts[]" value="@roleCount" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
+                                        </div>
+                                        @if (i > 0)
+                                        {
+                                            <div class="col-span-1">
+                                                <button type="button" onclick="this.parentElement.parentElement.remove(); updateHostRoles();" class="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded transition-all">
+                                                    <span class="material-symbols-outlined text-lg font-bold">close</span>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                // Default empty row
+                                <div class="grid grid-cols-12 gap-4 items-end bg-black/40 p-4 rounded border border-white/5">
+                                    <div class="col-span-8 flex flex-col gap-1.5">
+                                        <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Role Designation</label>
+                                        <input type="text" name="roleNames[]" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" placeholder="e.g., IGL, ENTRY, TANK" />
+                                    </div>
+                                    <div class="col-span-3 flex flex-col gap-1.5">
+                                        <label class="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Count</label>
+                                        <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
+                                    </div>
+                                </div>
+                            }
+                        }
                     </div>
                 </div>
 
@@ -82,10 +133,14 @@
                 <div class="bg-card-dark border border-white/10 rounded-lg p-8">
                     <h2 class="text-xl font-black uppercase text-white tracking-tight italic mb-6">Tactical Protocol Tags</h2>
                     <div class="flex flex-wrap gap-3">
+                        @{
+                            var submittedMoods = ViewBag.SubmittedMoods as List<string> ?? new List<string>();
+                        }
                         @foreach (var mood in new[] { "TRYHARD", "CHILL", "COMPETITIVE", "CASUAL", "MIC REQ", "18+", "NO TOXIC" })
                         {
+                            var isChecked = submittedMoods.Contains(mood);
                             <label class="relative cursor-pointer group">
-                                <input type="checkbox" name="moods" value="@mood" class="peer sr-only" />
+                                <input type="checkbox" name="moods" value="@mood" class="peer sr-only" @(isChecked ? "checked" : "") />
                                 <span class="px-6 py-3 bg-white/5 border border-white/10 rounded text-[11px] font-black text-white/40 uppercase tracking-widest transition-all group-hover:bg-white/10 peer-checked:bg-primary peer-checked:border-primary peer-checked:text-black peer-checked:shadow-[0_0_20px_rgba(242,150,13,0.3)]">
                                     @mood
                                 </span>
@@ -237,12 +292,19 @@
                     <input type="number" name="roleCounts[]" value="1" min="1" class="bg-black/60 border border-white/10 rounded px-4 py-2 text-sm text-white focus:border-primary outline-none transition-all" />
                 </div>
                 <div class="col-span-1">
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded transition-all">
+                    <button type="button" onclick="this.parentElement.parentElement.remove(); updateHostRoles();" class="size-9 flex items-center justify-center bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-black border border-red-500/20 rounded transition-all">
                         <span class="material-symbols-outlined text-lg font-bold">close</span>
                     </button>
                 </div>
             `;
             container.appendChild(div);
+            
+            // Add event listener to the new input
+            const newInput = div.querySelector('input[name="roleNames[]"]');
+            if (newInput) {
+                newInput.addEventListener('input', updateHostRoles);
+            }
+            
             updateHostRoles();
         }
 
@@ -285,10 +347,24 @@
              // Optional auto-init
              updateHostRoles();
              
-             // Initial listener for the first input
-             const firstInput = document.querySelector('input[name="roleNames[]"]');
-             if(firstInput) {
-                 firstInput.addEventListener('input', updateHostRoles);
+             // Add listeners to ALL role inputs (including restored ones)
+             const allRoleInputs = document.querySelectorAll('input[name="roleNames[]"]');
+             allRoleInputs.forEach(input => {
+                 input.addEventListener('input', updateHostRoles);
+             });
+             
+             // Restore submitted host role if validation failed
+             const submittedHostRole = '@(ViewBag.SubmittedHostRole ?? "")';
+             if (submittedHostRole) {
+                 setTimeout(() => {
+                     const hostRoleSelect = document.getElementById('hostRole');
+                     for (let i = 0; i < hostRoleSelect.options.length; i++) {
+                         if (hostRoleSelect.options[i].value === submittedHostRole) {
+                             hostRoleSelect.selectedIndex = i;
+                             break;
+                         }
+                     }
+                 }, 100); // Small delay to ensure roles are populated
              }
         });
     </script>
