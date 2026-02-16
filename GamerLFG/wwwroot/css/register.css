@@ -1,0 +1,70 @@
+/* login.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+.login-container {
+  font-family: "Inter", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh; /* Keeps it centered vertically in the main container */
+}
+
+.login-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #292929;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 20px;
+  max-height: auto;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.form-group label {
+  display: none;
+}
+
+.form-group input {
+  font-family: "Inter", sans-serif;
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid #ffa31a;
+  border-radius: 50px;
+  color: white;
+  box-sizing: border-box;
+}
+form {
+  width: 100%;
+  max-width: 300px;
+}
+.form-group input::placeholder {
+  color: #bbb;
+}
+
+.login-button {
+  font-family: "Inter", sans-serif;
+  /* background-color: #ffa31a; */
+  cursor: pointer;
+  transition: ease-out 0.5s;
+  background: transparent;
+  color: #ffa31a;
+}
+.login-button:active {
+  transform: scale(0.9);
+}
+
+.login-button:hover {
+  color: white;
+  box-shadow: inset 400px 0px 0px 0px #ffa31a;
+}
