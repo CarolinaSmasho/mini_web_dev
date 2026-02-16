@@ -45,5 +45,10 @@ namespace GamerLFG.Controllers
             // จำลองการเปิด-ปิดห้อง
             return Json(new { success = true });
         }
+
+        public IActionResult create_lobby()
+        {
+            return View();
+        }
     }
 }

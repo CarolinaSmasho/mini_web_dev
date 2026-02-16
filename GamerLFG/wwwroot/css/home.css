@@ -1,14 +1,20 @@
 * {
   box-sizing: border-box;
 }
+body {
+    margin: 0;
+    padding: 0;
+}
 .header{
     position: sticky;
     top: 0px;
     z-index: 10;
     background-color: #1b1b1b;
+    width: 100%;
+    padding: 0;
    
 }
-.container{
+body > .container{
     z-index: 8;
     position: relative;
 }
@@ -52,6 +58,7 @@ body {
 }
 
 
+
 .black-button{
     background-color: #1b1b1b;
     color: #ffffff;
@@ -89,6 +96,8 @@ body {
     padding-right:1rem;
     justify-content: space-between;
     height: 5rem;
+    width: 100%;
+
 }
 
 .mobile-menu{
@@ -124,13 +133,18 @@ body {
     left: 0;
     width: auto;
     gap: 20px;
-    background-color: #ffffff;
+    background-image: url("https://images2.alphacoders.com/895/thumb-1920-895681.jpg");
+    overflow: hidden;
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #191919;
 
     
 }
-.nav-mobile-active .orange-button{
+.nav-mobile-active .orange-button,.nav-mobile-active a .orange-button{
     height:3rem;
-    width: auto;
+    min-width: 100%;
     font-size: larger;
 
     }
@@ -224,4 +238,8 @@ padding: 0%;
 color: #1b1b1b;
 background-color:#ffffff;
 font-size: x-large;
+}
+
+.mobile-menu a,.mobile-menu a .orange-button{
+    width: 100%;
 }

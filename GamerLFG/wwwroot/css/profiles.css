@@ -35,7 +35,7 @@ body {
 }
 
 .col-right { 
-    min-width: 450px; 
+    min-width: 300px; 
 }
 
 .box {
@@ -135,15 +135,22 @@ input, textarea {
     margin-bottom: 0; 
 }
 
-@media (max-width: 810px) {
+@media (max-width: 768px) {
     .container { 
         flex-direction: column; 
-        align-items: center; 
+        align-items: center;
     }
     .col-left, .col-right { 
         width: 100%; 
     }
     .main-content { 
-        align-items: flex-start; 
+        align-items: flex-start;
+        
+    }}
+
+@media (min-width:810px){
+    .container{
+        min-width: 810px;
     }
 }
+
