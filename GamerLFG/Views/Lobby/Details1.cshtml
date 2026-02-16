@@ -1,0 +1,47 @@
+@model GamerLFG.Models.Lobby
+@{
+    var isHost = (Context.Session.GetString("UserId") == Model.HostId);
+    var pendingApps = ViewData["PendingApplications"] as List<GamerLFG.Models.Application> ?? new List<GamerLFG.Models.Application>();
+}
+
+<div class="lobby-container">
+    <h1>@Model.Title</h1>
+    <p>Game: @Model.Game</p>
+
+    @if (isHost)
+    {
+        <div class="host-section">
+            <h2>Host Dashboard</h2>
+            @foreach(var app in pendingApps) {
+                <div>
+                    Applicant: @app.UserId 
+                    <button onclick="recruitApplicant('@app.Id')">Accept</button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="guest-section">
+            <button id="joinBtn">Join Lobby</button>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('joinBtn')?.addEventListener('click', function() {
+            fetch('@Url.Action("Apply", "Lobby", new { id = Model.Id })', {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
+            }).then(() => location.reload());
+        });
+
+        function recruitApplicant(appId) {
+            fetch('/Lobby/Recruit/' + appId, {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
+            }).then(() => location.reload());
+        }
+    </script>
+}
