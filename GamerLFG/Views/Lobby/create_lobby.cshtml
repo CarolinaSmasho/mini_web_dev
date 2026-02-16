@@ -1,0 +1,106 @@
+@{
+    ViewData["Title"] = "New Lobby";
+    string[] Moods = {"Chil","Hardcode","Not Toxic","Toxic","God"};
+}
+<script src="~/js/create-lobby.js" asp-append-version="true" defer></script>
+<link rel="stylesheet" href="~/css/create_lobby.css" asp-append-version="true">
+<main>
+    <form action="" class="create-form">
+       
+        <div class="title">
+            <select name="game" id="game" disabled="disabled"></select>
+            <input type="text" name="title" id="title" placeholder="Lobby title">
+            <input type="text" name="description" id="des" placeholder="description">
+        </div>
+
+
+        <div class="require">
+            <p id="re-text-1">PERSONAL REQUIREMENTS</p>
+            <p id="re-text-2">ASSIGN SPASIFIC ROLES FOR THE SQUAD</p>
+
+            <div class="input-role">
+                <input type="text" placeholder="Role Assign" id="key-role">
+                <input type="text" id="count" value="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <div id="add-count-btn">
+                    <button type="button" onclick="counting(1,'count')"><i class="fa fa-arrow-up"></i></button>
+                    <button type="button" onclick="counting(-1,'count')"><i class="fa fa-arrow-down"></i></button>
+                </div>
+                 <button onclick="addToDOM()" id="add-role-btn" type="button"><strong>ADD ROLE</strong></i></button>
+            </div>
+        <div id="roles-added"></div>
+
+        <input type="hidden" name="ItemsData" id="ItemsData">
+        </div>
+
+
+        <div class="mood-select">
+            <p>TACTICAL PROTOCAL TAGS</p>
+            <div class=moods>
+                @foreach(string mood in Moods){
+                <input type="checkbox" id=@mood name="moods[]" value="@mood" class="check-box"> 
+                <label class="mood-label" for=@mood>@mood</label>
+            }   
+            </div>
+
+        </div>
+        <div class="wallpaper">
+            <p>Tactical Visuals</p>
+            <input type="text" placeholder="Direct Image URL">
+        </div>
+        <div class="discord">
+            <p>Discord Link</p>
+            <input type="text" placeholder="discord">
+            
+        </div>
+        <div class="assign-role">
+           Choose your Role
+           <select name="host-role" id="host-role"></select>
+        </div>
+        
+        <div class="date">
+            <label for="start" class="calendar-label">
+                <div class="calendar">
+                 Start Date <i class="fa fa-calendar"></i>   
+                </div>
+                
+               <input type="date" onclick="this.showPicker()" class="input-date" id="start" name="start"> 
+            </label>
+             <label for="end" class="calendar-label">
+                <div class="calendar">
+                  End Date <i class="fa fa-calendar"></i>  
+                </div>
+                
+              <input type="date" onclick="this.showPicker()" class="input-date" id="end" name="end">  
+             </label>
+
+
+             <div class="time-range">
+
+                <div>
+                  <input type="text" name="hour" id='hour' oninput=" this.value = this.value.replace(/[^0-9]/g, '')">
+                  <div id="add-count-btn">
+                    <button type="button" onclick="countingTime(1,'hour')"><i class="fa fa-arrow-up"></i></button>
+                    <button type="button" onclick="countingTime(-1,'hour')"><i class="fa fa-arrow-down"></i></button>
+                    </div>
+                  <p>HOUR</p>
+                </div>
+
+
+                <div>
+                    <input type="text" name="min" id="min" oninput=" this.value = this.value.replace(/[^0-9]/g, '')">
+                    <div id="add-count-btn">
+                        <button type="button" onclick="countingTime(1,'min')"><i class="fa fa-arrow-up"></i></button>
+                        <button type="button" onclick="countingTime(-1,'min')"><i class="fa fa-arrow-down"></i></button>
+                    </div>
+                    <p>MIN</p>
+                </div>
+                  
+             </div>
+             
+        </div>
+
+        <button class="orange-button">
+            CREATE LOBBY
+        </button>
+    </form>
+</main>

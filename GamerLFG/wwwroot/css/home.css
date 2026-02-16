@@ -1,3 +1,17 @@
+* {
+  box-sizing: border-box;
+}
+.header{
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+    background-color: #1b1b1b;
+   
+}
+.container{
+    z-index: 8;
+    position: relative;
+}
 h1{
     width: max-content;
     padding: 3px;
@@ -19,7 +33,16 @@ body {
     background-color:rgb(27,27,27);
     min-height: 100%;
 }
-
+.gamerhub-logo{
+    font-size: xx-large;
+    font-weight: bolder;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    margin-left: 0.5rem;
+}
+.gamerhub-logo:hover{
+    cursor: pointer;
+}
 .content-list-box{
     background-color: #292929;
     min-height: 50vh;
@@ -30,10 +53,16 @@ body {
 
 
 .black-button{
-    background-color: #292929;
+    background-color: #1b1b1b;
     color: #ffffff;
     height: max-content;
     width: max-content;
+    font-size: x-large;
+    padding: 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+     font-weight: bolder;
+    border: #ffffff solid 2px;
 
 }
 .orange-button{
@@ -42,7 +71,13 @@ body {
     padding: 3px;
     color: black;
     height: max-content;
+    font-weight: bolder;
+    font-size: x-large;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
+
+
 
 .nav-bar{
     position: sticky;
@@ -50,10 +85,10 @@ body {
     border: solid gray 0.1px;
     display: flex;
     align-items: center;
-    display:fle x;
     padding-left:1rem;
     padding-right:1rem;
     justify-content: space-between;
+    height: 5rem;
 }
 
 .mobile-menu{
@@ -67,10 +102,16 @@ body {
 
 .landscape-menu{
     display: flex;
+    min-width:70% ;
+    gap: 2rem;
+    align-items: center;
+    justify-content:flex-end;
 }
+
 .nav-mobile-hidden{
     display: none;
 }
+
 .nav-mobile-active{
     display: flex;
     flex-direction: column;
@@ -83,6 +124,8 @@ body {
     left: 0;
     width: auto;
     gap: 20px;
+    background-color: #ffffff;
+
     
 }
 .nav-mobile-active .orange-button{
@@ -103,6 +146,82 @@ body {
     display: block;
     font-size: 2rem;
     color: white;
-    
   }
+}
+@media (hover: hover) {
+.orange-button:hover{
+    scale: 1.05;
+}
+.black-button:hover{
+    scale: 1.05;
+}
+.landscape-menu .profile-btn:hover{
+    scale: 1.05;
+}
+}
+
+.search-form{
+display: flex;
+justify-content: center;
+align-items: center;
+position: relative;
+gap: 1rem;
+}
+.search-space{
+    border-radius: 1rem;
+}
+
+.search-form button{
+    background-color: #ffa431;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+.mobile-search{
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+.mobile-search-hidden{
+    display: none;
+}
+input[type="text"] {
+    padding: 15px 25px; /* บน-ล่าง 15px, ซ้าย-ขวา 25px */
+    font-size: 18px;    /* เพิ่มขนาดตัวอักษรข้างในให้สมดุลกัน */
+}
+
+@media screen and (min-width:768px) {
+     .mobile-search{
+        display: none;
+    }
+    .nav-bar{
+    position: sticky;
+    top: 0;
+    border: solid gray 0.1px;
+    display: flex;
+    align-items: center;
+    display:flex;
+    padding-left:1rem;
+    padding-right:1rem;
+    gap: 2rem;
+}
+}
+
+.landscape-menu .orange-button{
+    font-weight: bolder;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 5px;
+}
+
+.landscape-menu .profile-btn{
+width: max-content;
+height: fit-content;
+border-radius: 2rem;
+border: #ffffff solid 2px;
+margin: 0%;
+padding: 0%;
+color: #1b1b1b;
+background-color:#ffffff;
+font-size: x-large;
 }
