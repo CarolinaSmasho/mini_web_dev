@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Briefing - GamerLFG</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 20px; }
+        main { max-width: 900px; margin: auto; background: #252525; padding: 20px; border-radius: 8px; }
+        .hero img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; }
+        .btn { padding: 8px 16px; cursor: pointer; border: none; border-radius: 4px; margin: 5px; }
+        .btn-primary { background: #f2960d; color: black; font-weight: bold; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .card { background: #333; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .flex { display: flex; align-items: center; gap: 10px; }
+        .avatar { border-radius: 50%; border: 2px solid #f2960d; }
+        hr { border: 0; border-top: 1px solid #444; margin: 20px 0; }
+        #countdown { font-family: monospace; color: #f2960d; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+
+<main id="app">
+    </main>
+
+<script>
+    // 1. MOCK DATA (จำลองข้อมูลจาก Backend)
+    const mockModel = {
+        Id: "LOBBY-001",
+        Title: "ตะลุยด่านมหาสนุกกับ Notatord",
+        Game: "Minecraft",
+        Description: "หาเพื่อนสายชิลล์มาสร้างบ้านและขุดเหมืองด้วยกันครับ ไม่จำกัดอายุ!",
+        PictureUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+        CurrentPlayers: 2,
+        MaxPlayers: 4,
+        IsRecruiting: true,
+        IsCompleted: false,
+        HostId: "USER-123",
+        Members: [
+            { UserId: "USER-123", Username: "Notatord", AssignedRole: "Leader", IsHost: true },
+            { UserId: "USER-456", Username: "Dew", AssignedRole: "Builder", IsHost: false }
+        ],
+        PlayerIds: ["USER-123", "USER-456"],
+        Moods: ["Chill", "Friendly", "Voice Chat"],
+        RecruitmentDeadline: new Date(Date.now() + 3600000).toISOString(), // อีก 1 ชม.
+        SessionStartTime: "20:00",
+        SessionEndTime: "22:00"
+    };
+
+    const currentUser = { Id: "USER-123" }; // ลองเปลี่ยนเป็น "USER-789" เพื่อดูหน้าจอ Member
+    const isHost = mockModel.HostId === currentUser.Id;
+
+    // 2. RENDER FUNCTION
+    function render() {
+        const app = document.getElementById('app');
+        
+        if (isHost) {
+            app.innerHTML = `
+                <div class="hero">
+                    <img src="${mockModel.PictureUrl}" alt="Game">
+                    <h1>${mockModel.Title}</h1>
+                    <p>โหมด: <b>Host Command Center</b> (${mockModel.Game})</p>
+                    <button class="btn btn-primary" onclick="alert('Toggle Recruitment')">
+                        ${mockModel.IsRecruiting ? "🔓 Close Recruitment" : "🔒 Open Recruitment"}
+                    </button>
+                    <button class="btn" onclick="location.reload()">Refresh Data</button>
+                </div>
+
+                <hr>
+                <h3>Personnel Management (${mockModel.CurrentPlayers}/${mockModel.MaxPlayers})</h3>
+                <div id="squad-list">
+                    ${mockModel.Members.map(m => `
+                        <div class="card flex">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${m.UserId}" width="40" height="40" class="avatar">
+                            <div>
+                                <strong>${m.Username}</strong> - ${m.AssignedRole}
+                                ${!m.IsHost ? `<button class="btn btn-danger" style="padding:2px 5px" onclick="alert('Kicked!')">Kick</button>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <hr>
+                <h3>Mission Intelligence</h3>
+                <p>Recruit Until: ${new Date(mockModel.RecruitmentDeadline).toLocaleString()}</p>
+                <div id="countdown">00:00:00</div>
+                <div style="margin-top:10px">
+                    ${mockModel.Moods.map(mood => `<span style="background:#444; padding:3px 8px; margin-right:5px; border-radius:4px">${mood}</span>`).join('')}
+                </div>
+                <br>
+                <button class="btn btn-primary" onclick="alert('Mission Completed!')">COMPLETE MISSION</button>
+                <button class="btn btn-danger" onclick="confirm('Terminate?')">TERMINATE LOBBY</button>
+            `;
+        } else {
+            app.innerHTML = `
+                <div class="hero">
+                    <img src="${mockModel.PictureUrl}" alt="Game">
+                    <h1>${mockModel.Title}</h1>
+                    <p>${mockModel.Description}</p>
+                </div>
+                <div class="card">
+                    <h3>Squad Composition</h3>
+                    <p>เหลือที่ว่างอีก ${mockModel.MaxPlayers - mockModel.CurrentPlayers} ที่</p>
+                    <button class="btn btn-primary" id="joinBtn">REQUEST DEPLOYMENT</button>
+                </div>
+            `;
+        }
+    }
+
+    // 3. COUNTDOWN LOGIC
+    function initCountdown() {
+        const deadline = new Date(mockModel.RecruitmentDeadline);
+        setInterval(() => {
+            const el = document.getElementById('countdown');
+            if (!el) return;
+            const now = new Date();
+            const diff = deadline - now;
+            if (diff <= 0) { el.innerText = "EXPIRED"; return; }
+            
+            const hours = Math.floor(diff / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+            el.innerText = `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        }, 1000);
+    }
+
+    // Start
+    render();
+    initCountdown();
+</script>
+
+</body>
+</html>
