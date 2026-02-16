@@ -1,6 +1,4 @@
-* {
-  box-sizing: border-box;
-}
+
 main{
     background-color: #292929;
     margin:1rem;
@@ -13,12 +11,19 @@ main{
 p{
     margin: 0;
 }
+
+a {
+    text-decoration: none; 
+}
+
+a:hover, a:active, a:focus {
+    text-decoration: none; 
+}
+
 .lobbies{
     display: grid;
-    /* บอกว่า: ให้สร้างคอลัมน์กี่อันก็ได้ (auto-fit) 
-       โดยแต่ละอันต้องกว้างอย่างน้อย 300px และใหญ่ได้ไม่เกิน 1 ส่วนที่เหลือ (1fr) */
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px; /* ระยะห่างระหว่าง card */
+    gap: 30px;
     padding: 20px;
     margin-top: 2rem;
     margin-bottom: 2rem;
