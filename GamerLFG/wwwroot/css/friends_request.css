@@ -17,6 +17,12 @@ h1 {
   margin-bottom: 20px;
 }
 
+.rbx-tab a:hover,
+a:visited {
+  color: white;
+  text-decoration: none;
+}
+
 .rbx-tab {
   width: 50%;
   text-align: center;
@@ -24,6 +30,8 @@ h1 {
 
 .rbx-tab a {
   display: block;
+  color: white; /* สีข้อความขาว */
+  text-decoration: none; /* เอาขีดเส้นใต้ออก */
   width: 100%;
 }
 

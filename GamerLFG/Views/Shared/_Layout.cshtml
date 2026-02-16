@@ -21,7 +21,7 @@
                 <p style="color: #ffffff;">GAMER</p>
                 <p style="padding-left: 0%;background-color:#ffa431">HUB</p>
             </div>
-            
+
             <div class="landscape-menu">
                 <button class="orange-button">LOG IN</button>
                 <button class="black-button"><i class="fa fa-bell"></i></button>
@@ -38,11 +38,11 @@
                 <button class="orange-button">Notics</button>
                 <button class="orange-button">Create Lobby</button>
             </div>
-            
-        </div> 
+
+        </div>
 
     </header>
-   
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -50,7 +50,7 @@
     </div>
 
     <footer class="border-top footer text-muted">
-       
+
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -90,7 +90,8 @@
         document.getElementById('modal-username').innerText = "...";
 
         // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
-        fetch(`/Home/GetUserDetails?id=${userId}`)
+        // เปลี่ยนจาก /Home/ เป็น /Friends/
+        fetch(`/Friends/GetUserDetails?id=${userId}`)
         .then(response => {
         if (!response.ok) throw new Error("User not found");
         return response.json();
