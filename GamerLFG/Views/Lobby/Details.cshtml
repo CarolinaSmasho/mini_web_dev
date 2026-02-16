@@ -1,373 +1,186 @@
+@* 1. ประกาศ Model ตามปกติ *@
 @model GamerLFG.Models.Lobby
-@{
-    ViewData["Title"] = "Mission Briefing";
-    var hostName = ViewData["HostName"] as string ?? "Unknown";
-    var memberMap = ViewData["MemberMap"] as Dictionary<string, GamerLFG.Models.User> ?? new Dictionary<string, GamerLFG.Models.User>();
-}
 
 @{
-    var currentUserId = Context.Session.GetString("UserId");
-    var isHost = !string.IsNullOrEmpty(currentUserId) && Model.HostId == currentUserId;
-    var isMember = ViewData["IsMember"] as bool? ?? false;
-    var pendingApp = ViewData["PendingApplication"] as GamerLFG.Models.Application;
-    var pendingApps = ViewData["PendingApplications"] as List<GamerLFG.Models.Application> ?? new List<GamerLFG.Models.Application>();
-    var applicantMap = ViewData["ApplicantMap"] as Dictionary<string, GamerLFG.Models.User> ?? new Dictionary<string, GamerLFG.Models.User>();
-    var endorsedUserIds = ViewData["EndorsedUserIds"] as HashSet<string> ?? new HashSet<string>();
+    /* 2. MOCKUP DATA AREA - ส่วนนี้จำลองข้อมูลที่ปกติจะมาจาก Controller */
+    
+    // จำลองข้อมูล Lobby
+    var mockModel = new {
+        Id = "LOBBY-999",
+        Title = "ไต่แรงค์ Valorant คืนนี้ขอคนไม่ตึงมาก",
+        Game = "Valorant",
+        Description = "หาเพื่อนร่วมทีมตำแหน่ง Sentinel และ Duelist ครับ เล่นขำๆ เน้นฮา ไม่เน้นหัวร้อน",
+        PictureUrl = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+        CurrentPlayers = 2,
+        MaxPlayers = 5,
+        IsRecruiting = true,
+        IsCompleted = false,
+        HostId = "USER-001",
+        Moods = new List<string> { "Chill", "Voice Chat", "Competitive" },
+        RecruitmentDeadline = DateTime.Now.AddHours(2),
+        SessionStartTime = DateTime.Now.AddHours(3),
+        SessionEndTime = DateTime.Now.AddHours(5),
+        Members = new List<dynamic> {
+            new { UserId = "USER-001", AssignedRole = "Leader", IsHost = true },
+            new { UserId = "USER-002", AssignedRole = "Controller", IsHost = false }
+        },
+        PlayerIds = new List<string> { "USER-001", "USER-002" }
+    };
+
+    // จำลองข้อมูลเสริม (ViewData)
+    var hostName = "Notatord_Commander";
+    var memberMap = new Dictionary<string, dynamic> {
+        { "USER-001", new { Username = "Notatord_Commander", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" } },
+        { "USER-002", new { Username = "Dew_The_Slayer", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew" } }
+    };
+
+    // จำลอง Session (สมมติว่าเราเป็น Host)
+    var currentUserId = "USER-001"; 
+    var isHost = true; // ลองเปลี่ยนเป็น false เพื่อดูหน้าจอฝั่งลูกทีม
+    var isMember = true;
+    
+    var pendingApps = new List<dynamic> {
+        new { Id = "APP-01", UserId = "USER-003", Message = "ขอเล่นด้วยครับ ผมเล่น Sage เป็น" }
+    };
+    var applicantMap = new Dictionary<string, dynamic> {
+        { "USER-003", new { Username = "Newbie_Player", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Newbie" } }
+    };
 }
 
-@if (isHost)
-{
-    <main>
-        <div>
-            <!-- Hero section -->
-            <div>
-                <img src="@(string.IsNullOrEmpty(Model.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80" : Model.PictureUrl)" alt="@Model.Game" />
-                
-                <div>
-                    <button onclick="toggleRecruitment('@Model.Id')" id="toggleRecruitHero">
-                        <span>@(Model.IsRecruiting ? "lock_open 🔓" : "lock 🔒")</span> 
-                        <span>@(Model.IsRecruiting ? "Close Recruitment" : "Open Recruitment")</span> 
-                    </button>
+@* 3. ส่วนการแสดงผล (ใช้ข้อมูลจาก Mock ด้านบน) *@
+<style>
+    body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .hero-img { width: 100%; height: 350px; object-fit: cover; border-radius: 15px; opacity: 0.7; }
+    .status-badge { background: #f2960d; color: black; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+    .card-dark { background: #1e1e1e; border: 1px solid #333; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .btn-action { background: #f2960d; color: black; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .member-avatar { width: 45px; height: 45px; border-radius: 8px; border: 2px solid #f2960d; }
+</style>
 
-                    <br />
-
-                    <button onclick="quickChangeBackground()">
-                        <span>image</span> Quick Change
-                    </button>
-                    
-                    <br />
-
-                    <a asp-action="Edit" asp-route-id="@Model.Id">
-                        <span>edit</span> Edit Mission
-                    </a>
-
-                    
-                </div>
-                <div>
-                    <div>
-                        <span>Host Command Center</span>
-                        <span>@Model.Game</span>
+<main class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="position-relative card-dark p-0 overflow-hidden">
+                <img src="@mockModel.PictureUrl" class="hero-img" alt="Game Background" />
+                <div class="p-4">
+                    <div class="d-flex gap-2 mb-2">
+                        <span class="status-badge">@mockModel.Game</span>
+                        @if(isHost) { <span class="status-badge" style="background: #2ecc71;">HOST MODE</span> }
                     </div>
-                    <h1>@Model.Title</h1>
+                    <h1 class="display-5 fw-bold text-white">@mockModel.Title</h1>
+                    <p class="lead text-secondary">@mockModel.Description</p>
                 </div>
             </div>
 
-            <hr />
-            <!-- Personnel Management -->
-            <div>
-                <div>
-                    <h3>Personnel Management</h3>
-                    <p>Manage your active squad and recruits</p>
-                </div>
-                <div>
-                    <span>@Model.CurrentPlayers / @Model.MaxPlayers</span>
-                    <button onclick="toggleRecruitment('@Model.Id')">
-                        @(Model.IsRecruiting ? "RECRUITING ACTIVE" : "RECRUITING PAUSED")
-                    </button>
+            <div class="card-dark">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Squad Management</h3>
+                    <span class="h4">@mockModel.CurrentPlayers / @mockModel.MaxPlayers Players</span>
                 </div>
 
-                <!-- Squad List -->
-                <div>
-                    @foreach (var member in Model.Members)
+                <div class="row">
+                    @foreach (var member in mockModel.Members)
                     {
-                        var user = memberMap.ContainsKey(member.UserId) ? memberMap[member.UserId] : null;
-                        <div>
-                            @if (!member.IsHost) {
-                                <button onclick="kickMember('@member.UserId', this)">
-                                    <span>close</span>
-                                </button>
-                            }
-                            <div>
-                                <img src="@(user?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + member.UserId)" width="40" height="40" />
+                        var user = memberMap[member.UserId];
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center gap-3 p-3 bg-black rounded shadow-sm">
+                                <img src="@user.AvatarUrl" class="member-avatar" />
                                 <div>
-                                    <a href="@Url.Action("FriendProfile", "User", new { id = user?.Username ?? "" })">@(user?.Username ?? "Unknown")</a>
-                                    <p>@member.AssignedRole</p>
+                                    <h6 class="mb-0 text-white">@user.Username</h6>
+                                    <small class="text-primary">@member.AssignedRole</small>
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
-                <hr />
-
-                <!-- Applications -->
-                <div>
-                    <h4>Deployment Requests (@pendingApps.Count)</h4>
-                    @if (pendingApps.Any())
-                    {
-                        @foreach (var app in pendingApps)
-                        {
-                            var applicant = applicantMap.ContainsKey(app.UserId) ? applicantMap[app.UserId] : null;
-                            <div>
-                                <img src="@(applicant?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + app.UserId)" width="40" height="40" />
-                                <div>
-                                    <h5>@(applicant?.Username ?? "Unknown")</h5>
-                                    <p>"@app.Message"</p>
-                                </div>
-                                <div>
-                                    <button onclick="rejectApplicant('@app.Id', this)">Reject</button>
-                                    <button onclick="recruitApplicant('@app.Id', this)">Recruit</button>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>No pending recruitment requests</p>
-                    }
-                </div>
-            </div>
-            <hr />
-
-
-
-            <!-- Mission Intelligence -->
-            <div>
-                <h3>Mission Intelligence</h3>
-                @if (Model.IsCompleted)
-                {
-                    <p>MISSION COMPLETED</p>
-                }
-                else
-                {
-                    <p>Tactical Timeline</p>
-                    <p>Recruit Until: @(Model.RecruitmentDeadline?.ToLocalTime().ToString("f") ?? "TBD")</p>
-                    @if (Model.RecruitmentDeadline.HasValue && Model.RecruitmentDeadline > DateTime.UtcNow)
-                    {
-                        <div id="countdown" data-deadline="@Model.RecruitmentDeadline.Value.ToString("O")">
-                            <p>00:00:00</p>
-                        </div>
-                    }
-                    <p>Session: @(Model.SessionStartTime?.ToLocalTime().ToString("HH:mm") ?? "??:??") - @(Model.SessionEndTime?.ToLocalTime().ToString("HH:mm") ?? "??:??")</p>
-                }
-
-                <div>
-                    @foreach(var mood in Model.Moods) {
-                        <span>@mood</span>
-                    }
-                </div>
-
-                @if (!Model.IsCompleted)
-                {
-                    <button onclick="completeSession('@Model.Id')">COMPLETE MISSION</button>
-                }
-                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('TERMINATE LOBBY?');">
-                    @Html.AntiForgeryToken()
-                    <button type="submit">TERMINATE LOBBY</button>
-                </form>
-            </div>
-            <hr />
-
-            <!-- Host Info -->
-            <div>
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" width="48" height="48" />
-                <div>
-                    <h4>@hostName</h4>
-                    <p>Mission Commander</p>
-                </div>
-            </div>
-        </div>
-    </main>
-}
-else
-{
-    <main>
-        <div>
-            <!-- Hero Section -->
-            <div>
-                <img src="@(string.IsNullOrEmpty(Model.PictureUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80" : Model.PictureUrl)" alt="@Model.Game" />
-                <h1>@Model.Title</h1>
-                <p>@Model.Description</p>
             </div>
 
-            <!-- Squad -->
-            <div>
-                <h3>Squad Composition</h3>
-                <p>@(Model.MaxPlayers - Model.CurrentPlayers) slots remaining</p>
-                <p>@Model.PlayerIds.Count / @Model.MaxPlayers</p>
-                
-                @foreach (var playerId in Model.PlayerIds)
-                {
-                    var player = memberMap.ContainsKey(playerId) ? memberMap[playerId] : null;
-                    var playerIsHost = playerId == Model.HostId;
-                    <div>
-                        <img src="@(player?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + playerId)" width="40" height="40" />
-                        <a href="@Url.Action("FriendProfile", "User", new { id = player?.Username ?? "" })">@(player?.Username ?? "Unknown")</a>
-                        @if (playerIsHost) { <span>Host</span> }
-                    </div>
-                }
-            </div>
-
-            @if (Model.IsCompleted && isMember)
+            @if (isHost && pendingApps.Any())
             {
-                <div>
-                    <h3>DEBRIEFING & KARMA EVALUATION</h3>
-                    @foreach (var memberId in Model.PlayerIds)
+                <div class="card-dark border-primary">
+                    <h4 class="text-primary mb-3">Pending Requests (@pendingApps.Count)</h4>
+                    @foreach (var app in pendingApps)
                     {
-                        if (memberId == currentUserId) continue;
-                        var player = memberMap.ContainsKey(memberId) ? memberMap[memberId] : null;
-                        <div>
-                            <img src="@(player?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + memberId)" width="64" height="64" />
-                            <a href="@Url.Action("FriendProfile", "User", new { id = player?.Username ?? "" })">@(player?.Username ?? "Unknown")</a>
-                            @if (endorsedUserIds.Contains(memberId))
-                            {
-                                <span>Evaluation Logged</span>
-                            }
-                            else
-                            {
-                                <select id="endorsement-@memberId">
-                                    <option value="MVP">MVP (+5)</option>
-                                    <option value="Leader">Leader (+4)</option>
-                                    <option value="Good Teammate" selected>Good Teammate (+3)</option>
-                                    <option value="Chill">Chill (+2)</option>
-                                    <option value="Leaver">Leaver (-3)</option>
-                                    <option value="Toxic">Toxic (-5)</option>
-                                    <option value="AFK">AFK (-3)</option>
-                                </select>
-                                <button onclick="submitEndorsement('@Model.Id', '@memberId', this)">Submit</button>
-                            }
+                        var applicant = applicantMap[app.UserId];
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-black rounded mb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@applicant.AvatarUrl" width="40" class="rounded" />
+                                <div>
+                                    <p class="mb-0 fw-bold">@applicant.Username</p>
+                                    <small class="text-secondary italic">"@app.Message"</small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-danger">Reject</button>
+                                <button class="btn btn-sm btn-success">Recruit</button>
+                            </div>
                         </div>
                     }
                 </div>
             }
+        </div>
 
-            <!-- Join / Status info -->
-            <div>
-                @if (isMember)
-                {
-                    <p>Tactical Comms Established</p>
-                    @if (!string.IsNullOrEmpty(Model.DiscordLink))
-                    {
-                        <a href="@Model.DiscordLink" target="_blank">DISCORD CHANNEL</a>
+        <div class="col-lg-4">
+            <div class="card-dark">
+                <h5>Mission Intel</h5>
+                <hr style="border-color: #444;">
+                <p class="mb-1 text-secondary">Recruitment Ends:</p>
+                <p class="fw-bold text-warning">@mockModel.RecruitmentDeadline.ToString("f")</p>
+                
+                <div id="countdown" class="p-3 bg-black rounded text-center mb-3">
+                    <span class="h4 font-monospace text-primary" id="timer">01:59:59</span>
+                </div>
+
+                <p class="mb-1 text-secondary">Moods:</p>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    @foreach(var mood in mockModel.Moods) {
+                        <span class="badge bg-secondary">@mood</span>
                     }
-                    <button onclick="leaveLobby()">ABANDON MISSION</button>
-                }
-                else if (pendingApp != null)
-                {
-                    <p>Recruitment verification in Progress</p>
-                    <button onclick="cancelApplication('@pendingApp.Id')">CANCEL REQUEST</button>
-                }
-                else
-                {
-                    @if (!Model.IsRecruiting)
-                    {
-                        <p>Recruitment Closed</p>
-                    }
-                    else
-                    {
-                        <button id="joinBtn">REQUEST DEPLOYMENT</button>
-                    }
+                </div>
+
+                @if(isHost) {
+                    <button class="btn-action w-100 mb-2">EDIT MISSION</button>
+                    <button class="btn btn-outline-danger w-100">TERMINATE LOBBY</button>
+                } else {
+                    <button class="btn-action w-100">REQUEST TO JOIN</button>
                 }
             </div>
 
-            <!-- Sidebar -->
-            <div>
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" width="48" height="48" />
-                <a href="@Url.Action("FriendProfile", "User", new { id = hostName })">@hostName</a>
-                
-                <p>Mission Protocols</p>
-                @foreach (var mood in Model.Moods) { <span>@mood</span> }
+            <div class="card-dark d-flex align-items-center gap-3">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" width="50" class="rounded-circle" />
+                <div>
+                    <h6 class="mb-0">@hostName</h6>
+                    <small class="text-secondary">Mission Commander</small>
+                </div>
             </div>
         </div>
-    </main>
-}
+    </div>
+</main>
 
 @section Scripts {
     <script>
-        document.getElementById('joinBtn')?.addEventListener('click', function() {
-            var btn = this;
-            btn.disabled = true;
-            fetch('@Url.Action("Apply", "Lobby", new { id = Model.Id })', {
-                method: 'POST',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        });
+        // จำลองระบบ Countdown 
+        function startTimer(duration, display) {
+            var timer = duration, hours, minutes, seconds;
+            setInterval(function () {
+                hours = parseInt(timer / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
 
-        function recruitApplicant(appId, btn) {
-            btn.disabled = true;
-            fetch('/Lobby/Recruit/' + appId, {
-                method: 'POST',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        function rejectApplicant(appId, btn) {
-            if(!confirm('Reject?')) return;
-            btn.disabled = true;
-            fetch('/Lobby/Reject/' + appId, {
-                method: 'POST',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
+                display.textContent = hours + ":" + minutes + ":" + seconds;
 
-        function kickMember(userId, btn) {
-            if(!confirm('Kick?')) return;
-            btn.disabled = true;
-            const formData = new FormData();
-            formData.append('lobbyId', '@Model.Id');
-            formData.append('memberId', userId);
-            fetch('/Lobby/Kick', {
-                method: 'POST',
-                body: formData,
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
-
-        function cancelApplication(appId) {
-            if(!confirm('Cancel?')) return;
-            fetch('/Lobby/CancelApplication/' + '@Model.Id', {
-                method: 'DELETE',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
-
-        function leaveLobby() {
-            if(!confirm('Leave?')) return;
-            fetch('/Lobby/CancelApplication/' + '@Model.Id', {
-                method: 'DELETE',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
-
-        function toggleRecruitment(id) {
-            fetch('/Lobby/ToggleRecruitment/' + id, {
-                method: 'POST',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
-
-        function completeSession(id) {
-            if(!confirm('Complete?')) return;
-            fetch('/Lobby/CompleteSession/' + id, {
-                method: 'POST',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
-
-        function submitEndorsement(lobbyId, targetUserId, btn) {
-            const select = document.getElementById(`endorsement-${targetUserId}`);
-            const type = select.value;
-            btn.disabled = true;
-            fetch(`/Lobby/EndorseMember?lobbyId=${lobbyId}&targetUserId=${targetUserId}&type=${encodeURIComponent(type)}`, {
-                method: 'POST',
-                headers: { 'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0]?.value }
-            }).then(() => location.reload());
-        }
-
-        function initCountdown() {
-            const el = document.getElementById('countdown');
-            if (!el) return;
-            const deadline = new Date(el.dataset.deadline);
-            const display = el.querySelector('p');
-            setInterval(() => {
-                const now = new Date();
-                const diff = deadline - now;
-                if (diff <= 0) { display.innerText = "EXPIRED"; return; }
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const secs = Math.floor((diff % (1000 * 60)) / 1000);
-                display.innerText = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (--timer < 0) { timer = 0; }
             }, 1000);
         }
-        document.addEventListener('DOMContentLoaded', initCountdown);
+
+        window.onload = function () {
+            var twoHours = 60 * 60 * 2,
+            display = document.querySelector('#timer');
+            startTimer(twoHours, display);
+        };
     </script>
 }
