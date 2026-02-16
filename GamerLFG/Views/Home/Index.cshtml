@@ -159,7 +159,7 @@
 
 
 <link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
-<div class="text-center">
+
         <main>
         <div class="mobile-search" id="mobile-search">
                 <form action="" class="search-form">
@@ -171,9 +171,11 @@
             <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
             
+            <div class="all-lob">
             <div class="lobbies">
             @foreach(Lobby lob in myLobbies){
-            
+                
+                <div class=my-lobby>
                 <div class="lobby">
                     <div class="game-pic" style="background-image: url('@lob.gamePic');">
                         <div class="gname">
@@ -216,11 +218,19 @@
                               <p class="tag-ele">@mood</p>  
                             }
                     </div>
-                    <button class="orange-button">JOIN LOBBY</button>
+                    <div class="bnt-mylob">
+                    <button class="orange-button">MANAGE LOBBY</button>    
+                    </div>
+
+                    </div>
 
                 </div>                 
             
             }
+            <div class="add-lobby">
+                <i class="fa fa-plus-circle fa-2x"></i>
+                <p>NEW LOBBY</p>
+            </div>
             </div>
 
 
@@ -230,7 +240,7 @@
             <div class="lobbies">
                 
                 @foreach(Lobby lob in publicLobbies){
-            
+                <div class="public-lobby">
                 <div class="lobby">
                     <div class="game-pic" style="background-image: url('@lob.gamePic');">
                         <div class="gname">
@@ -276,10 +286,10 @@
                     <button class="orange-button">JOIN LOBBY</button>
 
                 </div>                 
-            
+                </div>
             }                
             </div>
-
+        </div>
         </main>
         
-</div>
+

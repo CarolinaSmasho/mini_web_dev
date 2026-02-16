@@ -29,7 +29,13 @@ body {
     background-color:rgb(27,27,27);
     min-height: 100%;
 }
-
+.gamerhub-logo{
+    font-size: xx-large;
+    font-weight: bolder;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    margin-left: 0.5rem;
+}
 .content-list-box{
     background-color: #292929;
     min-height: 50vh;
@@ -40,7 +46,7 @@ body {
 
 
 .black-button{
-    background-color: #292929;
+    background-color: #1b1b1b;
     color: #ffffff;
     height: max-content;
     width: max-content;
@@ -48,6 +54,7 @@ body {
     padding: 3px;
     cursor: pointer;
     transition: all 0.3s ease;
+    border: #ffffff solid 2px;
 
 }
 .orange-button{
@@ -69,7 +76,6 @@ body {
     border: solid gray 0.1px;
     display: flex;
     align-items: center;
-    display:flex;
     padding-left:1rem;
     padding-right:1rem;
     justify-content: space-between;
@@ -87,8 +93,9 @@ body {
 .landscape-menu{
     display: flex;
     min-width:70% ;
-    gap: 15px;
+    gap: 2rem;
     align-items: center;
+    justify-content:flex-end;
 }
 
 .nav-mobile-hidden{
@@ -138,13 +145,11 @@ body {
 .black-button:hover{
     scale: 1.05;
 }
+.landscape-menu .profile-btn:hover{
+    scale: 1.05;
 }
-@media (min-width:768) and (hover:hover){
-    .landscape-menu{
-        justify-content:flex-start;
-        gap: 2rem;
-    }
 }
+
 .search-form{
 display: flex;
 justify-content: center;
@@ -190,4 +195,23 @@ input[type="text"] {
     padding-right:1rem;
     gap: 2rem;
 }
+}
+
+.landscape-menu .orange-button{
+    font-weight: bolder;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 5px;
+}
+
+.landscape-menu .profile-btn{
+width: max-content;
+height: fit-content;
+border-radius: 2rem;
+border: #ffffff solid 2px;
+margin: 0%;
+padding: 0%;
+color: #1b1b1b;
+background-color:#ffffff;
+font-size: x-large;
 }

@@ -1,8 +1,13 @@
+* {
+  box-sizing: border-box;
+}
 main{
     background-color: #292929;
     margin:1rem;
+    
     border-radius: 1rem;
     min-height: 10000vh;
+    box-sizing: border-box;
 
 }
 p{
@@ -17,12 +22,14 @@ p{
     padding: 20px;
     margin-top: 2rem;
     margin-bottom: 2rem;
+    width: 100%;
 }
-
+.all-lob{
+    padding: 0%;
+}
 .lobby{
     background-color: aliceblue;
-    width: max-content;
-    width: 300px;
+    width: clamp(250px, 100%, 300px);
     padding: 1rem;
     color: aliceblue;
     background-color: #1b1b1b;
@@ -35,6 +42,7 @@ p{
 .mobile-search{
     display: flex;
     flex-direction: column;
+    width: 100%;
     
 }
 main .mobile-search{
@@ -44,14 +52,16 @@ main .mobile-search{
         background-color: #292929;
     }
 
-@media screen and (min-width:768px) {
-    main .mobile-search .search-form{
-        display: none;
+
+    .search-form{   
+        display: flex;
+        width: 100%;
     }
-    .lobbies{
-        justify-content:flex-start;
+    .search-space{
+        flex-grow: 1;
+        max-width: 600px;
     }
-}
+   
 
 .gname{
     color:white;
@@ -78,13 +88,14 @@ display: flex;
 }
 
 .tag-ele{
-    color: #ff31c8;
+    color: #ffa431;
     margin:10px;
-    border: #ff31c8 solid;
+    border: #ffa431 solid;
     max-width: fit-content;
     padding: 7px;   
     border-radius: 2rem;
-    font-size:xx-small
+    font-size:medium;
+    font-weight: bolder;
 }
 
 .require-de{
@@ -157,13 +168,47 @@ main .orange-button{
     border: solid #1b1b1b 3px;
 }
 
+
+
+.lobby-type{
+    display: flex;
+    font-size: x-large;
+    gap: 1rem;
+}
+
+.add-lobby{
+    color: white;
+    background-color: #474747;
+    margin: 2rem;
+    width: 250px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap:20px;
+    border-radius: 30px;
+    border: dashed #030303 0.5rem;
+}
+
+.bnt-mylob .orange-button{
+    background-color: white;
+    
+}
+
 @media (hover:hover) {
-.lobby:hover{
+.public-lobby .lobby:hover{
     border:solid #ffa431 3px;
     scale: 1.05;
 }
+.my-lobby .lobby:hover{
+    border:solid #31eaff 3px;
+    scale: 1.05;
 }
-
-.lobby-type{
-    font-size: x-large;
+.add-lobby:hover{
+  
+    border: dashed #31eaff 0.5rem;
+    color: #31eaff;
+    scale: 1.05;
+}
 }
