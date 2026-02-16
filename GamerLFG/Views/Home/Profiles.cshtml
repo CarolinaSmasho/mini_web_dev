@@ -1,7 +1,7 @@
 @{
     ViewData["Title"] = "Profile";
     
-    string username = "Kant Kreurad";
+    string username = "Kant Kruerad";
     string pic = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Immanuel_Kant_-_Gemaelde_1.jpg/960px-Immanuel_Kant_-_Gemaelde_1.jpg";
     string bio = "ดูอยู่ก็รู้อยู่";
     string games = "18+";
@@ -9,18 +9,19 @@
     string steam = "kant1593";
     string twitch = "kant1593";
     
-    int karmaScore = 0;
+    int karmaScore = -75;
     bool isOwnProfile = true;
 
     int karmaPercent = (karmaScore + 100) / 2;
 
-    string tierName = "Standard";
-    string tierColor = "skyblue";
+    string tierName = "Restricted";
+    string tierColor = "#ff2828";
 }
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <link rel="stylesheet" href="~/css/profiles.css" asp-append-version="true" />
@@ -33,7 +34,7 @@
                     <img src="@pic" />
                 </div>
                 <h3>@username</h3>
-                <span style="background: orange; color: black; padding: 3px 6px; font-size: 12px; font-weight: bold;">
+                <span style="background: @tierColor; color: black; padding: 3px 6px; font-size: 12px; font-weight: bold;">
                     @tierName Member
                 </span>
             </div>
@@ -48,12 +49,12 @@
                 </div>
                 
                 <br>
-                <a href="#" style="color: orange;">[ View History ]</a>
+                <a asp-controller="Home" asp-action="KarmaHistory" style="color: orange; text-decoration: none;">[ View History ]</a>
             </div>
         </div>
 
         <div class="col-right">
-            <form action="#" method="post">
+            <form>
                 <div class="box">
                     <h2>Profile</h2>
 
