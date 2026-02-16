@@ -31,22 +31,6 @@ h1 {
   background-color: #808080;
 }
 
-.friends-filter {
-  padding: 20px;
-  border-radius: 30px;
-  margin-bottom: 20px;
-  width: fit-content;
-  background-color: #292929;
-}
-
-.friends-filter-searchbar-input {
-  background-color: #808080;
-  border-radius: 10px;
-}
-.friends-filter-searchbar-input::placeholder {
-  color: #ffa31a;
-}
-
 .friend-cards {
   display: flex;
   flex-wrap: wrap;
@@ -78,6 +62,9 @@ h1 {
   display: flex;
   align-items: center;
   padding: 10px;
+
+  /* --- เพิ่มบรรทัดนี้ --- */
+  flex-wrap: wrap; /* อนุญาตให้ของข้างในตกบรรทัดได้ */
 }
 
 .friend-card-caption {
@@ -85,7 +72,19 @@ h1 {
   padding-left: 10px;
   min-width: 0;
 }
-.text-overflow {
+
+.friend-card-btns {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.friend-card-btns button {
+  width: 50%;
+}
+
+.friend-card .text-overflow {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -108,13 +107,3 @@ h1 {
     width: 100%;
   }
 }
-
-/* --- เฉพาะ Portrait (แนวตั้ง) ---
-@media (orientation: portrait) {
-    /* ในแนวตั้ง ถ้าจอแคบมากจริงๆ อาจบังคับให้เหลือแถวละ 1 เพื่อความสวยงาม */
-/* @media (max-width: 480px) {
-        .friend-card {
-            flex: 1 1 100%;
-        }
-    } */
-/* } */
