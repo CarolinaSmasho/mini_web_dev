@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Profile";
+    
+    string username = "Kant Kruerad";
+    string pic = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Immanuel_Kant_-_Gemaelde_1.jpg/960px-Immanuel_Kant_-_Gemaelde_1.jpg";
+    string bio = "ดูอยู่ก็รู้อยู่";
+    string games = "18+";
+    string discord = "kant1593";
+    string steam = "kant1593";
+    string twitch = "kant1593";
+    
+    int karmaScore = -75;
+    bool isOwnProfile = true;
+
+    int karmaPercent = (karmaScore + 100) / 2;
+
+    string tierName = "Restricted";
+    string tierColor = "#ff2828";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+<link rel="stylesheet" href="~/css/profiles.css" asp-append-version="true" />
+
+<div class="main-content">
+    <div class="container">
+        <div class="col-left">
+            <div class="box" style="text-align: center;">
+                <div class="profile-img">
+                    <img src="@pic" />
+                </div>
+                <h3>@username</h3>
+                <span style="background: @tierColor; color: black; padding: 3px 6px; font-size: 12px; font-weight: bold;">
+                    @tierName Member
+                </span>
+            </div>
+
+            <div class="box">
+                <h2>Karma Score</h2>
+                <div style="font-size: 36px; font-weight: bold;">@karmaScore</div>
+                <div style="color: @tierColor; font-weight: bold;">Status: @tierName</div>
+
+                <div class="bar-bg">
+                    <div class="bar-fill" style="width: @(karmaPercent)%;"></div>
+                </div>
+                
+                <br>
+                <a asp-controller="Home" asp-action="KarmaHistory" style="color: orange; text-decoration: none;">[ View History ]</a>
+            </div>
+        </div>
+
+        <div class="col-right">
+            <form>
+                <div class="box">
+                    <h2>Profile</h2>
+
+                    <label>Display Name</label>
+                    <input type="text" name="Username" value="@username" @(isOwnProfile ? "" : "readonly") />
+
+                    <label>Bio</label>
+                    <textarea name="Bio" rows="3" @(isOwnProfile ? "" : "readonly")>@bio</textarea>
+
+                    <label>Games</label>
+                    <textarea name="games" rows="2" @(isOwnProfile ? "" : "readonly")>@games</textarea>
+
+                    <label>Vibe</label>
+                    <div style="@(isOwnProfile ? "" : "pointer-events: none; opacity: 0.5;")">
+                        <button type="button" class="btn active" onclick="toggleBtn(this)">Chill</button>
+                        <button type="button" class="btn" onclick="toggleBtn(this)">Tryhard</button>
+                        <button type="button" class="btn" onclick="toggleBtn(this)">Teacher</button>
+                        <button type="button" class="btn" onclick="toggleBtn(this)">Party</button>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <h2>Social Links</h2>
+
+                    <label>Discord</label>
+                    <div class="input-group">
+                        <span class="material-symbols-outlined">chat_bubble</span>
+                        <input type="text" value="@discord" @(isOwnProfile ? "" : "readonly") />
+                    </div>
+
+                    <label>Steam</label>
+                    <div class="input-group">
+                        <span class="material-symbols-outlined">sports_esports</span>
+                        <input type="text" value="@steam" @(isOwnProfile ? "" : "readonly") />
+                    </div>
+
+                    <label>Twitch</label>
+                    <div class="input-group">
+                        <span class="material-symbols-outlined">live_tv</span>
+                        <input type="text" value="@twitch" @(isOwnProfile ? "" : "readonly") />
+                    </div>
+                </div>
+
+                @if (isOwnProfile)
+                {
+                    <div style="text-align: right;">
+                        <button type="button" class="btn-save" onclick="alert('Saved!')">SAVE DATA</button>
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleBtn(btn) {
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
+            } else {
+                btn.classList.add('active');
+            }
+        }
+    </script>
+}

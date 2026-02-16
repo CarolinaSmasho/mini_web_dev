@@ -16,8 +16,15 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Profiles()
+    {
+        return View();
+    }
 
-
+    public IActionResult KarmaHistory()
+    {
+        return View();
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

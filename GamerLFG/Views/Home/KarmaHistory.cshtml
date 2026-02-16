@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Karma History";
+
+    string Username = "Kant Kruerad";
+    int karmascore = -75;
+
+    var historyList = new [] {
+        new { Description = "ได้รับโหวตจากเพื่อนร่วมทีม", Points = 10, ActionType = "Positive Vote", CreatedAt = DateTime.Now.AddHours(-2)},
+        new { Description = "ถูกรายงาน", Points = -15, ActionType = "Reported", CreatedAt = DateTime.Now.AddDays(-3)},
+        new { Description = "ถูกรายงาน", Points = -15, ActionType = "Reported", CreatedAt = DateTime.Now.AddDays(-5)},
+        new { Description = "AFK กลางเกม", Points = -20, ActionType = "System Penalty", CreatedAt = DateTime.Now.AddDays(-6)},
+        new { Description = "ถูกรายงาน", Points = -15, ActionType = "Reported", CreatedAt = DateTime.Now.AddDays(-9)},
+        new { Description = "AFK กลางเกม", Points = -20, ActionType = "System Penalty", CreatedAt = DateTime.Now.AddDays(-10)},
+    };
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+<link rel="stylesheet" href="~/css/karmahistory.css" asp-append-version="true" />
+
+<div class="main-content">
+    <div class="container">
+        <div class="box">
+            <div class="header-row">
+                <div>
+                    <h1>KARMA HISTORY</h1>
+                    <p class="sub-text">
+                        @Username • Total: 
+                        <span style="color: #ff3636 ; font-weight: bold;">
+                            @karmascore.ToString("0") pts
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="sub-text" style="margin-bottom: 15px;">
+                Total Records: @historyList.Length items
+            </div>
+
+            <div class="history-list">
+                @foreach (var entry in historyList)
+                {
+                    var isPositive = entry.Points >= 0;
+                    var pointColor = isPositive ? "text-green" : "text-red";
+                    var pointSign = isPositive ? "+" : "";
+                    var iconName = isPositive ? "trending_up" : "trending_down";
+                    
+                    <div class="history-item">
+                        <div class="item-left">
+                            <div class="icon-box" style="border-color: @(isPositive ? "#017758" : "#850a0a");">
+                                <span class="material-symbols-outlined @pointColor">@iconName</span>
+                            </div>
+                            <div>
+                                <p class="desc">@entry.Description</p>
+                                <p class="meta">
+                                    @entry.ActionType • @entry.CreatedAt.ToString("MMM dd, HH:mm")
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="item-right">
+                            <p class="points @pointColor">@pointSign@entry.Points</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
