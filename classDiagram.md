@@ -1,3 +1,4 @@
+<<<<<<< tawan
 # 📊 System Diagrams - Gamer LFG
 
 เอกสารนี้แสดง Class Diagram และ Entity Relationship เพื่ออธิบายโครงสร้างของระบบ Gamer LFG
@@ -10,18 +11,37 @@ ctrl+shift+v เพื่อดู
 classDiagram
     class User {
         +int userId
+=======
+```mermaid
+classDiagram
+    class User {
+        +string userId
+>>>>>>> main
         +string username
         +string email
         +string password
         +string avatar
+<<<<<<< tawan
         +float karmaScore
         +string[] vibeTags
         +string[] gameLibrary
         +datetime createdAt
+=======
+        +string bio
+        +float karmaScore
+        +Karma[] karmaHistory
+        +string[] vibeTags
+        +string[] gameLibrary
+        +string[] friend_id
+        +string[] social_media
+        +Notification[] notifications
+        -datetime createdAt
+>>>>>>> main
         +register()
         +login()
         +logout()
         +updateProfile()
+<<<<<<< tawan
         +endorse(User)
     }
 
@@ -29,12 +49,28 @@ classDiagram
         +int lobbyId
         +string title
         +string game
+=======
+        +updateFriend()
+        +endorse(User targetUser)
+    }
+
+    class Lobby {
+        +string lobbyId
+        +string title
+        +string game
+        +User[] id_pending
+        +User[] id_confirm
+>>>>>>> main
         +string description
         +int currentPlayers
         +int maxPlayers
         +string[] moods
+<<<<<<< tawan
         +Role[] roles
         +string status
+=======
+        +string[] roles
+>>>>>>> main
         +bool isRecruiting
         +datetime scheduledTime
         +datetime createdAt
@@ -44,6 +80,7 @@ classDiagram
         +openRecruitment()
         +closeRecruitment()
         +getMissingRoles()
+<<<<<<< tawan
     }
 
     class Role {
@@ -464,3 +501,26 @@ flowchart TB
 
 *Document Version: 1.0*  
 *Last Updated: 2026-01-31*
+=======
+        +confirm()
+    }
+
+    class Karma {
+        +string id
+        +float score
+        +datetime date
+        +string comment
+    }
+
+    class Notification {
+        +string text
+        +datetime date
+        +bool isRead
+    }
+
+    %% Relationships
+    User "1" --> "*" Karma : has
+    User "1" --> "*" Notification : receives
+    User "1" -- "*" User : friends
+    Lobby "1" o-- "*" User : contains
+>>>>>>> main
