@@ -61,6 +61,7 @@ body {
     padding: 3px;
     cursor: pointer;
     transition: all 0.3s ease;
+     font-weight: bolder;
     border: #ffffff solid 2px;
 
 }
@@ -70,6 +71,7 @@ body {
     padding: 3px;
     color: black;
     height: max-content;
+    font-weight: bolder;
     font-size: x-large;
     cursor: pointer;
     transition: all 0.3s ease;
