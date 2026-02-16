@@ -8,19 +8,19 @@
     "net10.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Hp\\.nuget\\packages\\": {}
+    "C:\\Users\\User\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\2nd_Year\\WebAppDev\\WebAppMiniProject\\mini_web_dev\\GamerLFG\\GamerLFG.csproj",
+      "projectUniqueName": "D:\\mini_web_dev\\GamerLFG\\GamerLFG.csproj",
       "projectName": "GamerLFG",
-      "projectPath": "E:\\2nd_Year\\WebAppDev\\WebAppMiniProject\\mini_web_dev\\GamerLFG\\GamerLFG.csproj",
-      "packagesPath": "C:\\Users\\Hp\\.nuget\\packages\\",
-      "outputPath": "E:\\2nd_Year\\WebAppDev\\WebAppMiniProject\\mini_web_dev\\GamerLFG\\obj\\",
+      "projectPath": "D:\\mini_web_dev\\GamerLFG\\GamerLFG.csproj",
+      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+      "outputPath": "D:\\mini_web_dev\\GamerLFG\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
