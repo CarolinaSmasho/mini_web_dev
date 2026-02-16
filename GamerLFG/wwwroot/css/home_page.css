@@ -22,7 +22,7 @@ a:hover, a:active, a:focus {
 
 .lobbies{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 30px;
     padding: 20px;
     margin-top: 2rem;
@@ -209,6 +209,8 @@ main .orange-button{
 .my-lobby .lobby:hover{
     border:solid #31eaff 3px;
     scale: 1.05;
+    margin: 0;
+    max-width: 315px;
 }
 .add-lobby:hover{
   
