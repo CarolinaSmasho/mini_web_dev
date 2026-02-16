@@ -1,0 +1,126 @@
+body {
+  background-color: black;
+}
+h1 {
+  width: fit-content;
+  color: #ffa31a;
+  background-color: #292929;
+  border-radius: 10px;
+  padding: 20px;
+}
+.nav-tabs {
+  display: flex;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+.rbx-tab a:hover,
+a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+.rbx-tab {
+  width: 50%;
+  text-align: center;
+}
+
+.rbx-tab a {
+  display: block;
+  color: white; /* สีข้อความขาว */
+  text-decoration: none; /* เอาขีดเส้นใต้ออก */
+  width: 100%;
+}
+
+.active {
+  background-color: #808080;
+}
+
+.friends-filter {
+  padding: 7px;
+  margin-bottom: 20px;
+  width: fit-content;
+  background-color: #292929;
+}
+
+.friends-filter-searchbar-input {
+  background-color: #808080;
+}
+.friends-filter-searchbar-input::placeholder {
+  color: #ffa31a;
+}
+
+.friend-cards {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 10px;
+}
+
+.friend-card {
+  border: 2px solid black;
+  background-color: #808080;
+}
+
+.friend-card-fullbody {
+  width: 96px;
+  height: 96px;
+  margin: 12px;
+}
+
+.friend-card-fullbody img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friend-card-content {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.friend-card-caption {
+  flex: 1;
+  padding-left: 10px;
+  min-width: 0;
+}
+.text-overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+.friend-cards .friend-card {
+  width: calc(33.33% - 10px);
+}
+
+@media (max-width: 991px) and (min-width: 543px) {
+  .friend-cards .friend-card {
+    width: calc(50% - 10px);
+  }
+}
+
+@media (max-width: 543px) {
+  .friend-cards .friend-card {
+    width: 100%;
+  }
+}
+
+/* --- เฉพาะ Portrait (แนวตั้ง) ---
+@media (orientation: portrait) {
+    /* ในแนวตั้ง ถ้าจอแคบมากจริงๆ อาจบังคับให้เหลือแถวละ 1 เพื่อความสวยงาม */
+/* @media (max-width: 480px) {
+        .friend-card {
+            flex: 1 1 100%;
+        }
+    } */
+/* } */

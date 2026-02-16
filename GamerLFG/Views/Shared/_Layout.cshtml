@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
 
     <header class="header">
         <div class="nav-bar">
@@ -58,6 +57,63 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    <input type="checkbox" id="global-user-modal-toggle" class="modal-checkbox">
+
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-box">
+                    <span id="modal-display-name" class="modal-title">Loading...</span>
+                </div>
+                <label for="global-user-modal-toggle" class="modal-close-btn">X</label>
+            </div>
+
+            <div class="modal-body" style="color: white; padding: 10px;">
+                <p><strong>Username:</strong> <span id="modal-username">-</span></p>
+                <p><strong>Status:</strong> <span id="modal-status">-</span></p>
+                <p><strong>Bio:</strong> <span id="modal-bio">-</span></p>
+            </div>
+
+            <div class="modal-actions">
+                <a id="modal-profile-link" href="#" class="modal-action-btn">ดู Profile</a>
+                <button class="modal-action-btn" onclick="alert('Mock: Add Friend')">Add/Delete Friend</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openUserModal(userId) {
+        // 1. ตั้งค่า Default ระหว่างรอโหลด
+        document.getElementById('modal-display-name').innerText = "Loading...";
+        document.getElementById('modal-username').innerText = "...";
+
+        // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
+        fetch(`/Home/GetUserDetails?id=${userId}`)
+        .then(response => {
+        if (!response.ok) throw new Error("User not found");
+        return response.json();
+        })
+        .then(data => {
+        // 3. เอาข้อมูลที่ได้มาหยอดใส่ Modal
+        document.getElementById('modal-display-name').innerText = data.displayName;
+        document.getElementById('modal-username').innerText = data.username;
+        document.getElementById('modal-status').innerText = data.status;
+        document.getElementById('modal-bio').innerText = data.bio;
+
+        // อัปเดตลิ้งก์ปุ่ม
+        document.getElementById('modal-profile-link').href = `/users/${data.id}/profile`;
+
+        // 4. สั่งเปิด Modal
+        document.getElementById('global-user-modal-toggle').checked = true;
+        })
+        .catch(err => {
+        console.error(err);
+        alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
+        });
+        }
+    </script>
 
 </body>
 

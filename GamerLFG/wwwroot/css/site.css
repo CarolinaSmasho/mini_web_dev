@@ -29,3 +29,121 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* ================= GLOBAL MODAL CSS (วางใน site.css) ================= */
+
+/* 1. ซ่อน Checkbox ตัวควบคุม */
+.modal-checkbox {
+    display: none;
+}
+
+/* 2. ฉากหลัง (Overlay) - ปกติซ่อนไว้ (display: none) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* สีดำโปร่งแสง */
+    backdrop-filter: blur(4px);      /* เบลอฉากหลัง */
+    z-index: 9999;                   /* ให้อยู่บนสุดเสมอ */
+    
+    display: none;                   /* [สำคัญ] ซ่อนไว้ก่อน */
+    justify-content: center;
+    align-items: center;
+}
+
+/* 3. สั่งให้แสดงเมื่อ Checkbox ถูกติ๊ก (โดย JS) */
+.modal-checkbox:checked ~ .modal-overlay {
+    display: flex;
+}
+
+/* 4. กล่อง Modal (ดีไซน์ตามรูป Dark Theme) */
+.modal-content {
+    background-color: #1e1e1e;       /* พื้นหลังสีเทาเข้มเกือบดำ */
+    padding: 25px;
+    border-radius: 20px;             /* มุมโค้งมน */
+    width: 320px;                    /* ความกว้าง */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* เงาฟุ้งๆ */
+    color: white;                    /* ตัวหนังสือสีขาว */
+}
+
+/* 5. ส่วนหัว (Header) */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none;             /* ลบเส้นขอบเดิมของ Bootstrap ออก */
+    padding: 0;
+}
+
+.modal-title-box {
+    background-color: #111;          /* กล่องชื่อสีดำเข้ม */
+    padding: 10px 20px;
+    border-radius: 12px;
+    flex-grow: 1;
+    margin-right: 15px;
+    text-align: center;
+}
+
+.modal-title {
+    color: #ffa31a;                  /* สีส้ม */
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* ปุ่มปิด (วงกลม) */
+.modal-close-btn {
+    background-color: #444;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+.modal-close-btn:hover {
+    background-color: #666;
+}
+
+/* 6. ส่วนเนื้อหา (Body) */
+.modal-body p {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+.modal-body span {
+    color: #ccc;                     /* สีตัวอักษรข้อมูลให้จางลงหน่อย */
+}
+
+/* 7. ปุ่มกดด้านล่าง (Actions) */
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-action-btn {
+    background-color: #111;
+    color: #eee;
+    border: 1px solid #333;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 1rem;
+}
+
+.modal-action-btn:hover {
+    background-color: #ffa31a;       /* ชี้แล้วเปลี่ยนเป็นสีส้ม */
+    color: #000;                     /* ตัวหนังสือดำ */
+    border-color: #ffa31a;
+}
