@@ -5,7 +5,7 @@ h1 {
   width: fit-content;
   color: #ffa31a;
   background-color: #292929;
-  border-radius: 30px;
+  border-radius: 10px;
   padding: 20px;
 }
 .nav-tabs {
@@ -17,6 +17,12 @@ h1 {
   margin-bottom: 20px;
 }
 
+.rbx-tab a:hover,
+a:visited {
+  color: white;
+  text-decoration: none;
+}
+
 .rbx-tab {
   width: 50%;
   text-align: center;
@@ -24,6 +30,8 @@ h1 {
 
 .rbx-tab a {
   display: block;
+  color: white; /* สีข้อความขาว */
+  text-decoration: none; /* เอาขีดเส้นใต้ออก */
   width: 100%;
 }
 
@@ -32,8 +40,7 @@ h1 {
 }
 
 .friends-filter {
-  padding: 20px;
-  border-radius: 30px;
+  padding: 7px;
   margin-bottom: 20px;
   width: fit-content;
   background-color: #292929;
@@ -41,7 +48,6 @@ h1 {
 
 .friends-filter-searchbar-input {
   background-color: #808080;
-  border-radius: 10px;
 }
 .friends-filter-searchbar-input::placeholder {
   color: #ffa31a;
