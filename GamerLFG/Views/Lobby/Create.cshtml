@@ -225,19 +225,22 @@
                                 <div class="flex flex-col gap-2">
                                     <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="recruitmentDeadline">Recruitment Deadline</label>
                                     <input type="datetime-local" id="recruitmentDeadline" name="RecruitmentDeadline" required
-                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                           style="color-scheme: dark;" />
                                 </div>
 
                                 <div class="flex flex-col gap-2">
                                     <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionStartTime">Session Starts</label>
                                     <input type="datetime-local" id="sessionStartTime" name="SessionStartTime" required
-                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                           style="color-scheme: dark;" />
                                 </div>
 
                                 <div class="flex flex-col gap-2">
                                     <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionEndTime">Expected End</label>
                                     <input type="datetime-local" id="sessionEndTime" name="SessionEndTime"
-                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all" />
+                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                           style="color-scheme: dark;" />
                                 </div>
                             </div>
                         </div>
@@ -342,10 +345,51 @@
             }
         }
 
+        function toLocalDatetimeValue(date) {
+            // Returns a string like "2025-12-31T18:00" in local time for use with datetime-local inputs
+            const pad = n => String(n).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        function initDatetimeFields() {
+            const now = new Date();
+            const nowStr = toLocalDatetimeValue(now);
+
+            const deadline = document.getElementById('recruitmentDeadline');
+            const start = document.getElementById('sessionStartTime');
+            const end = document.getElementById('sessionEndTime');
+
+            // Prevent selecting past times
+            deadline.min = nowStr;
+            start.min = nowStr;
+            end.min = nowStr;
+
+            // When deadline changes, session start can't be before it
+            deadline.addEventListener('change', () => {
+                if (deadline.value) {
+                    start.min = deadline.value;
+                    if (start.value && start.value < deadline.value) {
+                        start.value = deadline.value;
+                    }
+                }
+            });
+
+            // When session start changes, session end can't be before it
+            start.addEventListener('change', () => {
+                if (start.value) {
+                    end.min = start.value;
+                    if (end.value && end.value < start.value) {
+                        end.value = start.value;
+                    }
+                }
+            });
+        }
+
         // Initialize with a few default tags if needed
         document.addEventListener('DOMContentLoaded', () => {
              // Optional auto-init
              updateHostRoles();
+             initDatetimeFields();
              
              // Add listeners to ALL role inputs (including restored ones)
              const allRoleInputs = document.querySelectorAll('input[name="roleNames[]"]');
