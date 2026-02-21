@@ -1,0 +1,256 @@
+.create-form{
+    margin-left:2rem ;
+    margin-right: 2rem;
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns:repeat(6,1fr);
+    grid-template-rows: repeat(10,1fr);
+    grid-row: 1/3;
+    gap: 10px;
+    align-items: center;
+
+}
+input{
+    background-color: transparent;
+    width: auto;
+}
+.create-form{
+    display: flex;
+    flex-direction: column;
+    margin-left:2rem ;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+form div{
+    background-color: #292929;
+    color: whitesmoke;
+}
+
+form >div{
+    width: clamp(250px,100%,1000px);
+    height: clamp(100px,100%,600px);
+    padding: 2rem;
+
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: clamp(250px,100%,1000px);
+    height: clamp(100px,100%,600px);
+    background-image:linear-gradient(rgba(80, 77, 77, 0.3), rgba(27, 27, 27, 0.8)),
+    url("https://i.ytimg.com/vi/3SzjYKwHHO4/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDuq3xbnmvxoEa8kuaZhcnZADaL-g");
+    overflow: hidden; 
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    object-fit: cover;
+
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+}  
+
+.title input{
+    background-color: transparent;
+    color: white;
+    font-weight: bolder;
+    border: #938a8a solid 2px;
+}
+#title{
+    font-size: xx-large;
+
+}
+
+.title input::placeholder {
+  color: rgb(255, 255, 255);    /* เปลี่ยนสีตามต้องการ */
+  opacity: 0.8;    /* สำคัญ: Firefox มักจะปรับค่าความโปร่งแสงไว้ ถ้าอยากได้สีเป๊ะๆ ให้ใส่ตัวนี้ด้วย */
+}
+
+
+
+
+
+.require{
+    width: clamp(250px,100%,1000px);
+    height: clamp(100px,100%,600px);
+    padding-top: 1rem;
+}
+#re-text-1{
+    font-size: larger;
+}
+
+#re-text-2{
+    font-size: small;
+}
+
+.input-role{
+    display: flex;
+    gap: 15px;
+    justify-content: start;
+    padding: 2rem;
+    align-items: center;
+    background-color: #1b1b1b;
+}
+
+#key-role{
+    width: 100%;
+    color: white;
+    border: whitesmoke solid 2px;
+}
+#count{
+    width: 20%;
+    height: 100%;
+    border: whitesmoke solid 3px;
+    color: aliceblue;
+    margin: 0;
+    justify-items: center;
+    padding-top: 1rem ;
+    padding-left:1rem;
+    padding-right: 1rem;
+}
+#add-role-btn{
+    height: fit-content;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color:#ffa431;
+}
+#add-count-btn{
+
+}
+
+.role-box{
+    display: flex;
+    gap:20px;
+    max-width: 300px;
+    flex-direction: column;
+}
+.role-box div{
+    display: flex;
+    align-items: center;
+}
+.role-box div *{
+    margin: 0;
+    margin-left: 10px;
+}
+.role-box div p{
+    color: #ffa431;
+    font-weight: bold;
+}
+.del-role-btn{
+    color: rgb(0, 0, 0);
+    background-color: #ffa431;
+    font-weight: bolder;
+    border: #292929 solid 2px;
+    padding: 3px;
+    height: fit-content;
+}
+#roles-added{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    justify-content: start;
+    padding: 20px;
+    width: 100%;
+}
+
+@media (max-width:768px){
+    .input-role{
+        flex-direction: column;
+    }
+    #count{
+        color: #fff;
+    }
+}
+
+
+
+
+
+.mood-select{
+
+}
+.moods{ 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 20px; 
+
+}
+.check-box{
+    display: none;
+}
+
+.mood-label{
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: 2px solid #555;
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+    user-select: none;
+}
+
+.check-box:checked + .mood-label{
+    background-color: #ffa431;
+    color: #000;
+    border-color: #fff;
+    font-weight: bold;
+}
+.mood-label input{
+    display: none;
+}
+
+.wallpaper{
+
+}
+.wallpaper input{
+    color: white;
+}
+.discord input{
+    color: white;
+}
+
+.date{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+.calendar-label,.calendar{
+    display: flex;
+    gap: 20px;
+}
+.calendar{
+
+}
+.input-date{
+    color: white;
+    padding-left: 1rem;
+}
+.time-range ,.time-range > div{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.time-range > div >input{
+    border: white solid 2px;
+    max-width: 4rem ;
+    color: white;
+    padding: 1rem;
+}
+
+.create-form > .orange-button{
+    padding: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+}
+@media (hover:hover){
+    .create-form > .orange-button:hover{
+        scale: 1.05;
+
+    }
+}

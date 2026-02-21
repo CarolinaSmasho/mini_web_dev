@@ -1,0 +1,98 @@
+﻿@model List<GamerLFG.Models.Lobby>
+@{
+    ViewData["Title"] = "Home Page";
+}
+@using GamerLFG.Models
+
+
+
+<link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
+
+        <main>
+        <div class="mobile-search" id="mobile-search">
+                <form action="" class="search-form">
+                    <input type="text" placeholder="Search.." name="search" class="search-space">
+                    <button type="submit"><i class="fa fa-search fa-3x"></i></button>
+                </form>
+        </div>
+
+            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+                <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
+            
+            <div class="all-lob">
+            <div class="lobbies">
+            <a asp-controller="Lobby" asp-action="create_lobby">
+            <div class="add-lobby">
+                <i class="fa fa-plus-circle fa-2x"></i>
+                <p>NEW LOBBY</p>
+            </div>
+            </a>
+            </div>
+
+
+            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+                <i class="fa fa-globe" style="color: #ffa431;"></i>Public Feed</h3>
+
+            <div class="lobbies">
+                @if (Model == null || !Model.Any())
+                {
+                    <p style="color: aliceblue; padding: 1rem;">No lobbies found.</p>
+                }
+                else
+                {
+                @foreach(Lobby lob in Model){
+                <div class="public-lobby">
+                <div class="lobby">
+                    <div class="game-pic" style="background-image: url('@lob.PictureUrl');">
+                        <div class="gname">
+                            <p>@lob.Game</p>
+                        </div>
+                    </div>
+                    <div class="host-bar">
+                        <div>
+                            <i class="fa fa-user-o"></i>
+                            <p>Host: @lob.HostId</p>
+                        </div>
+                        @if(lob.IsRecruiting){
+                        <i class="fa fa-circle" style="color: green;"></i>
+                        }
+                        else{
+                        <i class="fa fa-circle" style="color: red;"></i>
+                        }
+                    </div>
+                    <h3>@lob.Title</h3>
+                    <div class="slots">
+                        <div class="icon">
+                            @if(lob.MaxPlayers <=10){
+                                @for(int i=0;i< lob.MaxPlayers;i++){
+                                    @if(i>=lob.CurrentPlayers){
+                                    <i class="fa fa-user-o"></i>
+                                    }
+                                    else{
+                                        <i class="fa fa-user-o" style="color: #ffa431;"></i>
+                                    }
+
+                                }
+                            }
+                        </div>
+                        <div>
+                            <p>@lob.CurrentPlayers/@lob.MaxPlayers SLOTS</p>
+                        </div>
+                    </div>
+                   <div class="tag-game">
+                            @foreach (string mood in lob.Moods){
+                              <p class="tag-ele">@mood</p>
+                            }
+                    </div>
+                    <a asp-controller="Lobby" asp-action="Details" asp-route-id="@lob.Id">
+                     <button class="orange-button">JOIN LOBBY</button>
+                    </a>
+
+
+                </div>
+                </div>
+            }
+                }
+            </div>
+        </div>
+        </main>

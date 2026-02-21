@@ -1,0 +1,478 @@
+@model GamerLFG.Models.Lobby
+@{
+    /*
+     * ════════════════════════════════════════════════════════
+     *  SCENARIO SWITCHER  —  เปลี่ยนตัวเลขบรรทัดนี้เพื่อเทส
+     * ════════════════════════════════════════════════════════
+     *  1 = HOST              (lobby active, recruiting open)
+     *  2 = ไม่ได้ login
+     *  3 = Visitor           (login แล้ว, recruiting OPEN)
+     *  4 = Visitor           (login แล้ว, recruiting CLOSED)
+     *  5 = Pending           (ส่ง request ไปแล้ว รอ)
+     *  6 = Member            (ถูกรับเข้าแล้ว, lobby active)
+     *  7 = Member + Completed (โชว์ Karma Evaluation)
+     *  8 = Host  + Completed  (ไม่มีปุ่ม Complete Mission)
+     * ════════════════════════════════════════════════════════
+     */
+    var scenario = 1;
+
+    // ── AUTH MOCK ───────────────────────────────────────────
+    // null  = ยังไม่ได้ login
+    // string = userId ของคนที่ login อยู่
+    string? currentUserId = scenario switch {
+        1 => "USER-001",   // host
+        2 => null,         // guest
+        3 => "USER-099",   // visitor (open)
+        4 => "USER-099",   // visitor (closed)
+        5 => "USER-099",   // pending
+        6 => "USER-002",   // member
+        7 => "USER-002",   // member + completed
+        8 => "USER-001",   // host  + completed  (case 8)
+    };
+
+    // ── LOBBY STATE MOCK ────────────────────────────────────
+    bool isRecruiting = scenario is not (4 or 7 or 8); // ปิดเมื่อ scenario 4, 7, 8
+    bool isCompleted  = scenario is 7 or 8;
+
+    // สมาชิก lobby (extended สำหรับ completed เพื่อให้มีคนให้ rate)
+    bool useExtendedMembers = scenario is 7 or 8;
+    var lobbyPlayerIds = useExtendedMembers
+        ? new List<string> { "USER-001", "USER-002", "USER-003" }
+        : new List<string> { "USER-001", "USER-002" };
+
+    // ── USER FLAGS (derived) ────────────────────────────────
+    bool isHost           = currentUserId == "USER-001";
+    bool isMember         = lobbyPlayerIds.Contains(currentUserId ?? "");
+    bool hasPendingRequest = scenario == 5;
+
+    // ── LOBBY DATA ──────────────────────────────────────────
+    var mockLobby = new {
+        Id                  = "LOBBY-999",
+        Title               = "ไต่แรงค์ Valorant คืนนี้ขอคนไม่ตึงมาก",
+        Game                = "Valorant",
+        Description         = "หาเพื่อนร่วมทีมตำแหน่ง Sentinel และ Duelist ครับ เล่นขำๆ เน้นฮา ไม่เน้นหัวร้อน",
+        PictureUrl          = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+        MaxPlayers          = 5,
+        IsRecruiting        = isRecruiting,
+        IsCompleted         = isCompleted,
+        HostId              = "USER-001",
+        Moods               = new List<string> { "Chill", "Voice Chat", "Competitive" },
+        RecruitmentDeadline = DateTime.Now.AddHours(2),
+        SessionStartTime    = DateTime.Now.AddHours(3),
+        SessionEndTime      = DateTime.Now.AddHours(5),
+        Members = new List<dynamic> {
+            new { UserId = "USER-001", AssignedRole = "Leader",     IsHost = true  },
+            new { UserId = "USER-002", AssignedRole = "Controller", IsHost = false },
+            new { UserId = "USER-003", AssignedRole = "Duelist",    IsHost = false },
+        },
+        PlayerIds = lobbyPlayerIds,
+        DiscordLink = (string?)null,
+    };
+
+    // ── USER MAP MOCK ───────────────────────────────────────
+    var hostName = "Notatord_Commander";
+    var memberMap = new Dictionary<string, dynamic> {
+        { "USER-001", new { Username = "Notatord_Commander", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" } },
+        { "USER-002", new { Username = "Dew_The_Slayer",     AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew"      } },
+        { "USER-003", new { Username = "TanK_Artisan",       AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Tank"     } },
+    };
+
+    // ── PENDING APPLICATIONS MOCK (มองเห็นเฉพาะ Host) ──────
+    var pendingApps = new List<dynamic> {
+        new { Id = "APP-01", UserId = "USER-099", Message = "ขอเล่นด้วยครับ ผมเล่น Sage เป็น" },
+    };
+    var applicantMap = new Dictionary<string, dynamic> {
+        { "USER-099", new { Username = "Newbie_Player", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Newbie" } },
+    };
+
+    // ── KARMA MOCK (สำหรับ scenario 7: endorsements ที่ submit ไปแล้ว) ─
+    // จำลองว่า USER-002 เคย rate USER-003 ไปแล้ว (เพื่อแสดง "Evaluated")
+    var endorsedUserIds = scenario == 7
+        ? new HashSet<string> { "USER-003" }
+        : new HashSet<string>();
+
+    // ── DEBUG BAR LABEL ─────────────────────────────────────
+    var (scenarioBadge, scenarioColor, scenarioDesc) = scenario switch {
+        1 => ("HOST",              "#2ecc71", "เป็นเจ้าของ Lobby — เห็น Personnel Management + Pending Requests"),
+        2 => ("NOT LOGGED IN",     "#e74c3c", "ไม่ได้ login — เห็นแค่ปุ่ม LOGIN TO JOIN"),
+        3 => ("VISITOR (OPEN)",    "#95a5a6", "Login แล้ว ยังไม่ขอ — Recruiting เปิดอยู่"),
+        4 => ("VISITOR (CLOSED)",  "#7f8c8d", "Login แล้ว ยังไม่ขอ — Recruiting ปิดแล้ว"),
+        5 => ("PENDING",           "#f39c12", "ส่ง Request ไปแล้ว กำลังรออนุมัติ"),
+        6 => ("MEMBER",            "#3498db", "ถูกรับเข้าแล้ว — Lobby ยังเล่นอยู่"),
+        7 => ("MEMBER+COMPLETED",  "#9b59b6", "Lobby จบแล้ว — โชว์ Karma Evaluation"),
+        _ => ("HOST+COMPLETED",    "#1abc9c", "Host + Lobby จบแล้ว — ปุ่ม Complete หายไป"),
+    };
+}
+
+@* ── DEBUG BAR ── *@
+<style>
+    body        { background-color: #0d0d0d; }
+    .debug-bar  { font-size: 13px; padding: 10px 16px; border-radius: 8px; margin-bottom: 20px;
+                  display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .card-dark  { background: #1a1a1a; border: 1px solid #2a2a2a; padding: 20px; border-radius: 12px;
+                  margin-bottom: 20px; color: #d0d0d0; }
+    .hero-img   { width: 100%; height: 320px; object-fit: cover; border-radius: 12px; opacity: 0.75; }
+    .badge-role { background: #f2960d; color: #000; padding: 3px 10px; border-radius: 4px;
+                  font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .slot-empty { background: #111; border: 1px dashed #333; height: 64px; border-radius: 8px;
+                  display: flex; align-items: center; justify-content: center; color: #555; font-size: 13px; }
+    .member-card { background: #111; border: 1px solid #222; border-radius: 8px;
+                   padding: 12px; display: flex; align-items: center; gap: 12px; color: #d0d0d0; }
+    .member-card.you { border-color: #2ecc71; background: #0d1f0d; }
+    .avatar     { width: 44px; height: 44px; border-radius: 8px; border: 2px solid #f2960d; object-fit: cover; }
+    .btn-primary-cta { background:#f2960d; color:#000; border:none; padding:12px; border-radius:8px;
+                       font-weight:800; font-size:15px; width:100%; cursor:pointer; letter-spacing:.05em; }
+    .btn-primary-cta:hover { background:#e08800; }
+    .btn-danger-outline { background:transparent; color:#e74c3c; border:1px solid #e74c3c; padding:10px;
+                          border-radius:8px; font-weight:700; font-size:13px; width:100%; cursor:pointer; }
+    .btn-muted   { background:#222; color:#888; border:1px solid #333; padding:10px; border-radius:8px;
+                   font-weight:700; font-size:13px; width:100%; cursor:not-allowed; }
+    .btn-warning { background:transparent; color:#f39c12; border:1px solid #f39c12; padding:10px;
+                   border-radius:8px; font-weight:700; font-size:13px; width:100%; cursor:pointer; }
+    .btn-cancel  { background:transparent; color:#777; border:1px solid #333; padding:8px;
+                   border-radius:8px; font-weight:600; font-size:12px; width:100%; cursor:pointer; margin-top:6px; }
+    .comms-box   { border-radius:10px; padding:20px; margin-bottom:16px; border-left:4px solid; color: #d0d0d0; }
+    .karma-card  { background:#111; border:1px solid #222; border-radius:10px; padding:16px;
+                   text-align:center; color: #d0d0d0; }
+    .karma-avatar { width:60px; height:60px; border-radius:10px; margin: 0 auto 10px; border:2px solid #333; }
+    .karma-select { background:#0a0a0a; border:1px solid #333; color:#ddd; padding:6px 10px;
+                    border-radius:6px; font-size:12px; width:100%; margin-bottom:8px; }
+    .karma-btn   { background:#f2960d22; color:#f2960d; border:1px solid #f2960d44;
+                   padding:8px; border-radius:6px; font-size:12px; font-weight:700; width:100%; cursor:pointer; }
+    .evaluated-tag { background:#2ecc7122; border:1px solid #2ecc7144; color:#2ecc71;
+                     padding:8px; border-radius:6px; font-size:11px; font-weight:700; }
+</style>
+
+<div class="container mt-3">
+    <div class="debug-bar" style="background:#0d0d1a; border:1px solid @scenarioColor; border-radius:8px;">
+        <span style="background:@scenarioColor; color:#000; padding:4px 12px; border-radius:4px; font-weight:900; font-size:12px; white-space:nowrap;">
+            SC @scenario — @scenarioBadge
+        </span>
+        <span style="color:#aaa; font-size:12px;">@scenarioDesc</span>
+        <span style="margin-left:auto; color:#555; font-size:11px; white-space:nowrap;">
+            แก้ <code style="color:#f2960d;">var scenario = @scenario</code> บรรทัด 17 เพื่อสลับ
+        </span> 
+    </div>
+</div>
+
+<main class="container pb-5">
+    <div class="row g-4">
+
+        @* ════════ LEFT COLUMN ════════ *@
+        <div class="col-lg-8">
+
+            @* Hero *@
+            <div class="card-dark p-0 overflow-hidden">
+                <img src="@mockLobby.PictureUrl" class="hero-img" alt="Game" />
+                <div class="p-4">
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <span class="badge-role">@mockLobby.Game</span>
+                        @if (isHost)    { <span class="badge-role" style="background:#2ecc71;">HOST MODE</span> }
+                        @if (isMember && !isHost) { <span class="badge-role" style="background:#3498db;">MEMBER</span> }
+                        @if (hasPendingRequest)   { <span class="badge-role" style="background:#f39c12;">PENDING</span> }
+                        @if (mockLobby.IsCompleted)
+                        {
+                            <span class="badge-role" style="background:#9b59b6;">COMPLETED</span>
+                        }
+                        else if (!mockLobby.IsRecruiting)
+                        {
+                            <span class="badge-role" style="background:#e74c3c;">RECRUITING CLOSED</span>
+                        }
+                    </div>
+                    <h1 class="fw-bold text-white">@mockLobby.Title</h1>
+                    <p class="text-secondary">@mockLobby.Description</p>
+                </div>
+            </div>
+
+            @* Squad *@
+            <div class="card-dark">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0 text-white">Squad Composition</h4>
+                    <span class="text-secondary">@mockLobby.PlayerIds.Count / @mockLobby.MaxPlayers</span>
+                </div>
+                <div class="row g-2">
+                    @foreach (var pid in mockLobby.PlayerIds)
+                    {
+                        var u = memberMap.ContainsKey(pid) ? memberMap[pid] : null;
+                        bool isMe = pid == currentUserId;
+                        bool pidIsHost = pid == mockLobby.HostId;
+                        <div class="col-md-6">
+                            <div class="member-card @(isMe ? "you" : "")">
+                                <img src="@(u?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + pid)"
+                                     class="avatar" />
+                                <div class="flex-grow-1">
+                                    <div class="text-white fw-bold" style="font-size:14px;">
+                                        @(u?.Username ?? pid)
+                                        @if (isMe)  { <small class="text-success">(You)</small> }
+                                    </div>
+                                    @{
+                                        var mem = mockLobby.Members.FirstOrDefault(m => m.UserId == pid);
+                                    }
+                                    <small style="color:#f2960d;">@(mem?.AssignedRole ?? "Member")</small>
+                                </div>
+                                @* Host สามารถ kick คนอื่น *@
+                                @if (isHost && !isMe)
+                                {
+                                    <button class="btn btn-sm btn-outline-danger">Kick</button>
+                                }
+                            </div>
+                        </div>
+                    }
+                    @* Empty slots *@
+                    @for (int i = mockLobby.PlayerIds.Count; i < mockLobby.MaxPlayers; i++)
+                    {
+                        <div class="col-md-6"><div class="slot-empty">— Empty Slot —</div></div>
+                    }
+                </div>
+            </div>
+
+            @* Pending Requests — HOST เท่านั้น *@
+            @if (isHost && pendingApps.Any())
+            {
+                <div class="card-dark" style="border-color:#3498db;">
+                    <h5 class="text-white mb-3">
+                        <span style="color:#3498db;">&#9654;</span> Pending Requests (@pendingApps.Count)
+                    </h5>
+                    @foreach (var app in pendingApps)
+                    {
+                        var ap = applicantMap.ContainsKey(app.UserId) ? applicantMap[app.UserId] : null;
+                        <div class="d-flex justify-content-between align-items-center p-3 mb-2"
+                             style="background:#0a0a0a; border-radius:8px; border:1px solid #222;">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@(ap?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=x")"
+                                     width="40" class="rounded" />
+                                <div>
+                                    <p class="mb-0 fw-bold text-white">@(ap?.Username ?? app.UserId)</p>
+                                    <small class="text-secondary fst-italic">"@app.Message"</small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-danger">Reject</button>
+                                <button class="btn btn-sm btn-success">Recruit</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @* Secure Comms / Status Box *@
+            @if (isMember && !isHost)
+            {
+                <div class="comms-box" style="background:#0d1f0d; border-color:#2ecc71;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span style="color:#2ecc71; font-size:18px;">&#128275;</span>
+                        <strong class="text-white">Tactical Comms Established</strong>
+                        <span class="badge-role" style="background:#2ecc71; margin-left:4px;">Authorized</span>
+                    </div>
+                    <p class="text-secondary mb-3" style="font-size:13px;">
+                        Welcome to the squad. All secure channels are now unlocked.
+                    </p>
+                    @if (!string.IsNullOrEmpty(mockLobby.DiscordLink))
+                    {
+                        <a href="@mockLobby.DiscordLink" class="btn btn-sm" style="background:#5865F2; color:#fff;">Discord Channel</a>
+                    }
+                    else
+                    {
+                        <span style="color:#555; font-size:12px;">No Discord link set by host</span>
+                    }
+                </div>
+            }
+            else if (hasPendingRequest)
+            {
+                <div class="comms-box" style="background:#1a1200; border-color:#f39c12;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span style="color:#f39c12; font-size:18px;">&#9203;</span>
+                        <strong class="text-white">Verification In Progress</strong>
+                        <span class="badge-role" style="background:#f39c12;">Waitlist</span>
+                    </div>
+                    <p class="text-secondary mb-0" style="font-size:13px;">
+                        Request logged. Squad leader is reviewing your credentials. Comms offline until confirmed.
+                    </p>
+                </div>
+            }
+            else if (!isHost && !string.IsNullOrEmpty(currentUserId) && !mockLobby.IsCompleted)
+            {
+                <div class="comms-box" style="background:#1a0d00; border-color:#f2960d;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span style="color:#f2960d; font-size:18px;">&#128274;</span>
+                        <strong class="text-white">Secure Communications Channel</strong>
+                        <span class="badge-role">Encrypted</span>
+                    </div>
+                    <p class="text-secondary mb-0" style="font-size:13px;">
+                        Discord and voice links are hidden until you are officially recruited.
+                    </p>
+                </div>
+            }
+
+            @* Karma Evaluation — member หรือ host เมื่อ lobby completed *@
+            @if (mockLobby.IsCompleted && (isMember || isHost))
+            {
+                <div class="card-dark" style="border-color:#9b59b666;">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span style="color:#9b59b6; font-size:20px;">&#127942;</span>
+                        <h5 class="text-white mb-0">Debriefing &amp; Karma Evaluation</h5>
+                    </div>
+                    <p class="text-secondary mb-4" style="font-size:13px;">
+                        Rate your teammates based on their performance and attitude.
+                    </p>
+                    <div class="row g-3">
+                        @foreach (var pid in mockLobby.PlayerIds)
+                        {
+                            if (pid == currentUserId) continue; @* ไม่ rate ตัวเอง *@
+                            var u2 = memberMap.ContainsKey(pid) ? memberMap[pid] : null;
+                            bool alreadyRated = endorsedUserIds.Contains(pid);
+                            <div class="col-md-4">
+                                <div class="karma-card">
+                                    <img src="@(u2?.AvatarUrl ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + pid)"
+                                         class="karma-avatar" />
+                                    <p class="text-white fw-bold mb-1" style="font-size:13px;">
+                                        @(u2?.Username ?? pid)
+                                    </p>
+                                    <small class="text-secondary d-block mb-3">Teammate</small>
+                                    @if (alreadyRated)
+                                    {
+                                        <div class="evaluated-tag w-100">&#10003; Evaluation Logged</div>
+                                    }
+                                    else
+                                    {
+                                        <select class="karma-select">
+                                            <option>MVP (+5)</option>
+                                            <option>Leader (+4)</option>
+                                            <option selected>Good Teammate (+3)</option>
+                                            <option>Chill (+2)</option>
+                                            <option>Leaver (-3)</option>
+                                            <option>Toxic (-5)</option>
+                                            <option>AFK (-3)</option>
+                                        </select>
+                                        <button class="karma-btn">Submit Rating</button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+        </div>@* end LEFT *@
+
+        @* ════════ RIGHT COLUMN ════════ *@
+        <div class="col-lg-4">
+
+            @* Mission Intel Card *@
+            <div class="card-dark">
+                <h5 class="text-white mb-3">Mission Intel</h5>
+                <hr style="border-color:#2a2a2a;">
+
+                @if (mockLobby.IsCompleted)
+                {
+                    <div class="p-3 mb-3 text-center" style="background:#0d1a0d; border:1px solid #2ecc7144; border-radius:8px;">
+                        <span style="color:#2ecc71; font-size:24px;">&#10003;</span>
+                        <p class="text-success fw-bold mb-0 mt-1">MISSION COMPLETED</p>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-secondary mb-1" style="font-size:12px;">Recruitment Ends:</p>
+                    <p class="text-warning fw-bold">@mockLobby.RecruitmentDeadline.ToString("f")</p>
+                    <div class="p-3 mb-3 text-center" style="background:#0a0a0a; border:1px solid #f2960d33; border-radius:8px;">
+                        <span class="h5 font-monospace" style="color:#f2960d;" id="timer">01:59:59</span>
+                    </div>
+                    <p class="text-secondary mb-1" style="font-size:12px;">Session:</p>
+                    <p class="text-white fw-bold mb-3">
+                        @mockLobby.SessionStartTime.ToString("HH:mm") – @mockLobby.SessionEndTime.ToString("HH:mm")
+                    </p>
+                }
+
+                <p class="text-secondary mb-2" style="font-size:12px;">Moods:</p>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    @foreach (var mood in mockLobby.Moods)
+                    {
+                        <span class="badge bg-secondary">@mood</span>
+                    }
+                </div>
+
+                @* ── ACTION BUTTON — เปลี่ยนตาม scenario ── *@
+
+                @if (isHost && !mockLobby.IsCompleted)
+                {
+                    @* SC 1: HOST (active) *@
+                    <button class="btn-primary-cta mb-2">EDIT MISSION</button>
+                    <button class="btn-primary-cta mb-2" style="background:#2ecc71;">COMPLETE MISSION</button>
+                    <button class="btn-danger-outline">TERMINATE LOBBY</button>
+                }
+                else if (isHost && mockLobby.IsCompleted)
+                {
+                    @* SC 8: HOST + COMPLETED — ไม่มีปุ่ม Complete *@
+                    <button class="btn-danger-outline">TERMINATE LOBBY</button>
+                }
+                else if (string.IsNullOrEmpty(currentUserId))
+                {
+                    @* SC 2: NOT LOGGED IN *@
+                    <button class="btn-primary-cta">LOGIN TO JOIN</button>
+                }
+                else if (isMember && !mockLobby.IsCompleted)
+                {
+                    @* SC 6: MEMBER (active) *@
+                    <button class="btn-muted mb-2">&#10003; RECRUITED</button>
+                    <button class="btn-danger-outline">ABANDON MISSION</button>
+                }
+                else if (isMember && mockLobby.IsCompleted)
+                {
+                    @* SC 7: MEMBER + COMPLETED *@
+                    <button class="btn-muted">&#10003; MISSION COMPLETE</button>
+                }
+                else if (hasPendingRequest)
+                {
+                    @* SC 5: PENDING *@
+                    <button class="btn-muted mb-2" style="color:#f39c12; border-color:#f39c12;">
+                        &#9203; REQUEST PENDING...
+                    </button>
+                    <button class="btn-cancel">Cancel Request</button>
+                }
+                else if (!mockLobby.IsRecruiting)
+                {
+                    @* SC 4: VISITOR + CLOSED *@
+                    <button class="btn-muted">&#128274; RECRUITMENT CLOSED</button>
+                }
+                else
+                {
+                    @* SC 3: VISITOR + OPEN *@
+                    <button class="btn-primary-cta">REQUEST DEPLOYMENT</button>
+                }
+            </div>
+
+            @* Host Card *@
+            <div class="card-dark d-flex align-items-center gap-3">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName"
+                     width="50" class="rounded-circle border border-warning" />
+                <div>
+                    <p class="text-white fw-bold mb-0">@hostName</p>
+                    <small style="color:#f2960d;">Mission Commander</small>
+                </div>
+            </div>
+
+        </div>@* end RIGHT *@
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        // Countdown timer
+        (function () {
+            var el = document.getElementById('timer');
+            if (!el) return;
+            var secs = 60 * 60 * 2;
+            setInterval(function () {
+                if (secs <= 0) { el.textContent = "EXPIRED"; return; }
+                secs--;
+                var h = Math.floor(secs / 3600);
+                var m = Math.floor((secs % 3600) / 60);
+                var s = secs % 60;
+                el.textContent =
+                    String(h).padStart(2,'0') + ':' +
+                    String(m).padStart(2,'0') + ':' +
+                    String(s).padStart(2,'0');
+            }, 1000);
+        })();
+    </script>
+}
