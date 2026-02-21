@@ -223,24 +223,42 @@
 
                             <div class="flex flex-col gap-4">
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="recruitmentDeadline">Recruitment Deadline</label>
-                                    <input type="datetime-local" id="recruitmentDeadline" name="RecruitmentDeadline" required
-                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
-                                           style="color-scheme: dark;" />
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Recruitment Deadline</label>
+                                    <input type="hidden" id="recruitmentDeadline" name="RecruitmentDeadline" required />
+                                    <div class="flex gap-2">
+                                        <input type="date" id="recruitmentDeadline_date"
+                                               class="flex-1 bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                               style="color-scheme: dark;" />
+                                        <input type="time" id="recruitmentDeadline_time"
+                                               class="w-32 bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                               style="color-scheme: dark;" />
+                                    </div>
                                 </div>
 
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionStartTime">Session Starts</label>
-                                    <input type="datetime-local" id="sessionStartTime" name="SessionStartTime" required
-                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
-                                           style="color-scheme: dark;" />
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Session Starts</label>
+                                    <input type="hidden" id="sessionStartTime" name="SessionStartTime" required />
+                                    <div class="flex gap-2">
+                                        <input type="date" id="sessionStartTime_date"
+                                               class="flex-1 bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                               style="color-scheme: dark;" />
+                                        <input type="time" id="sessionStartTime_time"
+                                               class="w-32 bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                               style="color-scheme: dark;" />
+                                    </div>
                                 </div>
 
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1" for="sessionEndTime">Expected End</label>
-                                    <input type="datetime-local" id="sessionEndTime" name="SessionEndTime"
-                                           class="bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
-                                           style="color-scheme: dark;" />
+                                    <label class="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Expected End</label>
+                                    <input type="hidden" id="sessionEndTime" name="SessionEndTime" />
+                                    <div class="flex gap-2">
+                                        <input type="date" id="sessionEndTime_date"
+                                               class="flex-1 bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                               style="color-scheme: dark;" />
+                                        <input type="time" id="sessionEndTime_time"
+                                               class="w-32 bg-black/60 border border-white/10 rounded px-4 py-3 text-sm text-white focus:border-primary outline-none transition-all"
+                                               style="color-scheme: dark;" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -346,42 +364,50 @@
         }
 
         function toLocalDatetimeValue(date) {
-            // Returns a string like "2025-12-31T18:00" in local time for use with datetime-local inputs
             const pad = n => String(n).padStart(2, '0');
             return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
         }
 
+        // Sync date+time pair → hidden datetime input
+        function syncDatetime(dateInputId, timeInputId, hiddenId) {
+            const d = document.getElementById(dateInputId).value;
+            const t = document.getElementById(timeInputId).value || '00:00';
+            document.getElementById(hiddenId).value = d && t ? `${d}T${t}` : '';
+        }
+
+        function bindDatetimePair(dateInputId, timeInputId, hiddenId) {
+            const sync = () => syncDatetime(dateInputId, timeInputId, hiddenId);
+            document.getElementById(dateInputId).addEventListener('change', sync);
+            document.getElementById(timeInputId).addEventListener('change', sync);
+        }
+
         function initDatetimeFields() {
             const now = new Date();
-            const nowStr = toLocalDatetimeValue(now);
+            const today = now.toISOString().split('T')[0];
+            const nowTime = now.toTimeString().slice(0, 5);
 
-            const deadline = document.getElementById('recruitmentDeadline');
-            const start = document.getElementById('sessionStartTime');
-            const end = document.getElementById('sessionEndTime');
-
-            // Prevent selecting past times
-            deadline.min = nowStr;
-            start.min = nowStr;
-            end.min = nowStr;
-
-            // When deadline changes, session start can't be before it
-            deadline.addEventListener('change', () => {
-                if (deadline.value) {
-                    start.min = deadline.value;
-                    if (start.value && start.value < deadline.value) {
-                        start.value = deadline.value;
-                    }
-                }
+            // Set min dates
+            ['recruitmentDeadline_date', 'sessionStartTime_date', 'sessionEndTime_date'].forEach(id => {
+                document.getElementById(id).min = today;
+            });
+            ['recruitmentDeadline_time', 'sessionStartTime_time', 'sessionEndTime_time'].forEach(id => {
+                document.getElementById(id).value = nowTime;
             });
 
-            // When session start changes, session end can't be before it
-            start.addEventListener('change', () => {
-                if (start.value) {
-                    end.min = start.value;
-                    if (end.value && end.value < start.value) {
-                        end.value = start.value;
-                    }
-                }
+            bindDatetimePair('recruitmentDeadline_date', 'recruitmentDeadline_time', 'recruitmentDeadline');
+            bindDatetimePair('sessionStartTime_date',    'sessionStartTime_time',    'sessionStartTime');
+            bindDatetimePair('sessionEndTime_date',      'sessionEndTime_time',      'sessionEndTime');
+
+            // When deadline date changes, session start min follows
+            document.getElementById('recruitmentDeadline_date').addEventListener('change', () => {
+                const d = document.getElementById('recruitmentDeadline_date').value;
+                if (d) document.getElementById('sessionStartTime_date').min = d;
+            });
+
+            // When session start date changes, session end min follows
+            document.getElementById('sessionStartTime_date').addEventListener('change', () => {
+                const d = document.getElementById('sessionStartTime_date').value;
+                if (d) document.getElementById('sessionEndTime_date').min = d;
             });
         }
 
