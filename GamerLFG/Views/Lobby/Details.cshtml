@@ -3,8 +3,20 @@
 
 @{
     /* 2. MOCKUP DATA AREA - ส่วนนี้จำลองข้อมูลที่ปกติจะมาจาก Controller */
-    
-    // จำลองข้อมูล Lobby
+
+    /*
+     * ========================================
+     * SCENARIO SWITCHER — เปลี่ยนตัวเลขเพื่อดู UI แต่ละกรณี
+     * ========================================
+     * 1 = เราเป็น HOST ของ Lobby นี้
+     * 2 = เราเป็น Visitor (ยังไม่ได้ขอเข้า)
+     * 3 = เราส่ง Request ไปแล้ว รอ Pending อยู่
+     * 4 = เราถูกรับเข้า Lobby แล้ว (เป็น Member)
+     * ========================================
+     */
+    var scenario = 3;
+
+    // ข้อมูล Lobby (ใช้ร่วมกันทุก scenario)
     var mockModel = new {
         Id = "LOBBY-999",
         Title = "ไต่แรงค์ Valorant คืนนี้ขอคนไม่ตึงมาก",
@@ -27,23 +39,57 @@
         PlayerIds = new List<string> { "USER-001", "USER-002" }
     };
 
-    // จำลองข้อมูลเสริม (ViewData)
     var hostName = "Notatord_Commander";
     var memberMap = new Dictionary<string, dynamic> {
         { "USER-001", new { Username = "Notatord_Commander", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" } },
-        { "USER-002", new { Username = "Dew_The_Slayer", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew" } }
+        { "USER-002", new { Username = "Dew_The_Slayer",     AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew" } }
     };
 
-    // จำลอง Session (สมมติว่าเราเป็น Host)
-    var currentUserId = "USER-001"; 
-    var isHost = true; // ลองเปลี่ยนเป็น false เพื่อดูหน้าจอฝั่งลูกทีม
-    var isMember = true;
-    
+    // --- ค่าที่เปลี่ยนไปตาม Scenario ---
+    string currentUserId;
+    bool isHost, isMember, hasPendingRequest;
+
+    switch (scenario) {
+        case 1: // HOST
+            currentUserId     = "USER-001";
+            isHost            = true;
+            isMember          = true;
+            hasPendingRequest = false;
+            break;
+        case 2: // VISITOR — ยังไม่ได้ขอ
+            currentUserId     = "USER-099";
+            isHost            = false;
+            isMember          = false;
+            hasPendingRequest = false;
+            break;
+        case 3: // PENDING — ส่ง Request ไปแล้ว รอ
+            currentUserId     = "USER-099";
+            isHost            = false;
+            isMember          = false;
+            hasPendingRequest = true;
+            break;
+        default: // MEMBER — ถูกรับเข้าแล้ว (case 4)
+            currentUserId     = "USER-002";
+            isHost            = false;
+            isMember          = true;
+            hasPendingRequest = false;
+            break;
+    }
+
+    // Pending applications (มองเห็นได้เฉพาะ Host)
     var pendingApps = new List<dynamic> {
         new { Id = "APP-01", UserId = "USER-003", Message = "ขอเล่นด้วยครับ ผมเล่น Sage เป็น" }
     };
     var applicantMap = new Dictionary<string, dynamic> {
         { "USER-003", new { Username = "Newbie_Player", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Newbie" } }
+    };
+
+    // Label สำหรับ debug bar ด้านบน
+    var (scenarioBadge, scenarioColor, scenarioDesc) = scenario switch {
+        1 => ("HOST",    "#2ecc71", "คุณเป็นเจ้าของ Lobby นี้"),
+        2 => ("VISITOR", "#95a5a6", "คุณยังไม่ได้ขอเข้า Lobby"),
+        3 => ("PENDING", "#f39c12", "คุณส่ง Request ไปแล้ว กำลังรออนุมัติ"),
+        _ => ("MEMBER",  "#3498db", "คุณเป็นสมาชิกของ Lobby นี้แล้ว")
     };
 }
 
@@ -55,9 +101,22 @@
     .card-dark { background: #1e1e1e; border: 1px solid #333; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
     .btn-action { background: #f2960d; color: black; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
     .member-avatar { width: 45px; height: 45px; border-radius: 8px; border: 2px solid #f2960d; }
+    .debug-bar { font-size: 13px; padding: 8px 16px; border-radius: 8px; margin-bottom: 20px;
+                 display: flex; align-items: center; gap: 12px; border: 1px solid #333; }
 </style>
 
-<main class="container mt-4">
+@* ── DEBUG BAR: แสดง scenario ที่กำลัง preview อยู่ ── *@
+<div class="container mt-3">
+    <div class="debug-bar" style="background:#1a1a2e; border-color: @scenarioColor;">
+        <span style="background:@scenarioColor; color:#000; padding:3px 10px; border-radius:4px; font-weight:bold;">
+            SCENARIO @scenario — @scenarioBadge
+        </span>
+        <span class="text-secondary">@scenarioDesc</span>
+        <span class="ms-auto text-muted" style="font-size:11px;">เปลี่ยน <code>var scenario = @scenario;</code> บรรทัด 18 เพื่อสลับ view</span>
+    </div>
+</div>
+
+<main class="container mt-2">
     <div class="row">
         <div class="col-lg-8">
             <div class="position-relative card-dark p-0 overflow-hidden">
@@ -65,7 +124,15 @@
                 <div class="p-4">
                     <div class="d-flex gap-2 mb-2">
                         <span class="status-badge">@mockModel.Game</span>
-                        @if(isHost) { <span class="status-badge" style="background: #2ecc71;">HOST MODE</span> }
+                        @if (isHost) {
+                            <span class="status-badge" style="background:#2ecc71;">HOST MODE</span>
+                        }
+                        @if (isMember && !isHost) {
+                            <span class="status-badge" style="background:#3498db;">MEMBER</span>
+                        }
+                        @if (hasPendingRequest) {
+                            <span class="status-badge" style="background:#f39c12;">PENDING REQUEST</span>
+                        }
                     </div>
                     <h1 class="display-5 fw-bold text-white">@mockModel.Title</h1>
                     <p class="lead text-secondary">@mockModel.Description</p>
@@ -82,19 +149,39 @@
                     @foreach (var member in mockModel.Members)
                     {
                         var user = memberMap[member.UserId];
+                        var isCurrentUser = member.UserId == currentUserId;
                         <div class="col-md-6 mb-3">
-                            <div class="d-flex align-items-center gap-3 p-3 bg-black rounded shadow-sm">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded shadow-sm"
+                                 style="background: @(isCurrentUser ? "#1a2a1a" : "#000"); border: 1px solid @(isCurrentUser ? "#2ecc71" : "transparent");">
                                 <img src="@user.AvatarUrl" class="member-avatar" />
-                                <div>
-                                    <h6 class="mb-0 text-white">@user.Username</h6>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 text-white">
+                                        @user.Username
+                                        @if (isCurrentUser) { <small class="text-success">(You)</small> }
+                                    </h6>
                                     <small class="text-primary">@member.AssignedRole</small>
                                 </div>
+                                @* Host สามารถ kick สมาชิกคนอื่นได้ *@
+                                @if (isHost && !isCurrentUser) {
+                                    <button class="btn btn-sm btn-outline-danger">Kick</button>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @* slot ว่างที่เหลือ *@
+                    @for (int i = mockModel.CurrentPlayers; i < mockModel.MaxPlayers; i++) {
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center justify-content-center gap-2 p-3 rounded"
+                                 style="background:#111; border: 1px dashed #333; height: 66px;">
+                                <span class="text-muted">— Empty Slot —</span>
                             </div>
                         </div>
                     }
                 </div>
             </div>
 
+            @* Pending Requests — มองเห็นเฉพาะ Host *@
             @if (isHost && pendingApps.Any())
             {
                 <div class="card-dark border-primary">
@@ -107,7 +194,7 @@
                                 <img src="@applicant.AvatarUrl" width="40" class="rounded" />
                                 <div>
                                     <p class="mb-0 fw-bold">@applicant.Username</p>
-                                    <small class="text-secondary italic">"@app.Message"</small>
+                                    <small class="text-secondary fst-italic">"@app.Message"</small>
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
@@ -126,22 +213,35 @@
                 <hr style="border-color: #444;">
                 <p class="mb-1 text-secondary">Recruitment Ends:</p>
                 <p class="fw-bold text-warning">@mockModel.RecruitmentDeadline.ToString("f")</p>
-                
+
                 <div id="countdown" class="p-3 bg-black rounded text-center mb-3">
                     <span class="h4 font-monospace text-primary" id="timer">01:59:59</span>
                 </div>
 
                 <p class="mb-1 text-secondary">Moods:</p>
                 <div class="d-flex flex-wrap gap-2 mb-4">
-                    @foreach(var mood in mockModel.Moods) {
+                    @foreach (var mood in mockModel.Moods) {
                         <span class="badge bg-secondary">@mood</span>
                     }
                 </div>
 
-                @if(isHost) {
+                @* ── Action Button — เปลี่ยนตาม Scenario ── *@
+                @if (isHost) {
+                    @* Scenario 1: HOST *@
                     <button class="btn-action w-100 mb-2">EDIT MISSION</button>
                     <button class="btn btn-outline-danger w-100">TERMINATE LOBBY</button>
+                } else if (isMember) {
+                    @* Scenario 4: MEMBER *@
+                    <button class="btn btn-outline-warning w-100">LEAVE LOBBY</button>
+                } else if (hasPendingRequest) {
+                    @* Scenario 3: PENDING *@
+                    <button class="w-100 mb-2" disabled
+                            style="background:#444; color:#f39c12; border:1px solid #f39c12; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:not-allowed;">
+                        ⏳ REQUEST PENDING...
+                    </button>
+                    <button class="btn btn-outline-secondary w-100" style="font-size:13px;">Cancel Request</button>
                 } else {
+                    @* Scenario 2: VISITOR *@
                     <button class="btn-action w-100">REQUEST TO JOIN</button>
                 }
             </div>
@@ -159,15 +259,14 @@
 
 @section Scripts {
     <script>
-        // จำลองระบบ Countdown 
         function startTimer(duration, display) {
             var timer = duration, hours, minutes, seconds;
             setInterval(function () {
-                hours = parseInt(timer / 3600, 10);
+                hours   = parseInt(timer / 3600, 10);
                 minutes = parseInt((timer % 3600) / 60, 10);
                 seconds = parseInt(timer % 60, 10);
 
-                hours = hours < 10 ? "0" + hours : hours;
+                hours   = hours   < 10 ? "0" + hours   : hours;
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;
 
@@ -178,9 +277,7 @@
         }
 
         window.onload = function () {
-            var twoHours = 60 * 60 * 2,
-            display = document.querySelector('#timer');
-            startTimer(twoHours, display);
+            startTimer(60 * 60 * 2, document.querySelector('#timer'));
         };
     </script>
 }
