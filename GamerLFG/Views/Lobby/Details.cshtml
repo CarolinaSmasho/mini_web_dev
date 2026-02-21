@@ -1,0 +1,186 @@
+@* 1. ประกาศ Model ตามปกติ *@
+@model GamerLFG.Models.Lobby
+
+@{
+    /* 2. MOCKUP DATA AREA - ส่วนนี้จำลองข้อมูลที่ปกติจะมาจาก Controller */
+    
+    // จำลองข้อมูล Lobby
+    var mockModel = new {
+        Id = "LOBBY-999",
+        Title = "ไต่แรงค์ Valorant คืนนี้ขอคนไม่ตึงมาก",
+        Game = "Valorant",
+        Description = "หาเพื่อนร่วมทีมตำแหน่ง Sentinel และ Duelist ครับ เล่นขำๆ เน้นฮา ไม่เน้นหัวร้อน",
+        PictureUrl = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+        CurrentPlayers = 2,
+        MaxPlayers = 5,
+        IsRecruiting = true,
+        IsCompleted = false,
+        HostId = "USER-001",
+        Moods = new List<string> { "Chill", "Voice Chat", "Competitive" },
+        RecruitmentDeadline = DateTime.Now.AddHours(2),
+        SessionStartTime = DateTime.Now.AddHours(3),
+        SessionEndTime = DateTime.Now.AddHours(5),
+        Members = new List<dynamic> {
+            new { UserId = "USER-001", AssignedRole = "Leader", IsHost = true },
+            new { UserId = "USER-002", AssignedRole = "Controller", IsHost = false }
+        },
+        PlayerIds = new List<string> { "USER-001", "USER-002" }
+    };
+
+    // จำลองข้อมูลเสริม (ViewData)
+    var hostName = "Notatord_Commander";
+    var memberMap = new Dictionary<string, dynamic> {
+        { "USER-001", new { Username = "Notatord_Commander", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord" } },
+        { "USER-002", new { Username = "Dew_The_Slayer", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew" } }
+    };
+
+    // จำลอง Session (สมมติว่าเราเป็น Host)
+    var currentUserId = "USER-001"; 
+    var isHost = true; // ลองเปลี่ยนเป็น false เพื่อดูหน้าจอฝั่งลูกทีม
+    var isMember = true;
+    
+    var pendingApps = new List<dynamic> {
+        new { Id = "APP-01", UserId = "USER-003", Message = "ขอเล่นด้วยครับ ผมเล่น Sage เป็น" }
+    };
+    var applicantMap = new Dictionary<string, dynamic> {
+        { "USER-003", new { Username = "Newbie_Player", AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Newbie" } }
+    };
+}
+
+@* 3. ส่วนการแสดงผล (ใช้ข้อมูลจาก Mock ด้านบน) *@
+<style>
+    body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .hero-img { width: 100%; height: 350px; object-fit: cover; border-radius: 15px; opacity: 0.7; }
+    .status-badge { background: #f2960d; color: black; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+    .card-dark { background: #1e1e1e; border: 1px solid #333; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .btn-action { background: #f2960d; color: black; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .member-avatar { width: 45px; height: 45px; border-radius: 8px; border: 2px solid #f2960d; }
+</style>
+
+<main class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="position-relative card-dark p-0 overflow-hidden">
+                <img src="@mockModel.PictureUrl" class="hero-img" alt="Game Background" />
+                <div class="p-4">
+                    <div class="d-flex gap-2 mb-2">
+                        <span class="status-badge">@mockModel.Game</span>
+                        @if(isHost) { <span class="status-badge" style="background: #2ecc71;">HOST MODE</span> }
+                    </div>
+                    <h1 class="display-5 fw-bold text-white">@mockModel.Title</h1>
+                    <p class="lead text-secondary">@mockModel.Description</p>
+                </div>
+            </div>
+
+            <div class="card-dark">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Squad Management</h3>
+                    <span class="h4">@mockModel.CurrentPlayers / @mockModel.MaxPlayers Players</span>
+                </div>
+
+                <div class="row">
+                    @foreach (var member in mockModel.Members)
+                    {
+                        var user = memberMap[member.UserId];
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center gap-3 p-3 bg-black rounded shadow-sm">
+                                <img src="@user.AvatarUrl" class="member-avatar" />
+                                <div>
+                                    <h6 class="mb-0 text-white">@user.Username</h6>
+                                    <small class="text-primary">@member.AssignedRole</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (isHost && pendingApps.Any())
+            {
+                <div class="card-dark border-primary">
+                    <h4 class="text-primary mb-3">Pending Requests (@pendingApps.Count)</h4>
+                    @foreach (var app in pendingApps)
+                    {
+                        var applicant = applicantMap[app.UserId];
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-black rounded mb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@applicant.AvatarUrl" width="40" class="rounded" />
+                                <div>
+                                    <p class="mb-0 fw-bold">@applicant.Username</p>
+                                    <small class="text-secondary italic">"@app.Message"</small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-danger">Reject</button>
+                                <button class="btn btn-sm btn-success">Recruit</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card-dark">
+                <h5>Mission Intel</h5>
+                <hr style="border-color: #444;">
+                <p class="mb-1 text-secondary">Recruitment Ends:</p>
+                <p class="fw-bold text-warning">@mockModel.RecruitmentDeadline.ToString("f")</p>
+                
+                <div id="countdown" class="p-3 bg-black rounded text-center mb-3">
+                    <span class="h4 font-monospace text-primary" id="timer">01:59:59</span>
+                </div>
+
+                <p class="mb-1 text-secondary">Moods:</p>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    @foreach(var mood in mockModel.Moods) {
+                        <span class="badge bg-secondary">@mood</span>
+                    }
+                </div>
+
+                @if(isHost) {
+                    <button class="btn-action w-100 mb-2">EDIT MISSION</button>
+                    <button class="btn btn-outline-danger w-100">TERMINATE LOBBY</button>
+                } else {
+                    <button class="btn-action w-100">REQUEST TO JOIN</button>
+                }
+            </div>
+
+            <div class="card-dark d-flex align-items-center gap-3">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@hostName" width="50" class="rounded-circle" />
+                <div>
+                    <h6 class="mb-0">@hostName</h6>
+                    <small class="text-secondary">Mission Commander</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        // จำลองระบบ Countdown 
+        function startTimer(duration, display) {
+            var timer = duration, hours, minutes, seconds;
+            setInterval(function () {
+                hours = parseInt(timer / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = hours + ":" + minutes + ":" + seconds;
+
+                if (--timer < 0) { timer = 0; }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            var twoHours = 60 * 60 * 2,
+            display = document.querySelector('#timer');
+            startTimer(twoHours, display);
+        };
+    </script>
+}
