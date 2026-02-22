@@ -11,9 +11,61 @@
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
         <script src="~/js/nav-control.js" asp-append-version="true" defer></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     </head>
 
     <body>
+
+
+        <header class="header">
+            <div class="nav-bar">
+
+                <div style="display: flex;" class="gamerhub-logo" onclick="location.href='@Url.Action("Index", "Home")'">
+                    <p style="color: #ffffff;">GAMER</p>
+                    <p style="padding-left: 0%;background-color:#ffa431" class="hub-text">HUB</p>
+                </div>
+
+                <div class="landscape-menu">
+                    <a href="/Home/Login"><button class="orange-button">LOG IN</button></a>
+                    <a asp-controller="Friends" asp-action="Friends_list"><button class="black-button">Friends</button></a>
+                    <button class="black-button"><i class="fa fa-bell"></i></button>
+
+                    <a asp-area="" asp-controller="Home" asp-action="Profiles">
+                        <button class="profile-btn"><i class="fa fa-user-circle fa-2x"></i></button>
+                    </a>
+                </div>
+
+                <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>
+                    <span>&#9776;</span>
+                </div>
+
+                <div id="mobile-menu" class="nav-mobile-hidden">
+                    <a href="/Home/Login"><button class="orange-button">Log In</button></a>
+                    <a href="/Home/Profiles"><button class="orange-button">Profile</button></a>
+
+                    <button class="orange-button">Notics</button>
+                    <button class="orange-button">Create Lobby</button>
+                </div>
+
+            </div>
+        </header>
+
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <footer class="border-top footer text-muted">
+
+        </footer>
+
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @await RenderSectionAsync("Scripts", required: false)
 
 
         <header class="header">
@@ -91,36 +143,36 @@
         </div>
 
         <script>
-                function openUserModal(userId) {
-                // 1. ตั้งค่า Default ระหว่างรอโหลด
-                document.getElementById('modal-display-name').innerText = "Loading...";
-                document.getElementById('modal-username').innerText = "...";
+                        function openUserModal(userId) {
+                        // 1. ตั้งค่า Default ระหว่างรอโหลด
+                        document.getElementById('modal-display-name').innerText = "Loading...";
+                        document.getElementById('modal-username').innerText = "...";
 
-                // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
-                // เปลี่ยนจาก /Home/ เป็น /Friends/
-                fetch(`/Friends/GetUserDetails?id=${userId}`)
-                .then(response => {
-                if (!response.ok) throw new Error("User not found");
-                return response.json();
-                })
-                .then(data => {
-                // 3. เอาข้อมูลที่ได้มาหยอดใส่ Modal
-                document.getElementById('modal-display-name').innerText = data.displayName;
-                document.getElementById('modal-username').innerText = data.username;
-                document.getElementById('modal-status').innerText = data.status;
-                document.getElementById('modal-bio').innerText = data.bio;
+                        // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
+                        // เปลี่ยนจาก /Home/ เป็น /Friends/
+                        fetch(`/Friends/GetUserDetails?id=${userId}`)
+                        .then(response => {
+                        if (!response.ok) throw new Error("User not found");
+                        return response.json();
+                        })
+                        .then(data => {
+                        // 3. เอาข้อมูลที่ได้มาหยอดใส่ Modal
+                        document.getElementById('modal-display-name').innerText = data.displayName;
+                        document.getElementById('modal-username').innerText = data.username;
+                        document.getElementById('modal-status').innerText = data.status;
+                        document.getElementById('modal-bio').innerText = data.bio;
 
-                // อัปเดตลิ้งก์ปุ่ม
-                document.getElementById('modal-profile-link').href = `/users/${data.id}/profile`;
+                        // อัปเดตลิ้งก์ปุ่ม
+                        document.getElementById('modal-profile-link').href = `/users/${data.id}/profile`;
 
-                // 4. สั่งเปิด Modal
-                document.getElementById('global-user-modal-toggle').checked = true;
-                })
-                .catch(err => {
-                console.error(err);
-                alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
-                });
-                }
+                        // 4. สั่งเปิด Modal
+                        document.getElementById('global-user-modal-toggle').checked = true;
+                        })
+                        .catch(err => {
+                        console.error(err);
+                        alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
+                        });
+                        }
         </script>
     </body>
 
