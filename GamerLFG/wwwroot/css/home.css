@@ -1,5 +1,7 @@
+
 * {
   box-sizing: border-box;
+  font-family : "inter"; 
 }
 body {
     margin: 0;
@@ -22,7 +24,9 @@ h1{
     width: max-content;
     padding: 3px;
 }
-
+.hub-text{
+    color: #191919;
+}
 nav{
     background-color: #808080;
     height: 4rem;

@@ -5,56 +5,47 @@ using System;
 
 namespace GamerLFG.Models
 {
-    public class Lobby
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
-        public string? Title { get; set; }
-        public string? Game { get; set; }
-        public string? Description { get; set; }
-        public string? PictureUrl { get; set; }
-        public string? HostId { get; set; }
+public class Lobby
+{
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
 
-        public bool IsRecruiting { get; set; }
-        public bool IsCompleted { get; set; }
+    public string Title { get; set; }
+    public string Game { get; set; }
+    public string Description { get; set; }
+    
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string HostId { get; set; }
+    
+    public string Picture { get; set; }
+    public string DiscordLink { get; set; }
 
-        // ส่วนที่เก็บข้อมูลสมาชิกและบทบาท
-        public List<Role> Roles { get; set; } = new List<Role>();
-        public List<Member> Members { get; set; } = new List<Member>();
-        public List<string> PlayerIds { get; set; } = new List<string>();
-        
-        // สำหรับหน้าจอ Mission Protocols
-        public List<string> Moods { get; set; } = new List<string>();
+    // Settings & Tags
+    public List<string> Moods { get; set; } = new();
+    public List<string> Roles { get; set; } = new();
+    public int MaxPlayers { get; set; }
+    public bool IsRecruiting { get; set; }
+    public bool IsComplete { get; set; }
 
-        // ข้อมูลเวลา
-        public DateTime? RecruitmentDeadline { get; set; }
-        public DateTime? SessionStartTime { get; set; }
-        public DateTime? SessionEndTime { get; set; }
+    // Time Management
+    public DateTime StartRecruiting { get; set; }
+    public DateTime EndRecruiting { get; set; }
+    public DateTime StartEvent { get; set; }
+    public DateTime EndEvent { get; set; }
 
-        // ลิงก์สื่อสาร
-        public string? DiscordLink { get; set; }
+    // Members (Embedded Array)
+    public List<LobbyMember> Members { get; set; } = new();
 
-        // Property พิเศษสำหรับคำนวณจำนวนผู้เล่นปัจจุบัน
-        [BsonIgnore]
-        public int CurrentPlayers => PlayerIds?.Count ?? 0;
-        
-        public int MaxPlayers { get; set; }
-    }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
 
-    // Class เสริมสำหรับจัดการบทบาทในทีม
-    public class Role
-    {
-        public string Name { get; set; } = "";
-        public int Count { get; set; }
-        public int Filled { get; set; }
-    }
-
-    // Class เสริมสำหรับข้อมูลสมาชิกใน Lobby
-    public class Member
-    {
-        public string UserId { get; set; } = "";
-        public string AssignedRole { get; set; } = "";
-        public bool IsHost { get; set; }
-    }
+public class LobbyMember
+{
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string UserId { get; set; }
+    public string Username { get; set; }
+    public string Status { get; set; } // e.g., 'joined', 'pending'
+    public string Role { get; set; }
+}
 }
