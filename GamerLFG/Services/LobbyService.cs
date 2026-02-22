@@ -16,7 +16,7 @@ namespace GamerLFG.Services
         public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){ // ใช้function แบบ async
             
             var myLobbyList = await _lobbies.Find(mylobby => mylobby.HostId == userId).ToListAsync(); // ดึง lobby ของเรามาแบบ async
-            var otherLobbyList = await _lobbies.Find(otherLobby => otherLobby.HostId != userId).Limit(10).ToListAsync();
+            var otherLobbyList = await _lobbies.Find(otherLobby => otherLobby.HostId != userId).SortBy(l => l.Id).Limit(10).ToListAsync();
             var myLobby = myLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
@@ -54,12 +54,12 @@ namespace GamerLFG.Services
         public async Task<List<ShowLobbyDTO>> GetNextLobbiesAsync(string? lastId,string? userId, int pageSize = 10)
             {
                 // ใช้ .Ne() แทน .Eq()
-                var filter = Builders<Lobby>.Filter.Ne(l => l.HostId, userId);
+                var notYours = Builders<Lobby>.Filter.Ne(l => l.HostId, userId);
 
                 
                 // กรองเอาเฉพาะตัวที่ ID "หลังจาก" ตัวสุดท้ายที่หน้าจอแสดงอยู่
-                filter = Builders<Lobby>.Filter.Gt(l => l.Id, lastId);
-                var nextLobby = await _lobbies.Find(filter)
+                var filter = Builders<Lobby>.Filter.Gt(l => l.Id, lastId);
+                var nextLobby = await _lobbies.Find(filter & notYours)
                                 .SortBy(l => l.Id) // ต้องเรียงลำดับเสมอเพื่อให้ข้อมูลต่อเนื่องกัน
                                 .Limit(pageSize)
                                 .ToListAsync();
@@ -82,8 +82,10 @@ namespace GamerLFG.Services
 
                 
         public async Task CreateLobbyAsync(CreateLobbyDTO newLobby){
-            
-            
+            var lobby = newLobby.ToEntity();
+            var hostObj = await _users.Find(u => u.Id == lobby.HostId).FirstOrDefaultAsync();
+            string hostName = hostObj.Username;
+            await _lobbies.InsertOneAsync(lobby);
         }
         public async Task DeleteLobbyAsync (string id){
 

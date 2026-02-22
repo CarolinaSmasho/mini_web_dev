@@ -25,8 +25,8 @@ public class Lobby
     public List<string> Moods { get; set; } = new();
     public List<string> Roles { get; set; } = new();
     public int MaxPlayers { get; set; }
-    public bool IsRecruiting { get; set; }
-    public bool IsComplete { get; set; }
+    public bool IsRecruiting { get; set; } = true;
+    public bool IsComplete { get; set; } = false;
 
     // Time Management
     public DateTime StartRecruiting { get; set; }
