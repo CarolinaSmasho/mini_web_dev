@@ -12,27 +12,47 @@ namespace GamerLFG.Services
         public LobbyService(IMongoDatabase database)
         {
             _lobbies = database.GetCollection<Lobby>("Lobby");
-            _users = database.GetCollection<User>("User");
         }
-        public async Task<List<ShowLobbyDTO>> GetAllLobbyAsync(){
-            var host_name = _lobbies.Aggregate(){
-                
-            }
+        public async Task<LobbyListResponse> GetAllLobbyAsync(string userId){
+            
             var lobbyList = await _lobbies.Find(_ => true).ToListAsync();
-            return lobbyList.Select( lob => new ShowLobbyDTO{
+            var separatedLobbies = lobbyList.ToLookup(lob => lob.HostId == userId);
+            var myLobby = separatedLobbies[true].Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
                 Game = lob.Game,
                 Description = lob.Description,
-                HostName  = lob.HostId,
+                HostName  = lob.HostName,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
-                Currentplayers = lob.Members.Count
-            });   
+                Currentplayers = lob.Members.Count,
+                MaxPlayers = lob.MaxPlayers
+                
+            }).ToList();
+            var publicLobby = separatedLobbies[false].Select( lob => new ShowLobbyDTO{
+                Id = lob.Id,
+                Title  = lob.Title,
+                Game = lob.Game,
+                Description = lob.Description,
+                HostName  = lob.HostName,
+                Picture = lob.Picture,
+                Moods = lob.Moods,
+                Currentplayers = lob.Members.Count,
+                MaxPlayers = lob.MaxPlayers
+                
+            }).ToList();
+
+            return new LobbyListResponse
+            {
+                MyLobbies = myLobby,
+                OtherLobbies = publicLobby
+            };
+        
+
             }
             
             
-        }
+        
         public async Task CreateLobbyAsync(CreateLobbyDTO newLobby){
             
             

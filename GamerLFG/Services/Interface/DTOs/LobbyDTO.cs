@@ -55,5 +55,11 @@ namespace GamerLFG.Services.Interface.DTOs
         public DateTime? StartRecruiting { get; set; }
         public DateTime? EndRecruiting { get; set; }
     }
+
+        public class LobbyListResponse
+    {
+        public List<ShowLobbyDTO> MyLobbies { get; set; } = new();
+        public List<ShowLobbyDTO> OtherLobbies { get; set; } = new();
+    }
 }
 
