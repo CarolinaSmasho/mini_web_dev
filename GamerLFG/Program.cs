@@ -3,6 +3,8 @@ using GamerLFG.service;
 using GamerLFG.Services;
 using GamerLFG.Services.Interface;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,7 +18,6 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 });
 builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
-<<<<<<< HEAD
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -25,7 +26,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Auth/Logout";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // ให้จำ Login ไว้ 60 นาที
     });
-=======
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ILobbyService,LobbyService>();
@@ -34,7 +34,6 @@ builder.Services.AddSingleton<ILobbyService,LobbyService>();
 var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
 
 
->>>>>>> tawan2
 var app = builder.Build();
 
 // --- เพิ่มส่วนนี้เข้าไป ---
