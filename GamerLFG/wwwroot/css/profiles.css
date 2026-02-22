@@ -1,12 +1,14 @@
 * { box-sizing: border-box; }
 
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+html {
+    position: relative;
+    min-height: 100%;
 }
 
 body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0 0 70px 0;
     background-color: black;
     color: #e0e0e0;
     font-family: 'Inter', sans-serif;
@@ -85,15 +87,18 @@ label {
     font-size: 14px;
 }
 
-input, textarea {
+.main-content input, 
+.main-content textarea {
     font-family: 'Inter', sans-serif;
+    font-size: 14px;
     width: 100%;
-    padding: 8px;
+    max-width: 400px;
+    padding: 8px 12px;
     background: #090909;
     color: white;
     border: 1px solid #555;
     margin-bottom: 15px;
-    resize: none;
+    border-radius: 4px;
 }
 
 .btn {
@@ -126,7 +131,8 @@ input, textarea {
 
 .input-group {
     display: flex;
-    align-items: center;
+    align-items: center;  
+    justify-content: center;
     gap: 10px;
     margin-bottom: 15px;
 }

@@ -18,6 +18,11 @@ public class UserController : Controller
         return View();
     }
 
+    public IActionResult Profiles()
+    {
+        return View();
+    }
+
 
 // Mock Data: ข้อมูลจำลอง (ในของจริงจะมาจาก DB)
 private readonly List<dynamic> _mockUsers = new List<dynamic>
