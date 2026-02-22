@@ -1,27 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
-
-using GamerLFG.Models;
-using GamerLFG.Repositories;
+using GamerLFG.Services;
 
 namespace GamerLFG.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IAuthService _authService;
 
-        public AuthController(IUserRepository userRepository)
+        public AuthController(IAuthService authService)
         {
-            _userRepository = userRepository;
+            _authService = authService;
         }
 
         // GET: /Auth/Login
         public IActionResult Login()
         {
-            // If already logged in, redirect to home
             if (HttpContext.Session.GetString("UserId") != null)
-            {
                 return RedirectToAction("Index", "Home");
-            }
             return View();
         }
 
@@ -32,19 +27,16 @@ namespace GamerLFG.Controllers
         {
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
             {
-                var user = await _userRepository.GetUserByEmailAsync(email);
-                
-                if (user != null && user.Password == password)
+                var user = await _authService.ValidateLoginAsync(email, password);
+                if (user != null)
                 {
-                    // Set session
                     HttpContext.Session.SetString("UserId", user.Id);
                     HttpContext.Session.SetString("Username", user.Username);
                     HttpContext.Session.SetString("Email", user.Email);
-                    
                     return RedirectToAction("Index", "Home");
                 }
             }
-            
+
             ViewData["Error"] = "Invalid email or password";
             return View();
         }
@@ -53,9 +45,7 @@ namespace GamerLFG.Controllers
         public IActionResult Register()
         {
             if (HttpContext.Session.GetString("UserId") != null)
-            {
                 return RedirectToAction("Index", "Home");
-            }
             return View();
         }
 
@@ -64,29 +54,12 @@ namespace GamerLFG.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string username, string email, string password, string confirmPassword)
         {
-            // Validation
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || 
-                string.IsNullOrEmpty(password) || password != confirmPassword)
+            var (success, error, _) = await _authService.RegisterAsync(username, email, password, confirmPassword);
+            if (!success)
             {
-                ViewData["Error"] = "Please fill all fields correctly";
+                ViewData["Error"] = error;
                 return View();
             }
-
-            var existingUser = await _userRepository.GetUserByEmailAsync(email);
-            if (existingUser != null)
-            {
-                ViewData["Error"] = "Email already registered";
-                return View();
-            }
-
-            var newUser = new User 
-            { 
-                Username = username, 
-                Email = email, 
-                Password = password 
-            };
-            
-            await _userRepository.CreateUserAsync(newUser);
 
             TempData["Success"] = "Account created successfully! Please log in.";
             return RedirectToAction("Login");
@@ -100,7 +73,7 @@ namespace GamerLFG.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
-        
+
         // GET: /Auth/Logout (for convenience)
         public IActionResult LogoutGet()
         {

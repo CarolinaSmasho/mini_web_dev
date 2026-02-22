@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using GamerLFG.Models;
-using GamerLFG.Repositories;
+using GamerLFG.Services;
 
 namespace GamerLFG.Controllers
 {
@@ -8,11 +7,11 @@ namespace GamerLFG.Controllers
     [Route("api/[controller]")]
     public class AuthApiController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IAuthService _authService;
 
-        public AuthApiController(IUserRepository userRepository)
+        public AuthApiController(IAuthService authService)
         {
-            _userRepository = userRepository;
+            _authService = authService;
         }
 
         /// <summary>
@@ -24,23 +23,16 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
                 return BadRequest(new { success = false, error = "Email and password are required" });
 
-            var user = await _userRepository.GetUserByEmailAsync(request.Email);
+            var user = await _authService.ValidateLoginAsync(request.Email, request.Password);
+            if (user == null)
+                return Unauthorized(new { success = false, error = "Invalid email or password" });
 
-            if (user != null && user.Password == request.Password)
+            return Ok(new
             {
-                return Ok(new { 
-                    success = true, 
-                    message = "Login successful",
-                    user = new {
-                        user.Id,
-                        user.Username,
-                        user.Email,
-                        user.KarmaScore
-                    }
-                });
-            }
-
-            return Unauthorized(new { success = false, error = "Invalid email or password" });
+                success = true,
+                message = "Login successful",
+                user = new { user.Id, user.Username, user.Email, user.KarmaScore }
+            });
         }
 
         /// <summary>
@@ -49,44 +41,21 @@ namespace GamerLFG.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            if (string.IsNullOrEmpty(request.Username) || 
-                string.IsNullOrEmpty(request.Email) || 
-                string.IsNullOrEmpty(request.Password))
+            var (success, error, userId) = await _authService.RegisterAsync(
+                request.Username, request.Email, request.Password, request.ConfirmPassword);
+
+            if (!success)
             {
-                return BadRequest(new { success = false, error = "Username, email, and password are required" });
+                if (error == "Email already registered" || error == "Username already taken")
+                    return Conflict(new { success = false, error });
+                return BadRequest(new { success = false, error });
             }
 
-            if (request.Password != request.ConfirmPassword)
+            return Created($"/api/user/{userId}", new
             {
-                return BadRequest(new { success = false, error = "Passwords do not match" });
-            }
-
-            var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
-            if (existingUser != null)
-            {
-                return Conflict(new { success = false, error = "Email already registered" });
-            }
-
-            var existingUsername = await _userRepository.GetUserByUsernameAsync(request.Username);
-            if (existingUsername != null)
-            {
-                return Conflict(new { success = false, error = "Username already taken" });
-            }
-
-            var newUser = new User
-            {
-                Username = request.Username,
-                Email = request.Email,
-                Password = request.Password,
-                KarmaScore = 0 // Start with 0 karma
-            };
-
-            await _userRepository.CreateUserAsync(newUser);
-
-            return Created($"/api/user/{newUser.Id}", new { 
-                success = true, 
+                success = true,
                 message = "Account created successfully",
-                userId = newUser.Id
+                userId
             });
         }
 
@@ -96,8 +65,8 @@ namespace GamerLFG.Controllers
         [HttpGet("check-email")]
         public async Task<IActionResult> CheckEmail([FromQuery] string email)
         {
-            var user = await _userRepository.GetUserByEmailAsync(email);
-            return Ok(new { available = user == null });
+            var available = await _authService.IsEmailAvailableAsync(email);
+            return Ok(new { available });
         }
 
         /// <summary>
@@ -106,8 +75,8 @@ namespace GamerLFG.Controllers
         [HttpGet("check-username")]
         public async Task<IActionResult> CheckUsername([FromQuery] string username)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(username);
-            return Ok(new { available = user == null });
+            var available = await _authService.IsUsernameAvailableAsync(username);
+            return Ok(new { available });
         }
     }
 

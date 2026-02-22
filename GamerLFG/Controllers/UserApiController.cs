@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using GamerLFG.Models;
-using GamerLFG.Repositories;
 using GamerLFG.Services;
 
 namespace GamerLFG.Controllers
@@ -9,27 +7,12 @@ namespace GamerLFG.Controllers
     [Route("api/[controller]")]
     public class UserApiController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IEndorsementRepository _endorsementRepository;
-        private readonly IFriendRequestRepository _friendRequestRepository;
-        private readonly KarmaService _karmaService;
-        private readonly NotificationService _notificationService;
+        private readonly IUserService _userService;
 
-        public UserApiController(
-            IUserRepository userRepository, 
-            IEndorsementRepository endorsementRepository, 
-            IFriendRequestRepository friendRequestRepository,
-            KarmaService karmaService,
-            NotificationService notificationService)
+        public UserApiController(IUserService userService)
         {
-            _userRepository = userRepository;
-            _endorsementRepository = endorsementRepository;
-            _friendRequestRepository = friendRequestRepository;
-            _karmaService = karmaService;
-            _notificationService = notificationService;
+            _userService = userService;
         }
-
-
 
         /// <summary>
         /// Search users by username
@@ -40,16 +23,11 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrWhiteSpace(query))
                 return BadRequest(new { success = false, error = "Query is required" });
 
-            var users = await _userRepository.SearchUsersAsync(query);
-            return Ok(new { 
-                success = true, 
-                users = users.Select(u => new {
-                    u.Id,
-                    u.Username,
-                    u.AvatarUrl,
-                    u.KarmaScore,
-                    u.IsOnline
-                })
+            var users = await _userService.SearchUsersAsync(query);
+            return Ok(new
+            {
+                success = true,
+                users = users.Select(u => new { u.Id, u.Username, u.AvatarUrl, u.KarmaScore, u.IsOnline })
             });
         }
 
@@ -59,26 +37,17 @@ namespace GamerLFG.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(string id)
         {
-            var user = await _userRepository.GetUserAsync(id);
+            var user = await _userService.GetUserAsync(id);
             if (user == null) return NotFound(new { success = false, error = "User not found" });
 
-            // Don't return password
-            return Ok(new { 
-                success = true, 
-                user = new {
-                    user.Id,
-                    user.Username,
-                    user.Email,
-                    user.Bio,
-                    user.AvatarUrl,
-                    user.KarmaScore,
-                    user.VibeTags,
-                    user.GameLibrary,
-                    user.DiscordUserId,
-                    user.SteamId,
-                    user.TwitchChannel,
-                    user.CreatedAt,
-                    user.IsOnline
+            return Ok(new
+            {
+                success = true,
+                user = new
+                {
+                    user.Id, user.Username, user.Email, user.Bio, user.AvatarUrl,
+                    user.KarmaScore, user.VibeTags, user.GameLibrary, user.DiscordUserId,
+                    user.SteamId, user.TwitchChannel, user.CreatedAt, user.IsOnline
                 }
             });
         }
@@ -89,24 +58,17 @@ namespace GamerLFG.Controllers
         [HttpGet("by-username/{username}")]
         public async Task<IActionResult> GetUserByUsername(string username)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(username);
+            var user = await _userService.GetUserByUsernameAsync(username);
             if (user == null) return NotFound(new { success = false, error = "User not found" });
 
-            return Ok(new { 
-                success = true, 
-                user = new {
-                    user.Id,
-                    user.Username,
-                    user.Bio,
-                    user.AvatarUrl,
-                    user.KarmaScore,
-                    user.VibeTags,
-                    user.GameLibrary,
-                    user.DiscordUserId,
-                    user.SteamId,
-                    user.TwitchChannel,
-                    user.CreatedAt,
-                    user.IsOnline
+            return Ok(new
+            {
+                success = true,
+                user = new
+                {
+                    user.Id, user.Username, user.Bio, user.AvatarUrl,
+                    user.KarmaScore, user.VibeTags, user.GameLibrary, user.DiscordUserId,
+                    user.SteamId, user.TwitchChannel, user.CreatedAt, user.IsOnline
                 }
             });
         }
@@ -117,24 +79,14 @@ namespace GamerLFG.Controllers
         [HttpGet("{id}/friends")]
         public async Task<IActionResult> GetFriends(string id)
         {
-            var user = await _userRepository.GetUserAsync(id);
+            var user = await _userService.GetUserAsync(id);
             if (user == null) return NotFound(new { success = false, error = "User not found" });
 
-            var friends = new List<User>();
-            if (user.FriendIds != null && user.FriendIds.Any())
+            var friends = await _userService.GetFriendsAsync(id);
+            return Ok(new
             {
-                friends = await _userRepository.GetUsersAsync(user.FriendIds);
-            }
-
-            return Ok(new { 
-                success = true, 
-                friends = friends.Select(f => new {
-                    f.Id,
-                    f.Username,
-                    f.AvatarUrl,
-                    f.KarmaScore,
-                    f.IsOnline
-                })
+                success = true,
+                friends = friends.Select(f => new { f.Id, f.Username, f.AvatarUrl, f.KarmaScore, f.IsOnline })
             });
         }
 
@@ -144,10 +96,10 @@ namespace GamerLFG.Controllers
         [HttpPost("{id}/friends")]
         public async Task<IActionResult> AddFriend(string id, [FromBody] AddFriendRequest request)
         {
-            var user = await _userRepository.GetUserAsync(id);
+            var user = await _userService.GetUserAsync(id);
             if (user == null) return NotFound(new { success = false, error = "User not found" });
 
-            await _userRepository.AddFriendAsync(id, request.FriendId);
+            await _userService.AddFriendAsync(id, request.FriendId);
             return Ok(new { success = true, message = "Friend added" });
         }
 
@@ -157,17 +109,13 @@ namespace GamerLFG.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProfile(string id, [FromBody] UpdateProfileRequest request)
         {
-            var user = await _userRepository.GetUserAsync(id);
+            var user = await _userService.GetUserAsync(id);
             if (user == null) return NotFound(new { success = false, error = "User not found" });
 
-            if (!string.IsNullOrEmpty(request.Username)) user.Username = request.Username;
-            if (request.Bio != null) user.Bio = request.Bio;
-            if (request.GameLibrary != null) user.GameLibrary = request.GameLibrary;
-            if (request.DiscordUserId != null) user.DiscordUserId = request.DiscordUserId;
-            if (request.SteamId != null) user.SteamId = request.SteamId;
-            if (request.TwitchChannel != null) user.TwitchChannel = request.TwitchChannel;
+            await _userService.UpdateProfileAsync(id, request.Username, request.Bio,
+                request.GameLibrary != null ? string.Join(",", request.GameLibrary) : null,
+                request.DiscordUserId, request.SteamId, request.TwitchChannel);
 
-            await _userRepository.UpdateUserAsync(user);
             return Ok(new { success = true, message = "Profile updated" });
         }
 
@@ -177,32 +125,12 @@ namespace GamerLFG.Controllers
         [HttpPost("friend-request/send")]
         public async Task<IActionResult> SendFriendRequest([FromBody] FriendRequestDto request)
         {
-            var fromUser = await _userRepository.GetUserAsync(request.FromUserId);
-            var toUser = await _userRepository.GetUserAsync(request.ToUserId);
-
-            if (fromUser == null || toUser == null)
-                return NotFound(new { success = false, error = "User not found" });
-
-            if (fromUser.FriendIds.Contains(request.ToUserId))
-                return BadRequest(new { success = false, error = "Already friends" });
-
-            var existingRequest = await _friendRequestRepository.GetByUsersAsync(request.FromUserId, request.ToUserId);
-            if (existingRequest != null && existingRequest.Status == "Pending")
-                return BadRequest(new { success = false, error = "Request already pending" });
-
-            var newRequest = new FriendRequest
+            var (success, error) = await _userService.SendFriendRequestAsync(request.FromUserId, request.ToUserId);
+            if (!success)
             {
-                FromUserId = request.FromUserId,
-                ToUserId = request.ToUserId,
-                Status = "Pending",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _friendRequestRepository.CreateAsync(newRequest);
-            
-            // Notify recipient
-            await _notificationService.NotifyUserAsync(request.ToUserId, "FriendRequest", $"You have a friend request from {fromUser.Username}", newRequest.Id);
-
+                if (error == "User not found") return NotFound(new { success = false, error });
+                return BadRequest(new { success = false, error });
+            }
             return Ok(new { success = true, message = "Friend request sent" });
         }
 
@@ -212,22 +140,12 @@ namespace GamerLFG.Controllers
         [HttpPost("friend-request/accept")]
         public async Task<IActionResult> AcceptFriendRequest([FromBody] RequestActionDto request)
         {
-            var friendRequest = await _friendRequestRepository.GetByIdAsync(request.RequestId);
-            if (friendRequest == null) return NotFound(new { success = false, error = "Request not found" });
-
-            if (friendRequest.ToUserId != request.UserId)
-                return Unauthorized(new { success = false, error = "Not authorized" });
-
-            await _friendRequestRepository.UpdateStatusAsync(request.RequestId, "Accepted");
-
-            // Add to both users' friend lists
-            await _userRepository.AddFriendAsync(friendRequest.FromUserId, friendRequest.ToUserId);
-            await _userRepository.AddFriendAsync(friendRequest.ToUserId, friendRequest.FromUserId);
-
-            // Notify sender
-            var user = await _userRepository.GetUserAsync(request.UserId);
-            await _notificationService.NotifyUserAsync(friendRequest.FromUserId, "FriendRequest", $"{user?.Username ?? "Unknown"} accepted your friend request", request.RequestId);
-
+            var (success, error) = await _userService.AcceptFriendRequestAsync(request.RequestId, request.UserId);
+            if (!success)
+            {
+                if (error == "Not authorized") return Unauthorized(new { success = false, error });
+                return NotFound(new { success = false, error });
+            }
             return Ok(new { success = true, message = "Friend request accepted" });
         }
 
@@ -237,13 +155,12 @@ namespace GamerLFG.Controllers
         [HttpPost("friend-request/reject")]
         public async Task<IActionResult> RejectFriendRequest([FromBody] RequestActionDto request)
         {
-            var friendRequest = await _friendRequestRepository.GetByIdAsync(request.RequestId);
-            if (friendRequest == null) return NotFound(new { success = false, error = "Request not found" });
-
-            if (friendRequest.ToUserId != request.UserId)
-                return Unauthorized(new { success = false, error = "Not authorized" });
-
-            await _friendRequestRepository.UpdateStatusAsync(request.RequestId, "Rejected");
+            var (success, error) = await _userService.RejectFriendRequestAsync(request.RequestId, request.UserId);
+            if (!success)
+            {
+                if (error == "Not authorized") return Unauthorized(new { success = false, error });
+                return NotFound(new { success = false, error });
+            }
             return Ok(new { success = true, message = "Friend request rejected" });
         }
 
@@ -253,21 +170,15 @@ namespace GamerLFG.Controllers
         [HttpGet("{userId}/friend-requests")]
         public async Task<IActionResult> GetPendingRequests(string userId)
         {
-            var requests = await _friendRequestRepository.GetPendingByUserIdAsync(userId);
-            
-            // Enrich with FromUser details
-            var fromUserIds = requests.Select(r => r.FromUserId).ToList();
-            var fromUsers = await _userRepository.GetUsersAsync(fromUserIds);
-            var userMap = fromUsers.ToDictionary(u => u.Id, u => u);
-
-            var result = requests.Select(r => new {
+            var requests = await _userService.GetPendingRequestsAsync(userId);
+            var result = requests.Select(r => new
+            {
                 r.Id,
                 r.FromUserId,
                 r.CreatedAt,
-                FromUserName = userMap.ContainsKey(r.FromUserId) ? userMap[r.FromUserId].Username : "Unknown",
-                FromUserAvatar = userMap.ContainsKey(r.FromUserId) ? userMap[r.FromUserId].AvatarUrl : ""
+                FromUserName = r.FromUserName,
+                FromUserAvatar = r.FromUserAvatar
             });
-
             return Ok(new { success = true, requests = result });
         }
 
@@ -277,7 +188,7 @@ namespace GamerLFG.Controllers
         [HttpGet("{id}/endorsements")]
         public async Task<IActionResult> GetEndorsements(string id)
         {
-            var endorsements = await _endorsementRepository.GetEndorsementsForUserAsync(id);
+            var endorsements = await _userService.GetEndorsementsAsync(id);
             return Ok(new { success = true, endorsements });
         }
 
@@ -287,25 +198,14 @@ namespace GamerLFG.Controllers
         [HttpPost("{id}/endorsements")]
         public async Task<IActionResult> GiveEndorsement(string id, [FromBody] GiveEndorsementRequest request)
         {
-            var toUser = await _userRepository.GetUserAsync(id);
-            if (toUser == null) return NotFound(new { success = false, error = "User not found" });
-
-            var fromUser = await _userRepository.GetUserAsync(request.FromUserId);
-            if (fromUser == null) return BadRequest(new { success = false, error = "FromUser not found" });
-
-            var endorsement = new Endorsement
+            var (success, error, endorsementId) = await _userService.GiveEndorsementAsync(id, request.FromUserId, request.Type, request.Comment);
+            if (!success)
             {
-                FromUserId = request.FromUserId,
-                ToUserId = id,
-                EndorsementType = request.Type,
-                Comment = request.Comment ?? "",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _endorsementRepository.CreateEndorsementAsync(endorsement);
-            await _karmaService.ProcessEndorsementAsync(id, fromUser.Username, request.Type, endorsement.Id);
-
-            return Ok(new { success = true, endorsementId = endorsement.Id });
+                if (error == "User not found" || error == "FromUser not found")
+                    return NotFound(new { success = false, error });
+                return BadRequest(new { success = false, error });
+            }
+            return Ok(new { success = true, endorsementId });
         }
     }
 
@@ -341,6 +241,6 @@ namespace GamerLFG.Controllers
     public class RequestActionDto
     {
         public string RequestId { get; set; } = string.Empty;
-        public string UserId { get; set; } = string.Empty; // User performing the action (ToUserId)
+        public string UserId { get; set; } = string.Empty;
     }
 }

@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using GamerLFG.Models;
-using GamerLFG.Repositories;
 using GamerLFG.Services;
 
 namespace GamerLFG.Controllers
@@ -9,24 +7,13 @@ namespace GamerLFG.Controllers
     [Route("api/[controller]")]
     public class LobbyApiController : ControllerBase
     {
-        private readonly ILobbyRepository _lobbyRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IApplicationRepository _applicationRepository;
-        private readonly IEndorsementRepository _endorsementRepository;
-        private readonly KarmaService _karmaService;
+        private readonly ILobbyService _lobbyService;
+        private readonly IUserService _userService;
 
-        public LobbyApiController(
-            ILobbyRepository lobbyRepository, 
-            IUserRepository userRepository,
-            IApplicationRepository applicationRepository, 
-            IEndorsementRepository endorsementRepository,
-            KarmaService karmaService)
+        public LobbyApiController(ILobbyService lobbyService, IUserService userService)
         {
-            _lobbyRepository = lobbyRepository;
-            _userRepository = userRepository;
-            _applicationRepository = applicationRepository;
-            _endorsementRepository = endorsementRepository;
-            _karmaService = karmaService;
+            _lobbyService = lobbyService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -38,7 +25,7 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(request.HostUserId))
                 return BadRequest(new { success = false, error = "HostUserId is required" });
 
-            var lobby = new Lobby
+            var lobby = new GamerLFG.Models.Lobby
             {
                 Title = request.Title,
                 Game = request.Game,
@@ -49,70 +36,15 @@ namespace GamerLFG.Controllers
                 SessionEndTime = request.SessionEndTime,
                 Status = "Active",
                 IsRecruiting = true,
-                Moods = request.Moods ?? new List<string>(),
                 PictureUrl = request.PictureUrl ?? "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop"
             };
 
-            // Map Roles
-            lobby.Roles = new List<Role>();
-            int totalRolePlayers = 0;
-            if (request.Roles != null)
-            {
-                foreach (var r in request.Roles)
-                {
-                    if (!string.IsNullOrWhiteSpace(r.Name) && r.Count > 0)
-                    {
-                        int count = r.Count;
-                        if (totalRolePlayers + count > lobby.MaxPlayers)
-                            count = lobby.MaxPlayers - totalRolePlayers;
+            var roleNames = request.Roles?.Select(r => r.Name).ToList() ?? new List<string>();
+            var roleCounts = request.Roles?.Select(r => r.Count).ToList() ?? new List<int>();
 
-                        if (count > 0)
-                        {
-                            lobby.Roles.Add(new Role { Name = r.Name, Count = count, Filled = 0 });
-                            totalRolePlayers += count;
-                        }
-                    }
-                    if (totalRolePlayers >= lobby.MaxPlayers) break;
-                }
-            }
+            var lobbyId = await _lobbyService.CreateLobbyAsync(request.HostUserId, lobby, request.Moods ?? new List<string>(), roleNames, roleCounts, request.HostRole);
 
-            if (totalRolePlayers < lobby.MaxPlayers)
-            {
-                lobby.Roles.Add(new Role { Name = "Other", Count = lobby.MaxPlayers - totalRolePlayers, Filled = 0 });
-            }
-
-            lobby.HostId = request.HostUserId;
-            
-            // Determine host role
-            var hostRoleName = !string.IsNullOrEmpty(request.HostRole) 
-                ? request.HostRole 
-                : (lobby.Roles.FirstOrDefault()?.Name ?? "Host");
-
-            lobby.Members = new List<Member>
-            {
-                new Member 
-                { 
-                    UserId = request.HostUserId, 
-                    AssignedRole = hostRoleName, 
-                    IsHost = true, 
-                    JoinedAt = DateTime.UtcNow 
-                }
-            };
-
-            var hostRole = lobby.Roles.FirstOrDefault(r => r.Name == lobby.Members[0].AssignedRole);
-            if (hostRole != null) hostRole.Filled = 1;
-
-            if (lobby.RecruitmentDeadline.HasValue) 
-                lobby.RecruitmentDeadline = lobby.RecruitmentDeadline.Value.ToUniversalTime();
-            if (lobby.SessionStartTime.HasValue)
-                lobby.SessionStartTime = lobby.SessionStartTime.Value.ToUniversalTime();
-            if (lobby.SessionEndTime.HasValue)
-                lobby.SessionEndTime = lobby.SessionEndTime.Value.ToUniversalTime();
-
-            lobby.CreatedAt = DateTime.UtcNow;
-            await _lobbyRepository.CreateLobbyAsync(lobby);
-
-            return CreatedAtAction(nameof(GetLobby), new { id = lobby.Id }, new { success = true, lobbyId = lobby.Id });
+            return CreatedAtAction(nameof(GetLobby), new { id = lobbyId }, new { success = true, lobbyId });
         }
 
         /// <summary>
@@ -124,64 +56,28 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(request.HostUserId))
                 return BadRequest(new { success = false, error = "HostUserId is required" });
 
-            var existingLobby = await _lobbyRepository.GetLobbyAsync(id);
+            var existingLobby = await _lobbyService.GetLobbyAsync(id);
             if (existingLobby == null) return NotFound(new { success = false, error = "Lobby not found" });
-
             if (existingLobby.HostId != request.HostUserId)
                 return Unauthorized(new { success = false, error = "Not authorized" });
 
-            // Update basic fields
-            if (!string.IsNullOrEmpty(request.Title)) existingLobby.Title = request.Title;
-            if (!string.IsNullOrEmpty(request.Game)) existingLobby.Game = request.Game;
-            if (request.Description != null) existingLobby.Description = request.Description;
-            if (request.MaxPlayers > 0) existingLobby.MaxPlayers = request.MaxPlayers;
-            if (!string.IsNullOrEmpty(request.PictureUrl)) existingLobby.PictureUrl = request.PictureUrl;
-            if (request.DiscordLink != null) existingLobby.DiscordLink = request.DiscordLink;
-            
-            if (request.RecruitmentDeadline.HasValue)
-                existingLobby.RecruitmentDeadline = request.RecruitmentDeadline.Value.ToUniversalTime();
-            if (request.SessionStartTime.HasValue)
-                existingLobby.SessionStartTime = request.SessionStartTime.Value.ToUniversalTime();
-            if (request.SessionEndTime.HasValue)
-                existingLobby.SessionEndTime = request.SessionEndTime.Value.ToUniversalTime();
-
-            if (request.Moods != null) existingLobby.Moods = request.Moods;
-
-            // Handle Roles update if provided
-            if (request.Roles != null)
+            var updatedLobby = new GamerLFG.Models.Lobby
             {
-                existingLobby.Roles = new List<Role>();
-                int totalRolePlayers = 0;
-                foreach (var r in request.Roles)
-                {
-                    if (!string.IsNullOrWhiteSpace(r.Name) && r.Count > 0)
-                    {
-                        int count = r.Count;
-                        if (totalRolePlayers + count > existingLobby.MaxPlayers)
-                            count = existingLobby.MaxPlayers - totalRolePlayers;
+                Title = request.Title ?? existingLobby.Title,
+                Game = request.Game ?? existingLobby.Game,
+                Description = request.Description ?? existingLobby.Description,
+                MaxPlayers = request.MaxPlayers > 0 ? request.MaxPlayers : existingLobby.MaxPlayers,
+                PictureUrl = request.PictureUrl ?? existingLobby.PictureUrl,
+                DiscordLink = request.DiscordLink ?? existingLobby.DiscordLink,
+                RecruitmentDeadline = request.RecruitmentDeadline,
+                SessionStartTime = request.SessionStartTime,
+                SessionEndTime = request.SessionEndTime
+            };
 
-                        if (count > 0)
-                        {
-                            existingLobby.Roles.Add(new Role { Name = r.Name, Count = count, Filled = 0 });
-                            totalRolePlayers += count;
-                        }
-                    }
-                    if (totalRolePlayers >= existingLobby.MaxPlayers) break;
-                }
+            var roleNames = request.Roles?.Select(r => r.Name).ToList() ?? new List<string>();
+            var roleCounts = request.Roles?.Select(r => r.Count).ToList() ?? new List<int>();
 
-                if (totalRolePlayers < existingLobby.MaxPlayers)
-                {
-                    existingLobby.Roles.Add(new Role { Name = "Other", Count = existingLobby.MaxPlayers - totalRolePlayers, Filled = 0 });
-                }
-
-                // Recalculate filled roles based on current members
-                foreach (var role in existingLobby.Roles)
-                {
-                    role.Filled = existingLobby.Members.Count(m => m.AssignedRole == role.Name);
-                }
-            }
-
-            await _lobbyRepository.UpdateLobbyAsync(existingLobby);
+            await _lobbyService.UpdateLobbyAsync(id, request.HostUserId, updatedLobby, request.Moods ?? new List<string>(), roleNames, roleCounts);
             return Ok(new { success = true, message = "Lobby updated" });
         }
 
@@ -191,13 +87,7 @@ namespace GamerLFG.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLobbies([FromQuery] string? game = null, [FromQuery] string? mood = null, [FromQuery] int page = 1)
         {
-            var lobbies = await _lobbyRepository.GetLobbiesAsync();
-            
-            if (!string.IsNullOrEmpty(game))
-            {
-                lobbies = lobbies.Where(l => l.Game.Contains(game, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
+            var lobbies = await _lobbyService.GetLobbiesAsync(game);
             return Ok(new { success = true, data = new { lobbies, pagination = new { currentPage = page, totalPages = 1 } } });
         }
 
@@ -207,10 +97,10 @@ namespace GamerLFG.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLobby(string id)
         {
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
+            var lobby = await _lobbyService.GetLobbyAsync(id);
             if (lobby == null) return NotFound(new { success = false, error = "Lobby not found" });
 
-            var host = await _userRepository.GetUserAsync(lobby.HostId);
+            var host = await _userService.GetUserAsync(lobby.HostId);
             return Ok(new { success = true, lobby, hostName = host?.Username });
         }
 
@@ -220,7 +110,7 @@ namespace GamerLFG.Controllers
         [HttpGet("{id}/applications")]
         public async Task<IActionResult> GetApplications(string id)
         {
-            var applications = await _applicationRepository.GetApplicationsByLobbyIdAsync(id);
+            var applications = await _lobbyService.GetApplicationsByLobbyIdAsync(id);
             return Ok(new { success = true, applications });
         }
 
@@ -233,31 +123,9 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(request.UserId))
                 return BadRequest(new { success = false, error = "UserId is required" });
 
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
-            if (lobby == null) return NotFound(new { success = false, error = "Lobby not found" });
-
-            if (lobby.RecruitmentDeadline.HasValue && DateTime.UtcNow > lobby.RecruitmentDeadline.Value)
-                return BadRequest(new { success = false, error = "Recruitment period has ended" });
-
-            if (lobby.Members.Any(m => m.UserId == request.UserId))
-                return BadRequest(new { success = false, error = "Already a member" });
-
-            var existingApps = await _applicationRepository.GetApplicationsByLobbyIdAsync(id);
-            if (existingApps.Any(a => a.UserId == request.UserId && a.Status == "Pending"))
-                return BadRequest(new { success = false, error = "Application already pending" });
-
-            var application = new Application
-            {
-                LobbyId = id,
-                UserId = request.UserId,
-                DesiredRoles = !string.IsNullOrEmpty(request.Role) ? new List<string> { request.Role } : new List<string>(),
-                Message = string.IsNullOrEmpty(request.Role) ? "Requesting to join" : $"Applying for {request.Role}",
-                Status = "Pending",
-                AppliedAt = DateTime.UtcNow
-            };
-
-            await _applicationRepository.CreateApplicationAsync(application);
-            return Ok(new { success = true, message = "Application sent", applicationId = application.Id });
+            var (success, error) = await _lobbyService.ApplyAsync(id, request.UserId, request.Role);
+            if (!success) return BadRequest(new { success = false, error });
+            return Ok(new { success = true, message = "Application sent" });
         }
 
         /// <summary>
@@ -269,32 +137,13 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(request.HostUserId))
                 return BadRequest(new { success = false, error = "HostUserId is required" });
 
-            var application = await _applicationRepository.GetApplicationAsync(applicationId);
-            if (application == null) return NotFound(new { success = false, error = "Application not found" });
-
-            var lobby = await _lobbyRepository.GetLobbyAsync(application.LobbyId);
-            if (lobby == null) return NotFound(new { success = false, error = "Lobby not found" });
-
-            if (lobby.HostId != request.HostUserId)
-                return Unauthorized(new { success = false, error = "Not authorized" });
-
-            if (lobby.Members.Count >= lobby.MaxPlayers)
-                return BadRequest(new { success = false, error = "Lobby is full" });
-
-            await _applicationRepository.UpdateApplicationStatusAsync(applicationId, "Accepted");
-
-            var role = application.DesiredRoles?.FirstOrDefault() ?? "Member";
-            var member = new Member
+            var (success, error) = await _lobbyService.RecruitAsync(applicationId, request.HostUserId);
+            if (!success)
             {
-                UserId = application.UserId,
-                AssignedRole = role,
-                IsHost = false,
-                JoinedAt = DateTime.UtcNow
-            };
-
-            await _lobbyRepository.AddMemberAsync(lobby.Id, member);
-            await _karmaService.AwardLobbyAcceptedAsync(application.UserId, lobby.Id, lobby.Title);
-
+                if (error == "Not authorized") return Unauthorized(new { success = false, error });
+                if (error == "Application not found" || error == "Lobby not found") return NotFound(new { success = false, error });
+                return BadRequest(new { success = false, error });
+            }
             return Ok(new { success = true, message = "Applicant recruited" });
         }
 
@@ -307,16 +156,12 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(request.HostUserId))
                 return BadRequest(new { success = false, error = "HostUserId is required" });
 
-            var application = await _applicationRepository.GetApplicationAsync(applicationId);
-            if (application == null) return NotFound(new { success = false, error = "Application not found" });
-
-            var lobby = await _lobbyRepository.GetLobbyAsync(application.LobbyId);
-            if (lobby == null) return NotFound(new { success = false, error = "Lobby not found" });
-
-            if (lobby.HostId != request.HostUserId)
-                return Unauthorized(new { success = false, error = "Not authorized" });
-
-            await _applicationRepository.UpdateApplicationStatusAsync(applicationId, "Rejected");
+            var (success, error) = await _lobbyService.RejectAsync(applicationId, request.HostUserId);
+            if (!success)
+            {
+                if (error == "Not authorized") return Unauthorized(new { success = false, error });
+                return NotFound(new { success = false, error });
+            }
             return Ok(new { success = true, message = "Applicant rejected" });
         }
 
@@ -329,18 +174,13 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(request.HostUserId) || string.IsNullOrEmpty(request.MemberId))
                 return BadRequest(new { success = false, error = "HostUserId and MemberId are required" });
 
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
-            if (lobby == null) return NotFound(new { success = false, error = "Lobby not found" });
-
-            if (lobby.HostId != request.HostUserId)
-                return Unauthorized(new { success = false, error = "Not authorized" });
-
-            if (request.MemberId == lobby.HostId)
-                return BadRequest(new { success = false, error = "Cannot kick host" });
-
-            await _lobbyRepository.RemoveMemberAsync(id, request.MemberId);
-            await _karmaService.PenalizeKickedAsync(request.MemberId, id, lobby.Title, request.HardKick);
-
+            var (success, error) = await _lobbyService.KickAsync(id, request.MemberId, request.HostUserId, request.HardKick);
+            if (!success)
+            {
+                if (error == "Not authorized") return Unauthorized(new { success = false, error });
+                if (error == "Lobby not found") return NotFound(new { success = false, error });
+                return BadRequest(new { success = false, error });
+            }
             return Ok(new { success = true, hardKick = request.HardKick });
         }
 
@@ -350,14 +190,9 @@ namespace GamerLFG.Controllers
         [HttpPost("{id}/toggle-recruitment")]
         public async Task<IActionResult> ToggleRecruitment(string id, [FromBody] HostActionRequest request)
         {
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
-            if (lobby == null || lobby.HostId != request.HostUserId)
-                return Unauthorized(new { success = false, error = "Unauthorized" });
-
-            lobby.IsRecruiting = !lobby.IsRecruiting;
-            await _lobbyRepository.UpdateLobbyAsync(lobby);
-
-            return Ok(new { success = true, isRecruiting = lobby.IsRecruiting });
+            var (success, isRecruiting, error) = await _lobbyService.ToggleRecruitmentAsync(id, request.HostUserId);
+            if (!success) return Unauthorized(new { success = false, error });
+            return Ok(new { success = true, isRecruiting });
         }
 
         /// <summary>
@@ -366,21 +201,8 @@ namespace GamerLFG.Controllers
         [HttpPost("{id}/complete")]
         public async Task<IActionResult> CompleteSession(string id, [FromBody] HostActionRequest request)
         {
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
-            if (lobby == null || lobby.HostId != request.HostUserId)
-                return Unauthorized(new { success = false, error = "Unauthorized" });
-
-            lobby.IsCompleted = true;
-            lobby.Status = "Closed";
-            await _lobbyRepository.UpdateLobbyAsync(lobby);
-
-            // Award karma
-            await _karmaService.AwardLobbyCompletedHostAsync(lobby.HostId, lobby.Id, lobby.Title);
-            foreach (var member in lobby.Members.Where(m => !m.IsHost))
-            {
-                await _karmaService.AwardLobbyCompletedMemberAsync(member.UserId, lobby.Id, lobby.Title);
-            }
-
+            var (success, error) = await _lobbyService.CompleteSessionAsync(id, request.HostUserId);
+            if (!success) return Unauthorized(new { success = false, error });
             return Ok(new { success = true, message = "Session completed, karma awarded" });
         }
 
@@ -390,13 +212,8 @@ namespace GamerLFG.Controllers
         [HttpPut("{id}/background")]
         public async Task<IActionResult> UpdateBackground(string id, [FromBody] BackgroundUpdateRequest request)
         {
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
-            if (lobby == null || lobby.HostId != request.HostUserId)
-                return Unauthorized(new { success = false, error = "Unauthorized" });
-
-            lobby.PictureUrl = request.PictureUrl;
-            await _lobbyRepository.UpdateLobbyAsync(lobby);
-
+            var (success, error) = await _lobbyService.UpdateBackgroundAsync(id, request.PictureUrl, request.HostUserId);
+            if (!success) return Unauthorized(new { success = false, error });
             return Ok(new { success = true });
         }
 
@@ -406,34 +223,9 @@ namespace GamerLFG.Controllers
         [HttpPost("{id}/endorse")]
         public async Task<IActionResult> EndorseMember(string id, [FromBody] EndorseRequest request)
         {
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
-            if (lobby == null || !lobby.IsCompleted)
-                return BadRequest(new { success = false, error = "Session not completed" });
-
-            if (!lobby.Members.Any(m => m.UserId == request.FromUserId) || 
-                !lobby.Members.Any(m => m.UserId == request.TargetUserId))
-                return BadRequest(new { success = false, error = "Invalid members" });
-
-            var endorsement = new Endorsement
-            {
-                FromUserId = request.FromUserId,
-                ToUserId = request.TargetUserId,
-                EndorsementType = request.Type,
-                Comment = "Session Feedback",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _endorsementRepository.CreateEndorsementAsync(endorsement);
-
-            var fromUser = await _userRepository.GetUserAsync(request.FromUserId);
-            await _karmaService.ProcessEndorsementAsync(
-                request.TargetUserId,
-                fromUser?.Username ?? "Unknown",
-                request.Type,
-                endorsement.Id
-            );
-
-            return Ok(new { success = true, endorsementId = endorsement.Id });
+            var (success, error) = await _lobbyService.EndorseMemberAsync(id, request.FromUserId, request.TargetUserId, request.Type);
+            if (!success) return BadRequest(new { success = false, error });
+            return Ok(new { success = true });
         }
 
         /// <summary>
@@ -442,15 +234,11 @@ namespace GamerLFG.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id, [FromQuery] string hostUserId)
         {
-            var lobby = await _lobbyRepository.GetLobbyAsync(id);
+            var lobby = await _lobbyService.GetLobbyAsync(id);
             if (lobby == null) return NotFound(new { success = false, error = "Lobby not found" });
+            if (lobby.HostId != hostUserId) return Unauthorized(new { success = false, error = "Not authorized" });
 
-            if (lobby.HostId != hostUserId)
-                return Unauthorized(new { success = false, error = "Not authorized" });
-
-            await _lobbyRepository.DeleteLobbyAsync(id);
-            await _applicationRepository.DeleteApplicationsByLobbyIdAsync(id);
-
+            await _lobbyService.DeleteLobbyAsync(id);
             return Ok(new { success = true, message = "Lobby deleted" });
         }
     }

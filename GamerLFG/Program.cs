@@ -27,6 +27,9 @@ builder.Services.AddScoped<GamerLFG.Repositories.IKarmaRepository, GamerLFG.Repo
 // Services
 builder.Services.AddScoped<GamerLFG.Services.KarmaService>();
 builder.Services.AddScoped<GamerLFG.Services.NotificationService>();
+builder.Services.AddScoped<GamerLFG.Services.IAuthService, GamerLFG.Services.AuthService>();
+builder.Services.AddScoped<GamerLFG.Services.ILobbyService, GamerLFG.Services.LobbyService>();
+builder.Services.AddScoped<GamerLFG.Services.IUserService, GamerLFG.Services.UserService>();
 
 // Register Seeder
 builder.Services.AddScoped<GamerLFG.Services.MongoDbSeeder>();
