@@ -79,8 +79,8 @@ namespace GamerLFG.Services.Interface.DTOs
                     new LobbyMember 
                     { 
                         UserId = this.HostId, 
-                        Status = "joined", 
-                        Role = this.HostRole
+                        Status = "Host", 
+                        Role = this.HostRole,
                     }
                     },
         };

@@ -1,13 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
 using System.Collections.Generic;
-
+using GamerLFG.Services;
+using GamerLFG.Services.Interface.DTOs;
 namespace GamerLFG.Controllers
 {
     public class LobbyController : Controller
     {
         // 1. หน้าแสดงรายละเอียด (ที่ใช้ MockData ใน View)
         // เข้าผ่าน: http://localhost:PORT/Lobby/Details/1
+        private readonly LobbyService _lobbyService;
+        public LobbyController(LobbyService lobbyService)
+        {
+            _lobbyService = lobbyService;
+        }
         public IActionResult Details(string id)
         {
             // ตอนนี้เราส่ง Model เปล่าไปก่อน เพราะคุณเขียน MockData ไว้ในหน้า View แล้ว
@@ -16,8 +22,6 @@ namespace GamerLFG.Controllers
             return View(lobby);
         }
 
-        // 2. หน้าแสดงรายการ Lobby ทั้งหมด (ถ้ามี)
-        // เข้าผ่าน: http://localhost:PORT/Lobby
         public IActionResult Index()
         {
             return View();
@@ -46,9 +50,17 @@ namespace GamerLFG.Controllers
             return Json(new { success = true });
         }
 
-        public IActionResult Create_lobby()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create_lobby(CreateLobbyDTO model)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                await _lobbyService.CreateLobbyAsync(model);
+                return RedirectToAction("Index");
+            }
+            return View(model);
         }
+       
     }
 }

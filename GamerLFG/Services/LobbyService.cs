@@ -9,10 +9,15 @@ namespace GamerLFG.Services
     {   
         private readonly IMongoCollection<Lobby> _lobbies;
         private readonly IMongoCollection<User> _users;
-        public LobbyService(IMongoDatabase database)
+
+        // รับ MongoDBservice เข้ามา (เพราะเราลงทะเบียนตัวนี้ไว้ใน Program.cs แล้ว)
+        public LobbyService(MongoDBservice mongoService)
         {
-            _lobbies = database.GetCollection<Lobby>("Lobby"); //ดึง collection lobby มาเก็บไว้เป็นตัวแปร
+            // ดึง Collection ผ่าน Property ที่คุณเขียนไว้ใน MongoDBservice ได้เลย
+            _lobbies = mongoService.Lobbies;
+            _users = mongoService.Users;
         }
+        
         public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){ // ใช้function แบบ async
             
             var myLobbyList = await _lobbies.Find(mylobby => mylobby.HostId == userId).ToListAsync(); // ดึง lobby ของเรามาแบบ async
@@ -84,6 +89,10 @@ namespace GamerLFG.Services
         public async Task CreateLobbyAsync(CreateLobbyDTO newLobby){
             var lobby = newLobby.ToEntity();
             var hostObj = await _users.Find(u => u.Id == lobby.HostId).FirstOrDefaultAsync();
+            if (hostObj == null)
+    {
+                throw new Exception($"ไม่พบ User ID: {lobby.HostId} ในระบบ");
+                }
             string hostName = hostObj.Username;
             await _lobbies.InsertOneAsync(lobby);
         }
