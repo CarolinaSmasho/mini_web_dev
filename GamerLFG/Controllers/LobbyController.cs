@@ -46,7 +46,7 @@ namespace GamerLFG.Controllers
             return Json(new { success = true });
         }
 
-        public IActionResult create_lobby()
+        public IActionResult Create_lobby()
         {
             return View();
         }
