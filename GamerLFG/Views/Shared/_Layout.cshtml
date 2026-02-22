@@ -22,17 +22,17 @@
     <header class="header">
         <div class="nav-bar">
 
-            <div style="display: flex;" class="gamerhub-logo" onclick="location.href='@Url.Action("Index", "Home")'">
+            <div style="display: flex;" class="gamerhub-logo" onclick="location.href='@Url.Action(action: "Index", "Home")'">
                 <p style="color: #ffffff;">GAMER</p>
                 <p style="padding-left: 0%;background-color:#ffa431" class="hub-text">HUB</p>
             </div>
             
             <div class="landscape-menu">
-                <a href="/Home/Login"><button class="orange-button">LOG IN</button></a>
-                <a asp-controller="Friends" asp-action="Friends_list"><button class="black-button">Friends</button></a>
+                <a asp-controller="Auth" asp-action="Login"><button class="orange-button">LOG IN</button></a>
+                <a asp-controller="User" asp-action="Friends_list"><button class="black-button">Friends</button></a>
                 <button class="black-button"><i class="fa fa-bell"></i></button>
                 
-                <a asp-area="" asp-controller="Home" asp-action="Profiles">
+                <a asp-area="" asp-controller="User" asp-action="Profiles">
                     <button class="profile-btn"><i class="fa fa-user-circle fa-2x"></i></button>
                 </a>
             </div>
@@ -50,7 +50,7 @@
             </div>
             
         </div> 
-s
+
     </header>
    
     <div class="container">

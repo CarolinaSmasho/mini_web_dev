@@ -44,8 +44,8 @@ public class LobbyMember
 {
     [BsonRepresentation(BsonType.ObjectId)]
     public string UserId { get; set; }
-    public string Username { get; set; }
     public string Status { get; set; } // e.g., 'joined', 'pending'
     public string Role { get; set; }
 }
+
 }

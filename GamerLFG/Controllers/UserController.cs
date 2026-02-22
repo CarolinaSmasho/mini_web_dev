@@ -4,7 +4,7 @@ using GamerLFG.Models;
 
 namespace GamerLFG.Controllers;
 
-public class FriendsController : Controller
+public class UserController : Controller
 {
 
     public IActionResult Friends_list()
