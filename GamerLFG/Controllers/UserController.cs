@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
+using MongoDB.Driver;
+using GamerLFG.service;
 
 namespace GamerLFG.Controllers;
 
@@ -12,40 +14,68 @@ public class UserController : Controller
         return View();
     }
 
-
     public IActionResult Friends_request()
     {
         return View();
     }
     
 
-    public IActionResult Profiles()
+    private readonly MongoDBservice _mongoDBservice;
+
+    public UserController(MongoDBservice mongoDBservice)
     {
-        return View();
+        _mongoDBservice = mongoDBservice;
     }
 
-
-// Mock Data: ข้อมูลจำลอง (ในของจริงจะมาจาก DB)
-private readonly List<dynamic> _mockUsers = new List<dynamic>
-{
-    new { Id = "7417146387", Username = "xldn", DisplayName = "qkrxldn", Status = "Offline", Bio = "ชอบเล่นเกม FPS มากๆ" },
-    new { Id = "2895051752", Username = "IloveMEOWMUK", DisplayName = "IloveAUGAIG", Status = "Online", Bio = "แมวคือพระเจ้า" },
-    new { Id = "1172879974", Username = "Sleep", DisplayName = "SpiritaulSniping", Status = "Away", Bio = "ง่วงนอนตลอดเวลา" }
-};
-
-[HttpGet]
-public IActionResult GetUserDetails(string id)
-{
-    // ค้นหาข้อมูลจาก Mock Data ตาม ID ที่ส่งมา
-    var user = _mockUsers.FirstOrDefault(u => u.Id == id);
-
-    if (user == null)
+    [HttpGet]
+    public async Task<IActionResult> Profiles(string id)
     {
-        return NotFound(); // ถ้าไม่เจอ
+        if (string.IsNullOrEmpty(id)) return NotFound();
+
+        var user = await _mongoDBservice.Users
+            .Find(u => u.Id == id)
+            .FirstOrDefaultAsync();
+
+        if (user == null) return NotFound();
+
+        return View(user);
     }
 
-    return Json(user); // ส่งข้อมูลกลับไปเป็น JSON
-}
+    [HttpPost]
+    public async Task<IActionResult> UpdateProfile(string id, string Username, string Bio, string GameLibraryString, string VibeTagsString, string discord, string steam, string twitch)
+    {
+        var user = await _mongoDBservice.Users.Find(u => u.Id == id).FirstOrDefaultAsync();
+        if (user == null) return NotFound();
 
+        // อัปเดตค่าใน Object
+        user.Username = Username;
+        user.Bio = Bio;
+        user.discord = discord;
+        user.steam = steam;
+        user.twitch = twitch;
 
+        if (!string.IsNullOrEmpty(GameLibraryString))
+        {
+            user.GameLibrary = GameLibraryString.Split(',')
+                .Select(s => s.Trim())
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList();
+        }
+
+        if (!string.IsNullOrEmpty(VibeTagsString))
+        {
+            user.VibeTags = VibeTagsString.Split(',')
+                .Select(v => v.Trim())
+                .ToList();
+        }
+        else
+        {
+            user.VibeTags = new List<string>();
+        }
+
+        // --- ส่วนที่สำคัญที่สุด: บันทึกกลับลง DB ---
+        await _mongoDBservice.Users.ReplaceOneAsync(u => u.Id == id, user);
+
+        return RedirectToAction("Profiles", new { id = id });
+    }
 }
