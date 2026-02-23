@@ -23,7 +23,9 @@ public class User
     [BsonRepresentation(BsonType.ObjectId)]
     public List<string> FriendIds { get; set; } = new();
     
-    public List<string> SocialMedia { get; set; } = new();
+    public string discord { get; set; }
+    public string steam { get; set; }
+    public string twitch { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
