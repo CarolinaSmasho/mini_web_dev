@@ -20,9 +20,24 @@
     
     double karmaScore = Model.KarmaScore;
 
-    int karmaPercent = (int)((karmaScore + 100) / 2);
-    string tierName = karmaScore < 0 ? "Restricted" : "Good Standing";
-    string tierColor = karmaScore < 0 ? "#ff2828" : "#28a745";
+    int karmaPercent = Math.Clamp((int)((karmaScore + 100) / 2), 0, 100);
+    
+    string tierName = "";
+    string tierColor = "";
+
+    if (karmaScore >= 50) {
+        tierName = "Excellent";
+        tierColor = "#00d2ff";
+    } else if (karmaScore >= 0) {
+        tierName = "Good Standing";
+        tierColor = "#28a745";
+    } else if (karmaScore > -50) {
+        tierName = "Warning";
+        tierColor = "#ff9800";
+    } else {
+        tierName = "Restricted";
+        tierColor = "#ff2828";
+    }
 }
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,7 +71,7 @@
                 </div>
                 
                 <br>
-                <a asp-controller="Home" asp-action="KarmaHistory" style="color: orange; text-decoration: none;">[ View History ]</a>
+                <a asp-controller="Karma" asp-action="KarmaHistory" asp-route-userId="@Model.Id" style="color: orange; text-decoration: none;">[ View History ]</a>
             </div>
         </div>
 
@@ -122,17 +137,14 @@
 @section Scripts {
     <script>
         function toggleVibe(btn, vibeName) {
-        // 1. สลับ Class active ให้ปุ่ม
-        btn.classList.toggle('active');
 
-        // 2. ดึงปุ่มที่เป็น active ทั้งหมดในกลุ่ม vibeContainer
-        const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
-        
-        // 3. นำชื่อ vibe จากปุ่มที่ active มาต่อกันด้วย comma
-        const selectedVibes = Array.from(activeButtons).map(b => b.innerText.trim());
-        
-        // 4. ใส่ค่าลงใน Hidden Input ที่เราสร้างไว้
-        document.getElementById('VibeTagsString').value = selectedVibes.join(',');
+            btn.classList.toggle('active');
+
+            const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
+            
+            const selectedVibes = Array.from(activeButtons).map(b => b.innerText.trim());
+            
+            document.getElementById('VibeTagsString').value = selectedVibes.join(',');
     }
     </script>
 }
