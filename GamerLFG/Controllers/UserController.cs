@@ -37,6 +37,12 @@ public class UserController : Controller
 
         if (user == null) return NotFound();
 
+        var karmaRecords = await _mongoDBservice.KarmaHistories
+            .Find(k => k.TargetUserId == id)
+            .ToListAsync();
+
+        user.KarmaScore = karmaRecords.Sum(k => k.Score); 
+
         return View(user);
     }
 
@@ -46,7 +52,6 @@ public class UserController : Controller
         var user = await _mongoDBservice.Users.Find(u => u.Id == id).FirstOrDefaultAsync();
         if (user == null) return NotFound();
 
-        // อัปเดตค่าใน Object
         user.Username = Username;
         user.Bio = Bio;
         user.discord = discord;
@@ -72,7 +77,6 @@ public class UserController : Controller
             user.VibeTags = new List<string>();
         }
 
-        // --- ส่วนที่สำคัญที่สุด: บันทึกกลับลง DB ---
         await _mongoDBservice.Users.ReplaceOneAsync(u => u.Id == id, user);
 
         return RedirectToAction("Profiles", new { id = id });
