@@ -69,178 +69,89 @@
         <script src="~/js/site.js" asp-append-version="true"></script>
         @await RenderSectionAsync("Scripts", required: false)
 
+        <input type="checkbox" id="global-user-mini-profile-toggle" class="mini-profile-checkbox">
 
-        <header class="header">
-            <div class="nav-bar">
-
-                <div style="display: flex;" class="gamerhub-logo" onclick="location.href='@Url.Action("Index", "Home")'">
-                    <p style="color: #ffffff;">GAMER</p>
-                    <p style="padding-left: 0%;background-color:#ffa431" class="hub-text">HUB</p>
-                </div>
-
-                <div class="landscape-menu">
-                    <a href="/Home/Login"><button class="orange-button">LOG IN</button></a>
-                    <a asp-controller="Friends" asp-action="Friends_list"><button class="black-button">Friends</button></a>
-                    <button class="black-button"><i class="fa fa-bell"></i></button>
-
-                    <a asp-area="" asp-controller="Home" asp-action="Profiles">
-                        <button class="profile-btn"><i class="fa fa-user-circle fa-2x"></i></button>
-                    </a>
-                </div>
-                <div style="display: flex;" class="gamerhub-logo"
-                     onclick="location.href='@Url.Action(action: "Index", "Home")'">
-                    <p style="color: #ffffff;">GAMER</p>
-                    <p style="padding-left: 0%;background-color:#ffa431" class="hub-text">HUB</p>
-                </div>
-
-                <div class="landscape-menu">
-                    <a asp-controller="Auth" asp-action="Login"><button class="orange-button">LOG IN</button></a>
-                    <a asp-controller="User" asp-action="Friends_list"><button class="black-button">Friends</button></a>
-                    <button class="black-button"><i class="fa fa-bell"></i></button>
-
-                    <a asp-area="" asp-controller="User" asp-action="Profiles">
-                        <button class="profile-btn"><i class="fa fa-user-circle fa-2x"></i></button>
-                    </a>
-                </div>
-
-                <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>
-                    <span>&#9776;</span>
-                </div>
-
-                <div id="mobile-menu" class="nav-mobile-hidden">
-                    <a href="/Home/Login"><button class="orange-button">Log In</button></a>
-                    <a href="/Home/Profiles"><button class="orange-button">Profile</button></a>
-
-                    <button class="orange-button">Notics</button>
-                    <button class="orange-button">Create Lobby</button>
-                </div>
-
-            </div>
-        </header>
-
-        <div class="container">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
-        </div>
-
-        <footer class="border-top footer text-muted">
-
-        </footer>
-
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-        @await RenderSectionAsync("Scripts", required: false)
-
-
-        <header class="header">
-            <div class="nav-bar">
-
-                <div style="display: flex;" class="gamerhub-logo" onclick="location.href='@Url.Action("Index", "Home")'">
-                    <p style="color: #ffffff;">GAMER</p>
-                    <p style="padding-left: 0%;background-color:#ffa431">HUB</p>
-                </div>
-
-                <div class="landscape-menu">
-                    <a href="/Home/Login"><button class="orange-button">LOG IN</button></a>
-                    <a asp-controller="Friends" asp-action="Friends_list"><button class="black-button">Friends</button></a>
-                    <button class="black-button"><i class="fa fa-bell"></i></button>
-
-                    <a asp-area="" asp-controller="Home" asp-action="Profiles">
-                        <button class="profile-btn"><i class="fa fa-user-circle fa-2x"></i></button>
-                    </a>
-                </div>
-
-                <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>
-                    <span>&#9776;</span>
-                </div>
-
-                <div id="mobile-menu" class="nav-mobile-hidden">
-                    <a href="/Home/Login"><button class="orange-button">Log In</button></a>
-                    <a href="/Home/Profiles"><button class="orange-button">Profile</button></a>
-
-                    <button class="orange-button">Notics</button>
-                    <button class="orange-button">Create Lobby</button>
-                </div>
-
-            </div>
-
-        </header>
-
-        <div class="container">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
-        </div>
-
-        <footer class="border-top footer text-muted">
-
-        </footer>
-
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-        @await RenderSectionAsync("Scripts", required: false)
-
-
-        <input type="checkbox" id="global-user-modal-toggle" class="modal-checkbox">
-
-        <div class="modal-overlay">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title-box">
-                        <span id="modal-display-name" class="modal-title">Loading...</span>
+        <div class="mini-profile-overlay">
+            <div class="mini-profile-content">
+                <div class="mini-profile-header">
+                    <div class="mini-profile-title-box">
+                        <span id="mini-profile-display-name" class="mini-profile-title">Loading...</span>
                     </div>
-                    <label for="global-user-modal-toggle" class="modal-close-btn">X</label>
+                    <label for="global-user-mini-profile-toggle" class="mini-profile-close-btn">X</label>
                 </div>
 
-                <div class="modal-body" style="color: white; padding: 10px;">
-                    <p><strong>Username:</strong> <span id="modal-username">-</span></p>
-                    <p><strong>Status:</strong> <span id="modal-status">-</span></p>
-                    <p><strong>Bio:</strong> <span id="modal-bio">-</span></p>
+                <div class="mini-profile-body" style="color: white; padding: 10px;">
+                    <p><strong>Username:</strong> <span id="mini-profile-username">-</span></p>
+                    <p><strong>Status:</strong> <span id="mini-profile-status">-</span></p>
+                    <p><strong>Bio:</strong> <span id="mini-profile-bio">-</span></p>
                 </div>
 
-                <div class="modal-actions">
-                    <a id="modal-profile-link" href="#" class="modal-action-btn">ดู Profile</a>
-                    <button class="modal-action-btn" onclick="alert('Mock: Add Friend')">Add/Delete Friend</button>
+                <div class="mini-profile-actions">
+                    <a id="mini-profile-link" href="#" class="mini-profile-action-btn">ดู Profile</a>
+                    <button id="mini-profile-action-btn" class="mini-profile-action-btn" onclick=""></button>
                 </div>
             </div>
         </div>
 
-        <script>
-                                        function openUserModal(userId) {
-                                        // 1. ตั้งค่า Default ระหว่างรอโหลด
-                                        document.getElementById('modal-display-name').innerText = "Loading...";
-                                        document.getElementById('modal-username').innerText = "...";
 
-                                        // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
-                                        // เปลี่ยนจาก /Home/ เป็น /Friends/
-                                        fetch(`/Friends/GetUserDetails?id=${userId}`)
-                                        .then(response => {
-                                        if (!response.ok) throw new Error("User not found");
-                                        return response.json();
-                                        })
-                                        .then(data => {
-                                        // 3. เอาข้อมูลที่ได้มาหยอดใส่ Modal
-                                        document.getElementById('modal-display-name').innerText = data.displayName;
-                                        document.getElementById('modal-username').innerText = data.username;
-                                        document.getElementById('modal-status').innerText = data.status;
-                                        document.getElementById('modal-bio').innerText = data.bio;
-
-                                        // อัปเดตลิ้งก์ปุ่ม
-                                        document.getElementById('modal-profile-link').href = `/users/${data.id}/profile`;
-
-                                        // 4. สั่งเปิด Modal
-                                        document.getElementById('global-user-modal-toggle').checked = true;
-                                        })
-                                        .catch(err => {
-                                        console.error(err);
-                                        alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
-                                        });
-                                        }
-        </script>
     </body>
 
+    <script>
+        function openUserMiniProfile(userId) {
+            // 1. ตั้งค่า Default ระหว่างรอโหลด
+            document.getElementById('mini-profile-display-name').innerText = "Loading...";
+            document.getElementById('mini-profile-username').innerText = "...";
+            let actionBtn = document.getElementById('mini-profile-action-btn');
+            actionBtn.innerText = "Loading...";
+            actionBtn.onclick = null;
+            // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
+            fetch(`/User/GetUserDetails?UserId=${userId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("User not found");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Data from API:", data);
+                    // 3. เอาข้อมูลที่ได้มาหยอดใส่ mini-profile
+                    document.getElementById('mini-profile-display-name').innerText = data.username;
+                    document.getElementById('mini-profile-username').innerText = data.username;
+                    document.getElementById('mini-profile-status').innerText = data.status;
+                    document.getElementById('mini-profile-bio').innerText = data.bio;
+                    if (data.isFriend) {
+                        actionBtn.innerText = "Delete Friend";
+                        actionBtn.style.backgroundColor = "#dc3545";
+                        actionBtn.style.color = "white";
+
+                        actionBtn.onclick = function () {
+                            alert(`ลบ ${data.username} ออกจากเพื่อน`);
+                            fetch(`/User/DeleteFriend?targetUserId=${encodeURIComponent(data.id)}`, {
+                                method: 'POST' // 🟢 สำคัญมาก: ต้องบอกว่าเป็น POST
+                            }).then(response => response.json())
+                                .then(result => {
+                                    openUserMiniProfile(data.id);
+                                })
+                        }
+
+                    } else {
+                        actionBtn.innerText = "Add Friend";
+                        actionBtn.style.backgroundColor = "#28a745";
+                        actionBtn.style.color = "white";
+
+                        actionBtn.onclick = function () {
+                            alert(`กำลังส่งคำขอ ${data.username} เป็นเพื่อน`);
+                            // อนาคตเราจะเรียกฟังก์ชัน fetch ไปที่ API เพิ่มเพื่อนตรงนี้ครับ
+                        };
+                    }
+                    document.getElementById('mini-profile-link').href = `/users/${data.id}/profile`;
+
+                    // 4. สั่งเปิด mini-profile
+                    document.getElementById('global-user-mini-profile-toggle').checked = true;
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
+                });
+        }
+    </script>
 
 </html>
