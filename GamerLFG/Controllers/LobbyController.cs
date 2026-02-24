@@ -56,7 +56,11 @@ namespace GamerLFG.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _lobbyService.CreateLobbyAsync(model);
+                var (success,message) = await _lobbyService.CreateLobbyAsync(model);
+                if (!success)
+                {
+                    return View(message);
+                }
                 return RedirectToAction("Index");
             }
             return View(model);

@@ -86,15 +86,16 @@ namespace GamerLFG.Services
                 }
 
                 
-        public async Task CreateLobbyAsync(CreateLobbyDTO newLobby){
+        public async Task<(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby){
             var lobby = newLobby.ToEntity();
             var hostObj = await _users.Find(u => u.Id == lobby.HostId).FirstOrDefaultAsync();
             if (hostObj == null)
-    {
-                throw new Exception($"ไม่พบ User ID: {lobby.HostId} ในระบบ");
+                {
+                return (false,"Host not found");
                 }
             string hostName = hostObj.Username;
             await _lobbies.InsertOneAsync(lobby);
+            return (true,"OK");
         }
         public async Task DeleteLobbyAsync (string id){
 

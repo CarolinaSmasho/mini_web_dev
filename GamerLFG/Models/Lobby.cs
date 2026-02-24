@@ -2,6 +2,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
+using System.Runtime.CompilerServices;
+using System.ComponentModel;
 
 namespace GamerLFG.Models
 {
@@ -9,7 +11,8 @@ public class Lobby
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
+    public string Id { get; set; } // ลบออกด้วย 
+    // [Ref = "user"]
 
     public string Title { get; set; }
     public string Game { get; set; }

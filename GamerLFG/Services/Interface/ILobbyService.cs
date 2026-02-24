@@ -6,7 +6,7 @@ namespace GamerLFG.Services.Interface
     {
         Task<LobbyListResponse> GetAllLobbyAsync(string? userId);
         Task<List<ShowLobbyDTO>> GetNextLobbiesAsync(string? lastId,string? userId, int pageSize = 10);
-        Task CreateLobbyAsync(CreateLobbyDTO newLobby);
+        Task <(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby);
         Task DeleteLobbyAsync (string id);
         Task UpdateLobbyAsync (Lobby lobby);
         Task AddmemberAsync (Lobby current_lobby,User newUser);
