@@ -63,17 +63,29 @@ namespace GamerLFG.Services
 
         public async Task<bool> RemoveFriendAsync(string currentUserId, string targetFriendId)
         {
-            // 1. หาตัวเราให้เจอ
-            var filter = Builders<User>.Filter.Eq(u => u.Id, currentUserId);
+            // ==========================================
+            // ฝั่งที่ 1: เอาเพื่อนออกจากลิสต์ของเรา
+            // ==========================================
+            var filterMe = Builders<User>.Filter.Eq(u => u.Id, currentUserId);
+            var updateMe = Builders<User>.Update.Pull(u => u.FriendIds, targetFriendId);
             
-            // 2. สั่งดึง (Pull) รหัสเพื่อนคนนั้นออกจากลิสต์ FriendIds ของเรา
-            var update = Builders<User>.Update.Pull(u => u.FriendIds, targetFriendId);
+            // สั่งอัปเดตฝั่งเรา
+            var resultMe = await _userCollection.UpdateOneAsync(filterMe, updateMe);
 
-            // 3. สั่งอัปเดตลง Database
-            var result = await _userCollection.UpdateOneAsync(filter, update);
 
-            // ถ้ามีการแก้ไขสำเร็จ จะคืนค่า true
-            return result.ModifiedCount > 0;
+            // ==========================================
+            // ฝั่งที่ 2: เอาเราออกจากลิสต์ของเพื่อนด้วย!
+            // ==========================================
+            var filterFriend = Builders<User>.Filter.Eq(u => u.Id, targetFriendId);
+            var updateFriend = Builders<User>.Update.Pull(u => u.FriendIds, currentUserId);
+            
+            // สั่งอัปเดตฝั่งเพื่อน
+            var resultFriend = await _userCollection.UpdateOneAsync(filterFriend, updateFriend);
+
+
+            // คืนค่า true ถ้ามีการเปลี่ยนแปลงเกิดขึ้นอย่างน้อย 1 ฝั่ง 
+            // (กันกรณีที่ฝั่งนึงอาจจะเผลอลบไปแล้ว แต่อีกฝั่งยังติดบัคค้างอยู่)
+            return resultMe.ModifiedCount > 0 || resultFriend.ModifiedCount > 0;
         }
 
     }

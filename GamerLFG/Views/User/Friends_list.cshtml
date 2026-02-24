@@ -76,11 +76,9 @@
 </div>
 
 <script>
-    // จับเหตุการณ์ตอนผู้ใช้พิมพ์ข้อความในช่อง Search
     document.getElementById('searchInput').addEventListener('input', function (e) {
         let keyword = e.target.value;
 
-        // ถ้าลบข้อความจนหมด ให้ล้างหน้าจอผลลัพธ์
         if (keyword.trim() === '') {
             document.getElementById('searchResultList').innerHTML = '';
             document.getElementById('friend_containers').style.display = "block"
@@ -123,7 +121,6 @@
                     });
                 }
 
-                // เอา HTML ที่สร้างเสร็จแล้วไปยัดใส่หน้าจอ
                 document.getElementById('searchResultList').innerHTML = resultHtml;
             })
             .catch(error => console.error('Error searching users:', error));

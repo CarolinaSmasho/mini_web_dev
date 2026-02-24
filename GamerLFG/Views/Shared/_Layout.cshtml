@@ -139,7 +139,13 @@
 
                         actionBtn.onclick = function () {
                             alert(`กำลังส่งคำขอ ${data.username} เป็นเพื่อน`);
-                            // อนาคตเราจะเรียกฟังก์ชัน fetch ไปที่ API เพิ่มเพื่อนตรงนี้ครับ
+                            fetch(`/User/SendFriendRequest?targetUserId=${encodeURIComponent(data.id)}`, {
+                                method: 'POST' // 🟢 สำคัญมาก: ต้องบอกว่าเป็น POST
+                            }).then(response => response.json())
+                                .then(result => {
+                                    console.log("Add Friend Result:", result);
+                                    openUserMiniProfile(data.id);
+                                })
                         };
                     }
                     document.getElementById('mini-profile-link').href = `/users/${data.id}/profile`;

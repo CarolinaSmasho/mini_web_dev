@@ -11,9 +11,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
-// builder.Services.AddScoped<ILobbyService, LobbyService>();
+
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
 var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
+
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     return new MongoClient(mongoSettings.ConnectionString);
