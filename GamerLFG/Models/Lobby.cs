@@ -11,7 +11,7 @@ public class Lobby
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } // ลบออกด้วย 
+    public string? Id { get; set; } // ลบออกด้วย 
     // [Ref = "user"]
 
     public string Title { get; set; }

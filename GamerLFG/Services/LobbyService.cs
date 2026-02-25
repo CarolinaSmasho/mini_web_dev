@@ -7,21 +7,18 @@ namespace GamerLFG.Services
 {
     public class LobbyService : ILobbyService
     {   
-        private readonly IMongoCollection<Lobby> _lobbies;
-        private readonly IMongoCollection<User> _users;
-
-        // รับ MongoDBservice เข้ามา (เพราะเราลงทะเบียนตัวนี้ไว้ใน Program.cs แล้ว)
-        public LobbyService(MongoDBservice mongoService)
+         private readonly MongoDBservice _database;
+        public LobbyService(MongoDBservice database)
         {
-            // ดึง Collection ผ่าน Property ที่คุณเขียนไว้ใน MongoDBservice ได้เลย
-            _lobbies = mongoService.Lobbies;
-            _users = mongoService.Users;
+            _database = database;
+            
         }
-        
+     
+        // _database.Users;
         public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){ // ใช้function แบบ async
             
-            var myLobbyList = await _lobbies.Find(mylobby => mylobby.HostId == userId).ToListAsync(); // ดึง lobby ของเรามาแบบ async
-            var otherLobbyList = await _lobbies.Find(otherLobby => otherLobby.HostId != userId).SortBy(l => l.Id).Limit(10).ToListAsync();
+            var myLobbyList = await _database.Lobbies.Find(mylobby => mylobby.HostId == userId).ToListAsync(); // ดึง lobby ของเรามาแบบ async
+            var otherLobbyList = await _database.Lobbies.Find(otherLobby => otherLobby.HostId != userId).SortBy(l => l.Id).Limit(10).ToListAsync();
             var myLobby = myLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
@@ -64,7 +61,7 @@ namespace GamerLFG.Services
                 
                 // กรองเอาเฉพาะตัวที่ ID "หลังจาก" ตัวสุดท้ายที่หน้าจอแสดงอยู่
                 var filter = Builders<Lobby>.Filter.Gt(l => l.Id, lastId);
-                var nextLobby = await _lobbies.Find(filter & notYours)
+                var nextLobby = await _database.Lobbies.Find(filter & notYours)
                                 .SortBy(l => l.Id) // ต้องเรียงลำดับเสมอเพื่อให้ข้อมูลต่อเนื่องกัน
                                 .Limit(pageSize)
                                 .ToListAsync();
@@ -85,18 +82,42 @@ namespace GamerLFG.Services
                     }).ToList();
                 }
 
+        public async Task<(bool success, string message)> CreateLobbyAsync(CreateLobbyDTO newLobby) 
+        {
+            try {
+                var lobby = newLobby.ToEntity();
                 
-        public async Task<(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby){
-            var lobby = newLobby.ToEntity();
-            var hostObj = await _users.Find(u => u.Id == lobby.HostId).FirstOrDefaultAsync();
-            if (hostObj == null)
-                {
-                return (false,"Host not found");
-                }
-            string hostName = hostObj.Username;
-            await _lobbies.InsertOneAsync(lobby);
-            return (true,"OK");
+                // Debug ดูว่า Entity พร้อมใช้งานไหม
+                Console.WriteLine($"Inserting Lobby: {System.Text.Json.JsonSerializer.Serialize(lobby)}");
+
+                await _database.Lobbies.InsertOneAsync(lobby);
+                
+                // ถ้ามาถึงตรงนี้ได้ แสดงว่าคำสั่งส่งออกไปสำเร็จ
+                return (true, "OK");
+            }
+            catch (MongoException ex) {
+                // ดัก Error เฉพาะจาก MongoDB
+                Console.WriteLine($"MongoDB Error: {ex.Message}");
+                return (false, ex.Message);
+            }
+            catch (Exception ex) {
+                // ดัก Error อื่นๆ เช่น Mapping พัง
+                Console.WriteLine($"General Error: {ex.Message}");
+                return (false, ex.Message);
+            }
         }
+                // public async Task<(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby){
+        //     var lobby = newLobby.ToEntity();
+        //     Console.Write(newLobby);
+        //     // var hostObj = await _users.Find(u => u.Id == lobby.HostId).FirstOrDefaultAsync();
+        //     // if (hostObj == null)
+        //     //     {
+        //     //     return (false,"Host not found");
+        //     //     }
+        //     // string hostName = hostObj.Username;
+        //     await _database.Lobbies.InsertOneAsync(lobby);
+        //     return (true,"OK");
+        // }
         public async Task DeleteLobbyAsync (string id){
 
         }

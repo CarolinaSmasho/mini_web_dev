@@ -1,6 +1,8 @@
 using GamerLFG.Models;
 using GamerLFG.service;
 using GamerLFG.Services;
+using GamerLFG.Services.Interface;
+using MongoDB.Driver;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,7 +12,12 @@ builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<LobbyService>();
+builder.Services.AddSingleton<ILobbyService,LobbyService>();
+
+
+var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
+
+
 var app = builder.Build();
 
 // --- เพิ่มส่วนนี้เข้าไป ---
