@@ -1,18 +1,59 @@
 @{
     ViewData["Title"] = "New Lobby";
     string[] Moods = {"Chil","Hardcode","Not Toxic","Toxic","God"};
+    string[] Games = { 
+    "Elden Ring", 
+    "Monster Hunter: World", 
+    "Remnant 2", 
+    "Dark Souls III", 
+    "Helldivers 2", 
+    "Baldur's Gate 3", 
+    "It Takes Two", 
+    "Lords of the Fallen", 
+    "Valheim", 
+    "Palworld", 
+    "Deep Rock Galactic", 
+    "Left 4 Dead 2", 
+    "Stardew Valley", 
+    "Sea of Thieves", 
+    "Don't Starve Together", 
+    "Grand Theft Auto Online", 
+    "Apex Legends", 
+    "Warframe", 
+    "Destiny 2", 
+    "Minecraft" 
+};
+    
+    
 }
+@using GamerLFG.Services.Interface.DTOs;
+@model CreateLobbyDTO;
 <script src="~/js/create-lobby.js" asp-append-version="true" defer></script>
 <link rel="stylesheet" href="~/css/create_lobby.css" asp-append-version="true">
 <main>
-    <form action="" class="create-form">
-       
+    <form asp-controller="Lobby" asp-action="Create_lobby" class="create-form" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+       <input type="hidden" asp-for="HostId" value="698b47c7373afbcc2eb802c9">
         <div class="title">
-            <select name="game" id="game" disabled="disabled"></select>
-            <input type="text" name="title" id="title" placeholder="Lobby title">
-            <input type="text" name="description" id="des" placeholder="description">
+            <label for="game">Choose Your Game</label>
+            <select asp-for="Game" 
+                            asp-items="@(new SelectList(Games))" 
+                            class="form-control">
+                        <option value="">-- เลือกเกม --</option>
+                    </select>
+            
+                    
+            <input asp-for="Title" type="text" placeholder="Lobby title">
+            <input asp-for="Description" type="text"  placeholder="description">
         </div>
-
+        <div>
+                    <input type="number" asp-for="MaxPlayers" id="min" oninput=" this.value = this.value.replace(/[^2-100]/g, '')">
+                    <div id="add-count-btn">
+                        <button type="button" onclick="countingTime(1,'min')"><i class="fa fa-arrow-up"></i></button>
+                        <button type="button" onclick="countingTime(-1,'min')"><i class="fa fa-arrow-down"></i></button>
+                    </div>
+                    <p>MIN</p>
+        </div>
 
         <div class="require">
             <p id="re-text-1">PERSONAL REQUIREMENTS</p>
@@ -29,7 +70,7 @@
             </div>
         <div id="roles-added"></div>
 
-        <input type="hidden" name="ItemsData" id="ItemsData">
+        <input type="hidden" asp-for="Roles" id="ItemsData">
         </div>
 
 
@@ -37,7 +78,7 @@
             <p>TACTICAL PROTOCAL TAGS</p>
             <div class=moods>
                 @foreach(string mood in Moods){
-                <input type="checkbox" id=@mood name="moods[]" value="@mood" class="check-box"> 
+                <input type="checkbox" name="Moods" id="mood-@mood" value="@mood" class="check-box"> 
                 <label class="mood-label" for=@mood>@mood</label>
             }   
             </div>
@@ -45,36 +86,53 @@
         </div>
         <div class="wallpaper">
             <p>Tactical Visuals</p>
-            <input type="text" placeholder="Direct Image URL">
+            <input type="text" placeholder="Direct Image URL" asp-for="Picture">
         </div>
         <div class="discord">
             <p>Discord Link</p>
-            <input type="text" placeholder="discord">
+            <input type="text" placeholder="discord" asp-for="DiscordLink">
             
         </div>
         <div class="assign-role">
            Choose your Role
-           <select name="host-role" id="host-role"></select>
+           <select asp-for="HostRole" id="host-role">
+            <option value="olo"></option>
+           </select>
         </div>
         
         <div class="date">
             <label for="start" class="datetime-local">
                 <div class="calendar">
-                 Start Date <i class="fa fa-calendar"></i>   
+                 Open Recruit Date <i class="fa fa-calendar"></i>   
                 </div>
                 
-               <input type="date" onclick="this.showPicker()" class="input-date" id="start" name="start"> 
+               <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start" asp-for="StartRecruiting"> 
             </label>
              <label for="end" class="datetime-local">
                 <div class="calendar">
-                  End Date <i class="fa fa-calendar"></i>  
+                  Close Recruit Date <i class="fa fa-calendar"></i>  
                 </div>
                 
-              <input type="date" onclick="this.showPicker()" class="input-date" id="end" name="end">  
+              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end" asp-for="EndRecruiting">  
+
+             </label>
+            <label for="start-e" class="datetime-local">
+                <div class="calendar">
+                  Start Event Date <i class="fa fa-calendar"></i>  
+                </div>
+                
+              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start-e" asp-for="StartEvent">  
              </label>
 
+             <label for="end-e" class="datetime-local">
+                <div class="calendar">
+                  End Event Date <i class="fa fa-calendar"></i>  
+                </div>
+                
+              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end-e" asp-for="EndEvent">  
+             </label>
 
-             <div class="time-range">
+             @* <div class="time-range">
 
                 <div>
                   <input type="text" name="hour" id='hour' oninput=" this.value = this.value.replace(/[^0-9]/g, '')">
@@ -95,7 +153,7 @@
                     <p>MIN</p>
                 </div>
                   
-             </div>
+             </div> *@
              
         </div>
 
