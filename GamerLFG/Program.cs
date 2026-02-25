@@ -1,15 +1,29 @@
 using GamerLFG.Models;
 using GamerLFG.service;
 using GamerLFG.Services;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
+using MongoDB.Driver;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"));
+
+builder.Services.AddSingleton<IMongoClient>(sp => 
+{
+    var connectionString = builder.Configuration.GetSection("MongoDB")["ConnectionString"];
+    return new MongoClient(connectionString);
+});
 builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
-
+builder.Services.AddSingleton<AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login"; // ถ้ายังไม่ได้ Login ให้เด้งไปหน้านี้
+        options.LogoutPath = "/Auth/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // ให้จำ Login ไว้ 60 นาที
+    });
 var app = builder.Build();
 
 
@@ -31,7 +45,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
