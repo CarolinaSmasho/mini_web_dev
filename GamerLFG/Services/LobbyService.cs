@@ -16,9 +16,26 @@ namespace GamerLFG.Services
      
         // _database.Users;
         public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){ // ใช้function แบบ async
-            
-            var myLobbyList = await _database.Lobbies.Find(mylobby => mylobby.HostId == userId).ToListAsync(); // ดึง lobby ของเรามาแบบ async
-            var otherLobbyList = await _database.Lobbies.Find(otherLobby => otherLobby.HostId != userId).SortBy(l => l.Id).Limit(10).ToListAsync();
+
+            // ดึง lobbies ทั้งหมดก่อน
+            var allLobbies = await _database.Lobbies.Find(lobby => true).SortBy(l => l.Id).ToListAsync();
+            Console.WriteLine($"[DEBUG] ดึง lobbies ได้ {allLobbies.Count} อัน");
+            foreach(var lob in allLobbies)
+            {
+                Console.WriteLine($"[DEBUG] Lobby: {lob.Title}, HostId: {lob.HostId}, Members: {lob.Members?.Count ?? 0}");
+            }
+
+            // Filter ใน C# แทนใน MongoDB query เพื่อหลีกเลี่ยง type mismatch
+            var myLobbyList = string.IsNullOrEmpty(userId)
+                ? new List<Lobby>()
+                : allLobbies.Where(lob => lob.HostId == userId).ToList();
+
+            var otherLobbyList = string.IsNullOrEmpty(userId)
+                ? allLobbies.Take(10).ToList()
+                : allLobbies.Where(lob => lob.HostId != userId).Take(10).ToList();
+
+            Console.WriteLine($"[DEBUG] My lobbies: {myLobbyList.Count}, Other lobbies: {otherLobbyList.Count}");
+
             var myLobby = myLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
@@ -27,9 +44,9 @@ namespace GamerLFG.Services
                 HostName  = lob.HostName,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
-                Currentplayers = lob.Members.Count,
+                Currentplayers = lob.Members?.Count ?? 0,
                 MaxPlayers = lob.MaxPlayers
-                
+
             }).ToList();
             var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
@@ -39,9 +56,9 @@ namespace GamerLFG.Services
                 HostName  = lob.HostName,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
-                Currentplayers = lob.Members.Count,
+                Currentplayers = lob.Members?.Count ?? 0,
                 MaxPlayers = lob.MaxPlayers
-                
+
             }).ToList();
 
             return new LobbyListResponse
@@ -49,7 +66,7 @@ namespace GamerLFG.Services
                 MyLobbies = myLobby,
                 OtherLobbies = publicLobby
             };
-        
+
             }
             
             

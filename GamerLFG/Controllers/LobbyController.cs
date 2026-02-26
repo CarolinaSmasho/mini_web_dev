@@ -30,9 +30,11 @@ namespace GamerLFG.Controllers
             return View(lobby);
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var userId = HttpContext.Session.GetString("UserId");
+            var lobbyData = await _lobbyService.GetAllLobbyAsync(userId);
+            return View(lobbyData);
         }
 
         // --- ส่วนของ API ที่เรียกใช้จาก JavaScript (fetch) ในหน้า View ---

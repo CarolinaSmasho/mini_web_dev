@@ -1,42 +1,86 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-@using GamerLFG.Models
-
-
-
+@using GamerLFG.Services.Interface.DTOs
 
 <link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
 
-        <main>
+    @{
+        var lobbyData = Model as LobbyListResponse ?? new LobbyListResponse();
+    }
+
+    <main>
         <div class="mobile-search" id="mobile-search">
-                <form action="" class="search-form">
-                    <input type="text" placeholder="Search.." name="search" class="search-space">
-                    <button type="submit"><i class="fa fa-search fa-3x"></i></button>
-                </form>
+            <form action="" class="search-form">
+                <input type="text" placeholder="Search.." name="search" class="search-space">
+                <button type="submit"><i class="fa fa-search fa-3x"></i></button>
+            </form>
         </div>
 
-            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
-                <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
-            
-            <div class="all-lob">
+        <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+            <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby
+        </h3>
+
+        <div class="all-lob">
             <div class="lobbies">
-            <a asp-controller="Lobby" asp-action="Create_lobby">
-            <div class="add-lobby">
-                <i class="fa fa-plus-circle fa-2x"></i>
-                <p>NEW LOBBY</p>
-            </div>
-            </a>
+                <a asp-controller="Lobby" asp-action="Create_lobby">
+                    <div class="add-lobby">
+                        <i class="fa fa-plus-circle fa-2x"></i>
+                        <p>NEW LOBBY</p>
+                    </div>
+                </a>
 
+                @if (lobbyData.MyLobbies != null && lobbyData.MyLobbies.Any())
+                {
+                    @foreach (var lobby in lobbyData.MyLobbies)
+                    {
+                        <a asp-controller="Lobby" asp-action="Details" asp-route-id="@lobby.Id">
+                            <div class="lobby-card">
+                                <img src="@lobby.Picture" alt="@lobby.Title" class="lobby-background">
+                                <div class="lobby-info">
+                                    <h4>@lobby.Title</h4>
+                                    <p class="game-name">@lobby.Game</p>
+                                    <p class="description">@lobby.Description</p>
+                                    <div class="lobby-footer">
+                                        <span class="host">Host: @lobby.HostName</span>
+                                        <span class="players">@lobby.Currentplayers/@lobby.MaxPlayers</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
             </div>
-
 
             <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
-                <i class="fa fa-globe" style="color: #ffa431;"></i>Public Feed</h3>
+                <i class="fa fa-globe" style="color: #ffa431;"></i>Public Feed
+            </h3>
 
             <div class="lobbies">
-                
-              
+                @if (lobbyData.OtherLobbies != null && lobbyData.OtherLobbies.Any())
+                {
+                    @foreach (var lobby in lobbyData.OtherLobbies)
+                    {
+                        <a asp-controller="Lobby" asp-action="Details" asp-route-id="@lobby.Id">
+                            <div class="lobby-card">
+                                <img src="@lobby.Picture" alt="@lobby.Title" class="lobby-background">
+                                <div class="lobby-info">
+                                    <h4>@lobby.Title</h4>
+                                    <p class="game-name">@lobby.Game</p>
+                                    <p class="description">@lobby.Description</p>
+                                    <div class="lobby-footer">
+                                        <span class="host">Host: @lobby.HostName</span>
+                                        <span class="players">@lobby.Currentplayers/@lobby.MaxPlayers</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+                @if (lobbyData.OtherLobbies == null || !lobbyData.OtherLobbies.Any())
+                {
+                    <p style="color: aliceblue; padding: 2rem;">ไม่พบ lobbies ในขณะนี้</p>
+                }
             </div>
         </div>
-        </main>
+    </main>
