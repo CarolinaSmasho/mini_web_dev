@@ -129,6 +129,10 @@
                             }).then(response => response.json())
                                 .then(result => {
                                     openUserMiniProfile(data.id);
+                                    let friendCard = document.getElementById(data.id);
+                                    if (friendCard) {
+                                        friendCard.remove(); 
+                                    }
                                 })
                         }
 
@@ -139,7 +143,7 @@
 
                         actionBtn.onclick = function () {
                             alert(`กำลังส่งคำขอ ${data.username} เป็นเพื่อน`);
-                            fetch(`/User/SendFriendRequest?targetUserId=${encodeURIComponent(data.id)}`, {
+                            fetch(`/FriendRequest/Send?targetUserId=${encodeURIComponent(data.id)}`, {
                                 method: 'POST' // 🟢 สำคัญมาก: ต้องบอกว่าเป็น POST
                             }).then(response => response.json())
                                 .then(result => {

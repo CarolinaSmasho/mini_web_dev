@@ -8,7 +8,6 @@ namespace GamerLFG.Services
     {
         Task<List<User>> GetMyFriendsAsync(string myUserId);
 
-
         Task<List<User>> SearchFriendAsync(string keyword);
     
         Task<User> SearchUserAsync(string UserId);

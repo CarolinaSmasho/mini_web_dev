@@ -8,12 +8,10 @@ namespace GamerLFG.Controllers;
 public class UserController : Controller
 {
     private readonly IUserService _userService;
-    private readonly IFriendRequestService _friendRequestService;
 
     public UserController(IUserService userService, IFriendRequestService friendRequestService)
     {
         _userService = userService;
-        _friendRequestService = friendRequestService;
     }
         
     public async Task<IActionResult> Friends_list()
@@ -27,6 +25,7 @@ public class UserController : Controller
             return View(friendsList);
         }
 
+
     [HttpGet]
     public async Task<IActionResult> SearchAPI(string keyword)
     {
@@ -35,10 +34,7 @@ public class UserController : Controller
         return Json(users); 
     }
 
-    public IActionResult Friends_request()
-    {
-        return View();
-    }
+    
 
     public IActionResult Profiles()
     {
@@ -78,38 +74,17 @@ public class UserController : Controller
         bool isAlreadyFriend = me?.FriendIds?.Contains(userId) ?? false;
        
         var result = new 
-    {
-        id = user.Id,
-        username = user.Username,
-        bio = user.Bio,
-        avatar = user.Avatar,
-        status = user.VibeTags.FirstOrDefault() ?? "Online",
-        isFriend = isAlreadyFriend
-    };
+        {
+            id = user.Id,
+            username = user.Username,
+            bio = user.Bio,
+            avatar = user.Avatar,
+            status = user.VibeTags.FirstOrDefault() ?? "Online",
+            isFriend = isAlreadyFriend
+        };
 
         return Json(result);
     }
-
-    [HttpPost]
-    public async Task<IActionResult> SendFriendRequest(string targetUserId)
-    {
-        string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1"; 
-        Console.WriteLine($"[DEBUG] พยายามส่งคำขอจาก: {currentUserId} ไปหา: {targetUserId}");
-        bool success = await _friendRequestService.SendRequestAsync(currentUserId, targetUserId);
-        
-        if (success) return Json(new { success = true, message = "ส่งคำขอเป็นเพื่อนแล้ว!" });
-        return BadRequest(Json(new { success = false, message = "ไม่สามารถส่งคำขอได้ (อาจส่งไปแล้ว)" }));
-    }
-
-[HttpPost]
-public async Task<IActionResult> AcceptFriendRequest(string requestId)
-{
-    bool success = await _friendRequestService.AcceptRequestAsync(requestId);
-    
-    if (success) return Json(new { success = true, message = "ยอมรับคำขอแล้ว! ตอนนี้คุณเป็นเพื่อนกันแล้ว" });
-    return BadRequest(Json(new { success = false, message = "เกิดข้อผิดพลาดในการยอมรับคำขอ" }));
-}
-
 
 
 // สร้าง URL พิเศษไว้สำหรับสลับบัญชีชั่วคราว
