@@ -35,6 +35,9 @@
 }
 
 .form-group input {
+  height: 45px;
+  line-height: 45px;
+  /* padding: 0 20px; */
   font-family: "Inter", sans-serif;
   width: 100%;
   padding: 12px 20px;
@@ -54,6 +57,7 @@ form {
 
 .login-button {
   font-family: "Inter", sans-serif;
+
   /* background-color: #ffa31a; */
   cursor: pointer;
   transition: ease-out 0.5s;
@@ -68,3 +72,17 @@ form {
   color: white;
   box-shadow: inset 400px 0px 0px 0px #ffa31a;
 }
+
+.form-group input::placeholder {
+  color: #bbb;
+  font-size: 14px; /* Adjust this number to make it smaller or larger */
+  opacity: 0.8; /* Optional: makes it look a bit more subtle */
+  line-height: normal; /* Ensures it doesn't jump around */
+}
+
+/* Also target the specialized browser versions just in case */
+.form-group input::-webkit-input-placeholder {
+  font-size: 14px;
+}
+
+/* Specific style for Logout with icon */

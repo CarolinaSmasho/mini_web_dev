@@ -9,10 +9,12 @@ public class User
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
 
+    
+    public string? Name { get; set; }
     public string Username { get; set; }
     public string Email { get; set; }
-    public string Password { get; set; } // ในใช้งานจริงควรเก็บเป็น Hash
-
+    // public string Password { get; set; } // ในใช้งานจริงควรเก็บเป็น Hash
+    public string? PasswordHash { get; set; }
     // Profile (Embedded Fields)
     public string Avatar { get; set; }
     public string Bio { get; set; }

@@ -1,0 +1,66 @@
+@model List<GamerLFG.Models.Notification>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
+
+<div class="noti-page-container">
+    <div class="noti-page-header">
+        <h2>Notifications</h2>
+    </div>
+
+    <div class="noti-list">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="noti-item @(item.IsRead ? "" : "unread")" 
+                     onclick="readNotification(this, '@item.Id')" 
+                     id="noti-@item.Id">
+                    
+                    <div class="noti-text-wrapper">
+                        <p class="noti-message">@item.Text</p>
+                        <span class="noti-time">@item.Date.ToString("g")</span>
+                    </div>
+
+                    @if (!item.IsRead)
+                    {
+                        <span class="red-dot"></span>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="noti-empty">
+                <p>No notifications</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function readNotification(element, id) {
+        // ถ้าไม่มี class unread แปลว่าอ่านแล้ว ไม่ต้องทำอะไรซ้ำ
+        if (!element.classList.contains('unread')) return;
+
+        // ยิง AJAX ไปบอก Backend
+        fetch('/Noti/MarkAsRead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${id}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // เอา class unread ออกเพื่อเปลี่ยนสีพื้นหลัง
+                element.classList.remove('unread');
+                // ลบจุดแดงด้านหลังข้อความทิ้ง
+                const dot = element.querySelector('.red-dot');
+                if (dot) dot.remove();
+            }
+        })
+        .catch(err => console.error("Error marking as read:", err));
+    }
+</script>
