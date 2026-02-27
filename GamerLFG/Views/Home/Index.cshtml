@@ -12,6 +12,8 @@
 }
 
 <link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
+<script src="~/js/home_page.js" asp-append-version="true" defer></script>
+
 
         <main>
         <div class="mobile-search" id="mobile-search">
@@ -27,8 +29,14 @@
             <div class="all-lob">
                 <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
+                <div style="display: flex;gap:20px;align-items:center">
+                   <p class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">Hidden</p>
+                    <button id="hidden" class="off" onclick="toggleLobShow()"
+                    style="background-color:black;color:white;margin:1rem"
+                    ><i class="fa fa-toggle-off fa-2x" aria-hidden="true"></i></button> 
+                </div>
+                
             <div class="lobbies" id="mylob">
-
                 @foreach(ShowLobbyDTO lob in MyLobby){
                 
                 

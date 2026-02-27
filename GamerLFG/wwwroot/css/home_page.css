@@ -6,6 +6,7 @@ main{
     border-radius: 1rem;
     min-height: 10000vh;
     box-sizing: border-box;
+    overflow: hidden;
 
 }
 p{
@@ -219,6 +220,13 @@ main .orange-button{
     scale: 1.05;
 }
 }
-.role-box{
 
+.lob_off{
+    display: none;
+}
+#hidden{
+    border-radius: 2rem;
+    width: fit-content;
+    height: fit-content;
+    padding: 0ch;
 }
