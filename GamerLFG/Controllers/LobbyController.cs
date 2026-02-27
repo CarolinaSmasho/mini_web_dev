@@ -1,13 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
 using System.Collections.Generic;
+using GamerLFG.Services;
+using GamerLFG.Services.Interface.DTOs;
+using System.Text.Json;
+using GamerLFG.Services.Interface; // สำหรับ ASP.NET Core
 
 namespace GamerLFG.Controllers
-{
+{   
+    
     public class LobbyController : Controller
     {
         // 1. หน้าแสดงรายละเอียด (ที่ใช้ MockData ใน View)
         // เข้าผ่าน: http://localhost:PORT/Lobby/Details/1
+        private readonly ILobbyService _lobbyService;
+        public LobbyController(ILobbyService lobbyService)
+        {
+            _lobbyService = lobbyService;
+        }
+        // public LobbyController(LobbyService lobbyService)
+        // {
+        //     _lobbyService = lobbyService;
+        // }
         public IActionResult Details(string id)
         {
             // ตอนนี้เราส่ง Model เปล่าไปก่อน เพราะคุณเขียน MockData ไว้ในหน้า View แล้ว
@@ -16,8 +30,6 @@ namespace GamerLFG.Controllers
             return View(lobby);
         }
 
-        // 2. หน้าแสดงรายการ Lobby ทั้งหมด (ถ้ามี)
-        // เข้าผ่าน: http://localhost:PORT/Lobby
         public IActionResult Index()
         {
             return View();
@@ -46,9 +58,51 @@ namespace GamerLFG.Controllers
             return Json(new { success = true });
         }
 
-        public IActionResult Create_lobby()
+
+        [HttpGet]
+            public IActionResult Create_lobby()
         {
-            return View();
+            return View();  
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken] // ถ้าใช้ตัวนี้ ใน Form .cshtml ต้องมี <form>...</form> ปกติ
+        public async Task<IActionResult> Create_lobby(CreateLobbyDTO model) // เอา [FromBody] ออก
+        { 
+            Console.Write(model);
+            if (ModelState.IsValid)
+            {
+                var (success, message) = await _lobbyService.CreateLobbyAsync(model);
+                if (!success)
+                {
+                    // ใช้ ModelState เพิ่ม Error แทนการส่ง string เข้า View ตรงๆ
+                    ModelState.AddModelError(string.Empty, message);
+                    return View(model); 
+                }
+                return RedirectToAction("/");
+            }
+            return View(model);
+        }
+
+        // [HttpPost]
+        // // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Create_lobby(CreateLobbyDTO model)
+        // {   
+        //     Console.Write("Call create func");
+        //     if (ModelState.IsValid)
+        //     {
+        //         string modelJson = JsonSerializer.Serialize(model, new JsonSerializerOptions { WriteIndented = true });
+        //         Console.WriteLine("--- Incoming Model Data ---");
+        //         Console.WriteLine(modelJson);
+                
+        //         var (success,message) = await _lobbyService.CreateLobbyAsync(model);
+        //         if (!success)
+        //         {
+        //             return View(message);
+        //         }
+        //         return RedirectToAction("Index");
+        //     }
+        //     return View(model);
+        // }
+       
     }
 }

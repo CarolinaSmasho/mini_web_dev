@@ -1,7 +1,7 @@
 using GamerLFG.Models;
 using GamerLFG.service;
 using GamerLFG.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using GamerLFG.Services.Interface;
 using MongoDB.Driver;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +16,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 });
 builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
+<<<<<<< HEAD
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -24,7 +25,39 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Auth/Logout";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // ให้จำ Login ไว้ 60 นาที
     });
+=======
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ILobbyService,LobbyService>();
+
+
+var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
+
+
+>>>>>>> tawan2
 var app = builder.Build();
+
+// --- เพิ่มส่วนนี้เข้าไป ---
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "GamerLFG API V1");
+        // ถ้าอยากให้เปิดหน้าเว็บมาแล้วเจอ Swagger เลย (ไม่ต้องพิมพ์ /swagger) ให้ใส่บรรทัดนี้:
+        // c.RoutePrefix = string.Empty; 
+    });
+}
+// -----------------------
+
+// --- Seed ข้อมูลตัวอย่าง (คงเดิม) ---
+using (var scope = app.Services.CreateScope())
+{
+    var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
+    await productService.SeedAsync();
+}
+
+
 
 
 // --- Seed ข้อมูลตัวอย่าง (Run Phase) ---

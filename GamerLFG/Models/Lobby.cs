@@ -2,6 +2,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
+using System.Runtime.CompilerServices;
+using System.ComponentModel;
 
 namespace GamerLFG.Models
 {
@@ -9,7 +11,8 @@ public class Lobby
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
+    public string? Id { get; set; } // ลบออกด้วย 
+    // [Ref = "user"]
 
     public string Title { get; set; }
     public string Game { get; set; }
@@ -17,7 +20,7 @@ public class Lobby
     
     [BsonRepresentation(BsonType.ObjectId)]
     public string HostId { get; set; }
-    
+    public string HostName {get; set;}
     public string Picture { get; set; }
     public string DiscordLink { get; set; }
 
@@ -25,8 +28,8 @@ public class Lobby
     public List<string> Moods { get; set; } = new();
     public List<string> Roles { get; set; } = new();
     public int MaxPlayers { get; set; }
-    public bool IsRecruiting { get; set; }
-    public bool IsComplete { get; set; }
+    public bool IsRecruiting { get; set; } = true;
+    public bool IsComplete { get; set; } = false;
 
     // Time Management
     public DateTime StartRecruiting { get; set; }
