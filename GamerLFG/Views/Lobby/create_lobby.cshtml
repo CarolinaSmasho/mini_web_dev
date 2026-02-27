@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "New Lobby";
-    string[] Moods = {"Chil","Hardcode","Not Toxic","Toxic","God"};
+    string[] Moods = {"Chil","Hardcode","No Toxic","Toxic","God"};
     string[] Games = { 
     "Elden Ring", 
     "Monster Hunter: World", 
@@ -32,27 +32,29 @@
 <link rel="stylesheet" href="~/css/create_lobby.css" asp-append-version="true">
 <main>
     <form asp-controller="Lobby" asp-action="Create_lobby" class="create-form" method="post">
-        <div asp-validation-summary="All" class="text-danger"></div>
+        <div asp-validation-summary="All" class="text-danger" id="dangerDiv"></div>
        <input type="hidden" asp-for="HostId" value="698b47c7373afbcc2eb802c9">
         <div class="title">
-            <label for="game">Choose Your Game</label>
+            <label for="game" style="font-size: x-large;">Choose Your Game</label>
             <select asp-for="Game" 
                             asp-items="@(new SelectList(Games))" 
                             class="form-control">
-                        <option value="">-- เลือกเกม --</option>
+                        <option value="">-- GAME --</option>
                     </select>
             
                     
-            <input asp-for="Title" type="text" placeholder="Lobby title">
+            <input asp-for="Title" type="text" placeholder="Lobby title" style="min-height: 5rem; font-size:x-large">
             <input asp-for="Description" type="text"  placeholder="description">
         </div>
-        <div>
-                    <input type="number" asp-for="MaxPlayers" id="min" oninput=" this.value = this.value.replace(/[^2-100]/g, '')">
-                    <div id="add-count-btn">
-                        <button type="button" onclick="countingTime(1,'min')"><i class="fa fa-arrow-up"></i></button>
-                        <button type="button" onclick="countingTime(-1,'min')"><i class="fa fa-arrow-down"></i></button>
+        <div id="playerAmount">
+                    <p style="padding: 0%;margin:0;">Player Amount</p>
+                    
+                    <div id="btn-player-amount">
+                        <button type="button" onclick="counting(-1,'amountPlayer',2,100)" class="org-btn"><i class="fa fa-arrow-left"></i></button>
+                        <input type="text" asp-for="MaxPlayers" id="amountPlayer" min="2" max="100" value="2" >
+                        <button type="button" onclick="counting(1,'amountPlayer',2,100)" class="org-btn"><i class="fa fa-arrow-right"></i></button>
                     </div>
-                    <p>MIN</p>
+                    
         </div>
 
         <div class="require">
@@ -61,10 +63,10 @@
 
             <div class="input-role">
                 <input type="text" placeholder="Role Assign" id="key-role">
-                <input type="text" id="count" value="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="text" id="count" value="1" min="1" max="100">
                 <div id="add-count-btn">
-                    <button type="button" onclick="counting(1,'count')"><i class="fa fa-arrow-up"></i></button>
-                    <button type="button" onclick="counting(-1,'count')"><i class="fa fa-arrow-down"></i></button>
+                    <button type="button" onclick="counting(1,'count',1,100)"><i class="fa fa-arrow-up"></i></button>
+                    <button type="button" onclick="counting(-1,'count',1,100)"><i class="fa fa-arrow-down"></i></button>
                 </div>
                  <button onclick="addToDOM()" id="add-role-btn" type="button"><strong>ADD ROLE</strong></i></button>
             </div>
@@ -78,12 +80,14 @@
             <p>TACTICAL PROTOCAL TAGS</p>
             <div class=moods>
                 @foreach(string mood in Moods){
-                <input type="checkbox" name="Moods" id="mood-@mood" value="@mood" class="check-box"> 
-                <label class="mood-label" for=@mood>@mood</label>
+                string moodId = mood.Replace(oldValue: " ", newValue: "-");
+                <input type="checkbox" name="Moods" id="@moodId" value="@mood" class="check-box"> 
+                <label class="mood-label" for=@moodId>@mood</label>
             }   
             </div>
 
         </div>
+
         <div class="wallpaper">
             <p>Tactical Visuals</p>
             <input type="text" placeholder="Direct Image URL" asp-for="Picture">
@@ -94,10 +98,13 @@
             
         </div>
         <div class="assign-role">
-           Choose your Role
-           <select asp-for="HostRole" id="host-role">
-            <option value="olo"></option>
-           </select>
+           Choose your Role (Default = อะไรก็ได้)
+           
+           <div class=moods id="host-role-display">
+            <input type="radio" name="HostRole" value="default" class="check-box" id="default">
+            <label for="default" class="mood-label">Default</label>
+           </div>
+
         </div>
         
         <div class="date">

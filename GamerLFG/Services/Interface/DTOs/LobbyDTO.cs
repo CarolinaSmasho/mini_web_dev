@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using GamerLFG.Models;
+using System.Text.Json;
+using System.Linq;
 namespace GamerLFG.Services.Interface.DTOs
 {
     public class ShowLobbyDTO
@@ -40,7 +42,7 @@ namespace GamerLFG.Services.Interface.DTOs
 
         // ตำแหน่งที่ต้องการ เช่น "Tank", "Healer"
         public List<string> Roles { get; set; } = new(); //
-        public string HostRole { get; set; } = "GAY";
+        public string HostRole { get; set; } = "All Class";
 
         [Required]
         [Range(2, 100, ErrorMessage = "จำนวนผู้เล่นต้องอยู่ระหว่าง 2 - 100 คน")]
@@ -60,6 +62,20 @@ namespace GamerLFG.Services.Interface.DTOs
 
         public Lobby ToEntity()
         {
+            // 1. ดึง JSON string ออกมาจาก Array ตัวแรก
+            string jsonContent = this.Roles.FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(jsonContent))
+            {
+                // 2. Parse ก้อน JSON string นั้น
+                using JsonDocument doc = JsonDocument.Parse(jsonContent);
+
+                // 3. วนลูปใน Array แล้วดึง Text ของแต่ละก้อนออกมาเป็น List<string>
+                List<string> rawRoles = doc.RootElement.EnumerateArray()
+                    .Select(item => item.GetRawText())
+                    .ToList();
+
+            }
             return new Lobby
             {
                 

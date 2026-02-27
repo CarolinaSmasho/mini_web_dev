@@ -50,7 +50,36 @@ form >div{
     background-position: center;
     background-repeat: no-repeat;
 }  
+#amountPlayer{
+   
+    width: 20%;
+    height: 100%;
+    border: whitesmoke solid 3px;
+    color: aliceblue;
+    margin: 0;
+    justify-items: center;
+    padding-top: 1rem ;
+    padding-left:1rem;
+    padding-right: 1rem;
+}
+#playerAmount{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
 
+#btn-player-amount{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.org-btn{
+    background-color: #ffa431;
+    width: 4rem;
+}
 .title input{
     background-color: transparent;
     color: white;
@@ -61,7 +90,25 @@ form >div{
     font-size: xx-large;
 
 }
+.form-control{
+    max-width: fit-content;
+    font-size: x-large;
+    text-align: center;
+    font-weight: bolder;
+    background-color: #ffa431;
+    border: #000 solid 3px;
+    border-radius:10px;
 
+}
+/* ซ่อน div นี้เมื่อไม่มี Error */
+.validation-summary-valid {
+    display: none !important;
+}
+
+/* (ออปชันเสริม) เพื่อความชัวร์ว่าตอนมี Error มันจะแสดงขึ้นมา */
+.validation-summary-errors {
+    display: block !important;
+}
 .title input::placeholder {
   color: rgb(255, 255, 255);    /* เปลี่ยนสีตามต้องการ */
   opacity: 0.8;    /* สำคัญ: Firefox มักจะปรับค่าความโปร่งแสงไว้ ถ้าอยากได้สีเป๊ะๆ ให้ใส่ตัวนี้ด้วย */
@@ -171,7 +218,7 @@ form >div{
 }
 .moods{ 
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 20px; 
 
 }
@@ -180,7 +227,7 @@ form >div{
 }
 
 .mood-label{
-    display: inline-block;
+    display: flex;
     padding: 10px 20px;
     margin: 5px;
     border: 2px solid #555;
@@ -189,6 +236,12 @@ form >div{
     cursor: pointer;
     transition: 0.3s;
     user-select: none;
+    max-width: 12rem;
+    justify-content: center;
+    align-content: center;
+
+    
+    
 }
 
 .check-box:checked + .mood-label{
