@@ -9,11 +9,15 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GamerLFG.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
     <script src="~/js/nav-control.js" asp-append-version="true" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
 </head>
 
 <body>
@@ -23,14 +27,30 @@
         <div class="nav-bar">
 
             <div style="display: flex;" class="gamerhub-logo" onclick="location.href='@Url.Action(action: "Index", "Home")'">
-                <p style="color: #ffffff;">GAMER</p>
-                <p style="padding-left: 0%;background-color:#ffa431" class="hub-text">HUB</p>
+                <p style="color: #ffffff;">Gamer</p>
+                <p style="margin-left: 5px;padding: 0px 3px;background-color:#ffa431 ;border-radius: 10px;" class="hub-text">hub</p>
             </div>
-            
+
+
             <div class="landscape-menu">
-                <a asp-controller="Auth" asp-action="Login"><button class="orange-button">LOG IN</button></a>
-                <a asp-controller="User" asp-action="Friends_list"><button class="black-button">Friends</button></a>
-                <button class="black-button"><i class="fa fa-bell"></i></button>
+                @if(User.Identity.IsAuthenticated){
+                    <a asp-controller="Auth" asp-action="Logout" onclick="return confirm('Ayo bro are you sure you wanna logout?')"><button class="logout-nav-button"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></a>
+                }
+                else{
+                    <a asp-controller="Auth" asp-action="Login"><button class="login-nav-button">Log in</button></a>
+                }
+                
+                
+                <a asp-controller="User" asp-action="Friends_list"><button class="login-nav-button">Friends</button></a>
+                @* Notifications *@
+                <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
+                    <div class="notification-container-link" style="position: relative; display: inline-block;">
+                        <button id= "notifBell" class="logout-nav-button" style="position: relative;">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="notif-dot" id="global-notif-dot" style="display: none;"></span>
+                        </button>
+                    </div>
+                </a>
                 
                 <a asp-area="" asp-controller="User" asp-action="Profiles">
                     <button class="profile-btn"><i class="fa fa-user-circle fa-2x"></i></button>
@@ -42,8 +62,13 @@
             </div>
 
             <div id="mobile-menu" class="nav-mobile-hidden">
-                <a href="/Home/Login"><button class="orange-button">Log In</button></a>
-                <a href="/Home/Profiles"><button class="orange-button">Profile</button></a>
+                @if(User.Identity.IsAuthenticated){
+                    <a asp-controller="Auth" asp-action="Logout" onclick="return confirm('Ayo bro are you sure you wanna logout?')"><button class="orange-button">Log Out</button></a>
+                }else{
+                    <a asp-controller="Auth" asp-action="Login"><button class="orange-button">Log In</button></a>
+                }
+                
+                <a asp-controller="User" asp-action="Profiles"><button class="orange-button">Profile</button></a>
                 
                 <button class="orange-button">Notics</button>
                 <button class="orange-button">Create Lobby</button>
@@ -124,6 +149,26 @@
         });
         }
     </script>
+    @* Noti
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const bell = document.getElementById('notifBell');
+        const dropdown = document.getElementById('notifDropdown');
+
+        if (bell && dropdown) {
+            bell.addEventListener('click', function (e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show-notif');
+            });
+            //if click not in dropdown or bell
+            document.addEventListener('click', function (e) {
+                if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
+                    dropdown.classList.remove('show-notif');
+                }
+            });
+        }
+    });
+    </script> *@
 </body>
 
 

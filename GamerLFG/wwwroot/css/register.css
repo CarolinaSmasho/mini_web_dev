@@ -68,3 +68,15 @@ form {
   color: white;
   box-shadow: inset 400px 0px 0px 0px #ffa31a;
 }
+
+.form-group input::placeholder {
+  color: #bbb;
+  font-size: 14px; /* Adjust this number to make it smaller or larger */
+  opacity: 0.8; /* Optional: makes it look a bit more subtle */
+  line-height: normal; /* Ensures it doesn't jump around */
+}
+
+/* Also target the specialized browser versions just in case */
+.form-group input::-webkit-input-placeholder {
+  font-size: 14px;
+}
