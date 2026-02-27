@@ -27,7 +27,7 @@ namespace GamerLFG.Services
                 HostName  = lob.HostName,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
-                Currentplayers = lob.Members.Count,
+                CurrentPlayers = lob.Members.Count,
                 MaxPlayers = lob.MaxPlayers
                 
             }).ToList();
@@ -39,7 +39,7 @@ namespace GamerLFG.Services
                 HostName  = lob.HostName,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
-                Currentplayers = lob.Members.Count,
+                CurrentPlayers = lob.Members.Count,
                 MaxPlayers = lob.MaxPlayers
                 
             }).ToList();
@@ -76,7 +76,7 @@ namespace GamerLFG.Services
                     HostName  = lob.HostName,
                     Picture = lob.Picture,
                     Moods = lob.Moods,
-                    Currentplayers = lob.Members.Count,
+                    CurrentPlayers = lob.Members.Count,
                     MaxPlayers = lob.MaxPlayers
                     
                     }).ToList();
@@ -106,18 +106,7 @@ namespace GamerLFG.Services
                 return (false, ex.Message);
             }
         }
-                // public async Task<(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby){
-        //     var lobby = newLobby.ToEntity();
-        //     Console.Write(newLobby);
-        //     // var hostObj = await _users.Find(u => u.Id == lobby.HostId).FirstOrDefaultAsync();
-        //     // if (hostObj == null)
-        //     //     {
-        //     //     return (false,"Host not found");
-        //     //     }
-        //     // string hostName = hostObj.Username;
-        //     await _database.Lobbies.InsertOneAsync(lobby);
-        //     return (true,"OK");
-        // }
+
         public async Task DeleteLobbyAsync (string id){
 
         }

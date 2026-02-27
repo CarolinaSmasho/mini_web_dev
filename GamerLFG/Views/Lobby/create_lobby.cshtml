@@ -33,7 +33,8 @@
 <main>
     <form asp-controller="Lobby" asp-action="Create_lobby" class="create-form" method="post">
         <div asp-validation-summary="All" class="text-danger" id="dangerDiv"></div>
-       <input type="hidden" asp-for="HostId" value="698b47c7373afbcc2eb802c9">
+       <input type="hidden" asp-for="HostId">
+       <input type="hidden" asp-for="HostName"/>
         <div class="title">
             <label for="game" style="font-size: x-large;">Choose Your Game</label>
             <select asp-for="Game" 

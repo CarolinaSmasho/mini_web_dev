@@ -1,14 +1,27 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
-
+using GamerLFG.Services.Interface;
+using GamerLFG.Services.Interface.DTOs;
 namespace GamerLFG.Controllers;
+using System.Security.Claims;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly ILogger<HomeController> _logger;
+    private readonly ILobbyService _lobbyService; // เพิ่ม Service นี้เข้ามา
+
+    // ฉีดเข้ามาใน Constructor
+    public HomeController(ILogger<HomeController> logger, ILobbyService lobbyService)
     {
-        return View();
+        _logger = logger;
+        _lobbyService = lobbyService;
+    }
+    public async Task<IActionResult> Index()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var allLob =  await _lobbyService.GetAllLobbyAsync(userId);
+        return View(allLob);
     }
 
     public IActionResult Privacy()

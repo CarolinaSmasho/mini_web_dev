@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GamerLFG.Models;
 using System.Text.Json;
 using System.Linq;
+using MongoDB.Bson;
 namespace GamerLFG.Services.Interface.DTOs
 {
     public class ShowLobbyDTO
@@ -14,9 +15,11 @@ namespace GamerLFG.Services.Interface.DTOs
         public string HostName { get; set; }
         public string Picture { get; set; }
         public List<string> Moods {get;set;}
-        public int Currentplayers {get;set;}
+        public int CurrentPlayers {get;set;}
         public int MaxPlayers {get;set;}
 
+        public bool isRecuiting {get;set;}
+        public DateTime EndEvent {get;set;}
     }
 
     public class CreateLobbyDTO
@@ -29,8 +32,9 @@ namespace GamerLFG.Services.Interface.DTOs
         public string Game { get; set; }
 
         public string Description { get; set; }//
-
+        
         public string HostId {get;set;}
+        public string HostName {get;set;}
         public string Picture { get; set; } //
 
         [Required(ErrorMessage = "กรุณาใส่ลิงก์ Discord เพื่อใช้สื่อสาร")]
@@ -64,16 +68,17 @@ namespace GamerLFG.Services.Interface.DTOs
         {
             // 1. ดึง JSON string ออกมาจาก Array ตัวแรก
             string jsonContent = this.Roles.FirstOrDefault();
-
+            List<string> rawRoles = new List<string>();
             if (!string.IsNullOrEmpty(jsonContent))
             {
                 // 2. Parse ก้อน JSON string นั้น
                 using JsonDocument doc = JsonDocument.Parse(jsonContent);
 
                 // 3. วนลูปใน Array แล้วดึง Text ของแต่ละก้อนออกมาเป็น List<string>
-                List<string> rawRoles = doc.RootElement.EnumerateArray()
+               rawRoles = doc.RootElement.EnumerateArray()
                     .Select(item => item.GetRawText())
                     .ToList();
+                
 
             }
             return new Lobby
@@ -81,11 +86,13 @@ namespace GamerLFG.Services.Interface.DTOs
                 
                 Title = this.Title, //
                 Game = this.Game, //
-                Description = this.Description, // 
+                Description = this.Description, //
+                HostId = this.HostId,
+                HostName = this.HostName,
                 Picture = this.Picture, //
                 DiscordLink = this.DiscordLink, //
                 Moods = this.Moods, //
-                Roles = this.Roles, //
+                Roles = rawRoles, //
                 MaxPlayers = this.MaxPlayers, //
                 StartRecruiting = this.StartRecruiting, //
                 EndRecruiting = this.EndRecruiting, //

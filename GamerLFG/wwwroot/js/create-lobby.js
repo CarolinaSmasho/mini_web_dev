@@ -45,14 +45,14 @@ function addToDOM() {
     }
     const newItem = {
         id: Date.now(),
-        lable:roleIn.value,
+        label:roleIn.value,
         quantity: parseInt(qtyInput.value),
         timestamp: new Date().toLocaleTimeString()
     };
 
     let flag = true;
     itemsArray.forEach(element => {
-        if (element.lable == newItem.lable){
+        if (element.label == newItem.label){
             alert("There is already has THIS Role on You Lobby pls Cancel And Choose  Amount Again");
             flag = false;
             return
@@ -71,7 +71,7 @@ function addToDOM() {
                 <div>
                 <strong>Role: </strong>
                 <p>
-                    ${newItem.lable}
+                    ${newItem.label}
                 </p>
             </div>
             <div>
@@ -88,7 +88,7 @@ function addToDOM() {
     qtyInput.value = 1;
     roleIn.value ="";
     itemsArray.push(newItem);
-    addRoleToHost(newItem.lable);
+    addRoleToHost(newItem.label);
     updateHiddenInput();
 
 }
@@ -103,7 +103,7 @@ function removeItem(id) {
     }
     if (itemData) {
 
-        let roleId = itemData.lable.replaceAll(" ", "-");         
+        let roleId = itemData.label.replaceAll(" ", "-");         
         const inputToRemove = document.getElementById(roleId);
         const labelToRemove = document.querySelector(`label[for="${roleId}"]`); 
         if (inputToRemove) inputToRemove.remove();

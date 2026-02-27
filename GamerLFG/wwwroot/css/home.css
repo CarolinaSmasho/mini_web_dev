@@ -226,6 +226,9 @@ body {
   .landscape-menu .profile-btn:hover {
     scale: 1.05;
   }
+  #profile-icon:hover{
+    scale: 1.2;
+  }
 }
 
 .search-form {
@@ -282,16 +285,16 @@ input[type="text"] {
   border-radius: 5px;
 }
 
-.landscape-menu .profile-btn {
-  width: max-content;
-  height: fit-content;
-  border-radius: 2rem;
-  border: #ffffff solid 2px;
-  margin: 0%;
-  padding: 0%;
-  color: #1b1b1b;
-  background-color: #ffffff;
-  font-size: x-large;
+.landscape-menu .profile-btn{
+width: max-content;
+height: fit-content;
+border-radius: 2rem;
+border: #ffffff solid 2px;
+margin: 0%;
+padding: 0%;
+color: #1b1b1b;
+background-color:#ffffff;
+font-size: x-large;
 }
 
 .mobile-menu a,

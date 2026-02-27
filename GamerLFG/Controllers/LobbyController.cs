@@ -5,34 +5,23 @@ using GamerLFG.Services;
 using GamerLFG.Services.Interface.DTOs;
 using System.Text.Json;
 using GamerLFG.Services.Interface; // สำหรับ ASP.NET Core
-
+using System.Security.Claims;
 namespace GamerLFG.Controllers
 {   
     
     public class LobbyController : Controller
     {
-        // 1. หน้าแสดงรายละเอียด (ที่ใช้ MockData ใน View)
-        // เข้าผ่าน: http://localhost:PORT/Lobby/Details/1
         private readonly ILobbyService _lobbyService;
         public LobbyController(ILobbyService lobbyService)
         {
             _lobbyService = lobbyService;
         }
-        // public LobbyController(LobbyService lobbyService)
-        // {
-        //     _lobbyService = lobbyService;
-        // }
         public IActionResult Details(string id)
         {
             // ตอนนี้เราส่ง Model เปล่าไปก่อน เพราะคุณเขียน MockData ไว้ในหน้า View แล้ว
             // แต่ต้องส่งไปเพื่อให้ @model GamerLFG.Models.Lobby ไม่ Error
             var lobby = new Lobby(); 
             return View(lobby);
-        }
-
-        public IActionResult Index()
-        {
-            return View();
         }
 
         // --- ส่วนของ API ที่เรียกใช้จาก JavaScript (fetch) ในหน้า View ---
@@ -62,7 +51,15 @@ namespace GamerLFG.Controllers
         [HttpGet]
             public IActionResult Create_lobby()
         {
-            return View();  
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.Identity?.Name;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+            var model = new CreateLobbyDTO { HostId = userId ,HostName = userName};
+            return View(model);  
         }
         [HttpPost]
         [ValidateAntiForgeryToken] // ถ้าใช้ตัวนี้ ใน Form .cshtml ต้องมี <form>...</form> ปกติ
@@ -78,7 +75,7 @@ namespace GamerLFG.Controllers
                     ModelState.AddModelError(string.Empty, message);
                     return View(model); 
                 }
-                return RedirectToAction("/");
+                return RedirectToAction("Index","Home");
             }
             return View(model);
         }

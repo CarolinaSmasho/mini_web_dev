@@ -3,6 +3,8 @@ using GamerLFG.service;
 using GamerLFG.Services;
 using GamerLFG.Services.Interface;
 using MongoDB.Driver;using Microsoft.AspNetCore.Authentication.Cookies;
+using GamerLFG.Services.Interface;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MongoDB.Driver;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,13 @@ builder.Services.AddSingleton<ILobbyService,LobbyService>();
 
 
 var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ILobbyService,LobbyService>();
+
+
+
 
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
