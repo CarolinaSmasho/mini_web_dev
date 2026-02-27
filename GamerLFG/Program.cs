@@ -1,11 +1,7 @@
 using GamerLFG.Models;
 using GamerLFG.service;
 using GamerLFG.Services;
-<<<<<<< HEAD
-using Microsoft.AspNetCore.Authentication.Cookies;
-=======
 using GamerLFG.Services.Interface;
->>>>>>> tawan2
 using MongoDB.Driver;
 var builder = WebApplication.CreateBuilder(args);
 
