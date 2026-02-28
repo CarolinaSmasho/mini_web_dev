@@ -53,12 +53,13 @@ public class UserController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateProfile(string id, string Username, string Bio, string GameLibraryString, string VibeTagsString, string discord, string steam, string twitch)
+    public async Task<IActionResult> UpdateProfile(string id, string Username, string Bio, string Avatar,string GameLibraryString, string VibeTagsString, string discord, string steam, string twitch)
     {
         var user = await _mongoDBservice.Users.Find(u => u.Id == id).FirstOrDefaultAsync();
         if (user == null) return NotFound();
 
         user.Username = Username;
+        user.Avatar = Avatar;
         user.Bio = Bio;
         user.discord = discord;
         user.steam = steam;
