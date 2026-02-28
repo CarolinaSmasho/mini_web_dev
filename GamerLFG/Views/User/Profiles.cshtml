@@ -1,10 +1,12 @@
 @model GamerLFG.Models.User
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Profile";
     
-    string Logged_id = "699b1d583fe11d31cf70b728"; 
-    string id = Model.Id;
+    string Logged_id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? ""; 
+    
+    string id = Model?.Id ?? ""; 
 
     bool isOwnProfile = (Logged_id == id);
 

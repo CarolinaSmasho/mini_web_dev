@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
 using MongoDB.Driver;
 using GamerLFG.service;
+using System.Security.Claims;
 
 namespace GamerLFG.Controllers;
 
@@ -19,7 +20,6 @@ public class UserController : Controller
         return View();
     }
     
-
     private readonly MongoDBservice _mongoDBservice;
 
     public UserController(MongoDBservice mongoDBservice)
@@ -30,7 +30,12 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Profiles(string id)
     {
-        if (string.IsNullOrEmpty(id)) return NotFound();
+        if (string.IsNullOrEmpty(id)) 
+        {
+            id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+            if (string.IsNullOrEmpty(id)) return RedirectToAction("Login", "Auth");
+        }
 
         var user = await _mongoDBservice.Users
             .Find(u => u.Id == id)
