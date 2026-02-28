@@ -99,6 +99,7 @@ label {
     border: 1px solid #555;
     margin-bottom: 15px;
     border-radius: 4px;
+    resize: none;
 }
 
 .btn {
