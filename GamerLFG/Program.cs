@@ -3,6 +3,7 @@ using GamerLFG.service;
 using GamerLFG.Services;
 using GamerLFG.Services.Interface;
 using MongoDB.Driver;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,56 +13,53 @@ builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ILobbyService,LobbyService>();
+builder.Services.AddSingleton<ILobbyService, LobbyService>();
 
-
-var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
-
+// Session (ใช้สำหรับเก็บ UserId หลัง login)
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
-// --- เพิ่มส่วนนี้เข้าไป ---
+// --- Swagger (dev only) ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "GamerLFG API V1");
-        // ถ้าอยากให้เปิดหน้าเว็บมาแล้วเจอ Swagger เลย (ไม่ต้องพิมพ์ /swagger) ให้ใส่บรรทัดนี้:
-        // c.RoutePrefix = string.Empty; 
     });
 }
-// -----------------------
 
-// --- Seed ข้อมูลตัวอย่าง (คงเดิม) ---
+// --- Seed Products ---
 using (var scope = app.Services.CreateScope())
 {
     var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
     await productService.SeedAsync();
 }
 
-
-
-
-// --- Seed ข้อมูลตัวอย่าง (Run Phase) ---
-// สร้าง product ตัวอย่างใน MongoDB ถ้ายังว่างอยู่
+// --- Seed Lobby test data ---
 using (var scope = app.Services.CreateScope())
 {
-    var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
-    await productService.SeedAsync();
+    var db = scope.ServiceProvider.GetRequiredService<MongoDBservice>();
+    await LobbySeeder.SeedAsync(db);
 }
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseSession();          // ต้องอยู่ก่อน UseAuthorization
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -70,6 +68,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

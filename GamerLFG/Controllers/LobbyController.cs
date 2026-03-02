@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
-using System.Collections.Generic;
+using GamerLFG.Models.TestData;
 using GamerLFG.Services;
 using GamerLFG.Services.Interface.DTOs;
-using System.Text.Json;
-using GamerLFG.Services.Interface; // สำหรับ ASP.NET Core
+using GamerLFG.Services.Interface;
 
 namespace GamerLFG.Controllers
 {   
@@ -22,12 +21,12 @@ namespace GamerLFG.Controllers
         // {
         //     _lobbyService = lobbyService;
         // }
-        public IActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
-            // ตอนนี้เราส่ง Model เปล่าไปก่อน เพราะคุณเขียน MockData ไว้ในหน้า View แล้ว
-            // แต่ต้องส่งไปเพื่อให้ @model GamerLFG.Models.Lobby ไม่ Error
-            var lobby = new Lobby(); 
-            return View(lobby);
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            var viewModel = await _lobbyService.GetLobbyDetailsAsync(id, currentUserId);
+            if (viewModel == null) return NotFound();
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Index()
@@ -36,6 +35,60 @@ namespace GamerLFG.Controllers
             var lobbyData = await _lobbyService.GetAllLobbyAsync(userId);
             return View(lobbyData);
         }
+
+        // ── DEV ONLY: จำลอง login เป็น user ที่ต้องการ ─────────────────────────
+        // Usage: /Lobby/SwitchUser?userId=000000000000000000000001
+        //        /Lobby/SwitchUser          ← logout (clear session)
+        [HttpGet]
+        public IActionResult SwitchUser(string? userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                HttpContext.Session.Remove("UserId");
+            else
+                HttpContext.Session.SetString("UserId", userId);
+
+            var lobbyId = LobbySeeder.IdLobby;
+            return Redirect($"/Lobby/Details/{lobbyId}");
+        }
+
+        // ── DEV ONLY: แสดงหน้า test panel ────────────────────────────────────
+        // Usage: /Lobby/TestPanel
+        [HttpGet]
+        public IActionResult TestPanel()
+        {
+            var lobbyId = LobbySeeder.IdLobby;
+            var users = new[]
+            {
+                new { Label = "SC1 — HOST", UserId = LobbySeeder.IdHost    },
+                new { Label = "SC2 — NOT LOGGED IN", UserId = (string?)null          },
+                new { Label = "SC3/SC4 — VISITOR", UserId = LobbySeeder.IdVisitor },
+                new { Label = "SC5 — PENDING (Visitor)", UserId = LobbySeeder.IdVisitor },
+                new { Label = "SC6/SC7 — MEMBER", UserId = LobbySeeder.IdMember1 },
+            };
+
+            var html = $@"
+                            <!DOCTYPE html><html>
+                            <head><meta charset=""utf-8""><title>Lobby Test Panel</title>
+                            <style>body{{background:#111;color:#ddd;font-family:monospace;padding:40px}}
+                            a{{display:block;margin:8px 0;padding:12px 20px;background:#1a1a1a;border:1px solid #333;
+                            border-radius:8px;color:#f2960d;text-decoration:none;font-size:14px}}
+                            a:hover{{background:#222}} h2{{color:#fff}} code{{color:#2ecc71}}</style>
+                            </head><body>
+                            <h2>🎮 Lobby Test Panel</h2>
+                            <p style='color:#888'>Lobby ID: <code>{lobbyId}</code></p>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdHost}'>SC1 — HOST (active, recruiting open + pending request)</a>
+                            <a href='/Lobby/SwitchUser'>SC2 — NOT LOGGED IN</a>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdVisitor}'>SC3/SC4 — VISITOR (login แล้ว ยังไม่ได้ขอเข้า)</a>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdPending}'>SC5 — PENDING (ส่ง request ไปแล้ว รอ)</a>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdMember1}'>SC6 — MEMBER (ถูกรับเข้าแล้ว)</a>
+                            <hr style='border-color:#333;margin:20px 0'>
+                            <p style='color:#555;font-size:12px'>
+                            หมายเหตุ: SC7/SC8 (Completed) ต้องเปลี่ยน IsComplete=true ใน DB ก่อน<br>
+                            หรือใช้ MongoDB Compass: set <code>IsComplete: true, IsRecruiting: false</code>
+                            </p>
+                            </body></html>";
+                    return Content(html, "text/html; charset=utf-8");
+                            }   
 
         // --- ส่วนของ API ที่เรียกใช้จาก JavaScript (fetch) ในหน้า View ---
 

@@ -1,4 +1,5 @@
 using GamerLFG.Models;
+using GamerLFG.Models.ViewModels;
 using GamerLFG.service;
 using GamerLFG.Services.Interface;
 using GamerLFG.Services.Interface.DTOs;
@@ -17,13 +18,14 @@ namespace GamerLFG.Services
         // _database.Users;
         public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){ // ใช้function แบบ async
 
-            // ดึง lobbies ทั้งหมดก่อน
             var allLobbies = await _database.Lobbies.Find(lobby => true).SortBy(l => l.Id).ToListAsync();
-            Console.WriteLine($"[DEBUG] ดึง lobbies ได้ {allLobbies.Count} อัน");
-            foreach(var lob in allLobbies)
-            {
-                Console.WriteLine($"[DEBUG] Lobby: {lob.Title}, HostId: {lob.HostId}, Members: {lob.Members?.Count ?? 0}");
-            }
+
+            // batch-fetch host users
+            var hostIds = allLobbies.Select(l => l.HostId).Where(id => id != null).Distinct().ToList();
+            var hostUsers = hostIds.Any()
+                ? await _database.Users.Find(u => hostIds.Contains(u.Id)).ToListAsync()
+                : new List<User>();
+            var hostMap = hostUsers.ToDictionary(u => u.Id);
 
             // Filter ใน C# แทนใน MongoDB query เพื่อหลีกเลี่ยง type mismatch
             var myLobbyList = string.IsNullOrEmpty(userId)
@@ -34,31 +36,27 @@ namespace GamerLFG.Services
                 ? allLobbies.Take(10).ToList()
                 : allLobbies.Where(lob => lob.HostId != userId).Take(10).ToList();
 
-            Console.WriteLine($"[DEBUG] My lobbies: {myLobbyList.Count}, Other lobbies: {otherLobbyList.Count}");
-
-            var myLobby = myLobbyList.Select( lob => new ShowLobbyDTO{
+            var myLobby = myLobbyList.Select(lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
                 Game = lob.Game,
                 Description = lob.Description,
-                HostName  = lob.HostName,
+                HostName  = hostMap.TryGetValue(lob.HostId ?? "", out var hu1) ? hu1.Username : lob.HostId,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 Currentplayers = lob.Members?.Count ?? 0,
                 MaxPlayers = lob.MaxPlayers
-
             }).ToList();
-            var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
+            var publicLobby = otherLobbyList.Select(lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
                 Game = lob.Game,
                 Description = lob.Description,
-                HostName  = lob.HostName,
+                HostName  = hostMap.TryGetValue(lob.HostId ?? "", out var hu2) ? hu2.Username : lob.HostId,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 Currentplayers = lob.Members?.Count ?? 0,
                 MaxPlayers = lob.MaxPlayers
-
             }).ToList();
 
             return new LobbyListResponse
@@ -79,23 +77,26 @@ namespace GamerLFG.Services
                 // กรองเอาเฉพาะตัวที่ ID "หลังจาก" ตัวสุดท้ายที่หน้าจอแสดงอยู่
                 var filter = Builders<Lobby>.Filter.Gt(l => l.Id, lastId);
                 var nextLobby = await _database.Lobbies.Find(filter & notYours)
-                                .SortBy(l => l.Id) // ต้องเรียงลำดับเสมอเพื่อให้ข้อมูลต่อเนื่องกัน
+                                .SortBy(l => l.Id)
                                 .Limit(pageSize)
                                 .ToListAsync();
-                
-                
 
-                return nextLobby.Select( lob => new ShowLobbyDTO{
+                var nextHostIds = nextLobby.Select(l => l.HostId).Where(id => id != null).Distinct().ToList();
+                var nextHostUsers = nextHostIds.Any()
+                    ? await _database.Users.Find(u => nextHostIds.Contains(u.Id)).ToListAsync()
+                    : new List<User>();
+                var nextHostMap = nextHostUsers.ToDictionary(u => u.Id);
+
+                return nextLobby.Select(lob => new ShowLobbyDTO{
                     Id = lob.Id,
                     Title  = lob.Title,
                     Game = lob.Game,
                     Description = lob.Description,
-                    HostName  = lob.HostName,
+                    HostName  = nextHostMap.TryGetValue(lob.HostId ?? "", out var hu) ? hu.Username : lob.HostId,
                     Picture = lob.Picture,
                     Moods = lob.Moods,
                     Currentplayers = lob.Members.Count,
                     MaxPlayers = lob.MaxPlayers
-                    
                     }).ToList();
                 }
 
@@ -135,14 +136,99 @@ namespace GamerLFG.Services
         //     await _database.Lobbies.InsertOneAsync(lobby);
         //     return (true,"OK");
         // }
-        public async Task DeleteLobbyAsync (string id){
+        public async Task DeleteLobbyAsync(string id) { }
+        public async Task UpdateLobbyAsync(Lobby lobby) { }
+        public async Task AddmemberAsync(Lobby current_lobby, User newUser) { }
 
-        }
-        public async Task UpdateLobbyAsync (Lobby lobby){
+        public async Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId)
+        {
+            // 1. ดึง lobby จาก DB
+            var lobby = await _database.Lobbies
+                .Find(l => l.Id == id)
+                .FirstOrDefaultAsync();
 
-        }
-        public async Task AddmemberAsync (Lobby current_lobby,User newUser){
+            if (lobby == null) return null;
 
+            // 2. ดึง user ของทุก member (Status != "Pending")
+            var memberIds = lobby.Members
+                .Where(m => m.Status != "Pending")
+                .Select(m => m.UserId)
+                .ToList();
+
+            var memberUsers = memberIds.Any()
+                ? await _database.Users.Find(u => memberIds.Contains(u.Id)).ToListAsync()
+                : new List<User>();
+
+            var memberMap = memberUsers.ToDictionary(u => u.Id);
+
+            // 3. กำหนด role flags
+            bool isHost   = currentUserId == lobby.HostId;
+            bool isMember = lobby.Members.Any(m =>
+                m.UserId == currentUserId && m.Status != "Pending");
+
+            // 4. Pending members (มองเห็นเฉพาะ Host) + hasPendingRequest (สำหรับ Visitor)
+            var pendingApps  = new List<LobbyMember>();
+            var applicantMap = new Dictionary<string, User>();
+            bool hasPendingRequest = false;
+
+            if (isHost)
+            {
+                pendingApps = lobby.Members
+                    .Where(m => m.Status == "Pending")
+                    .ToList();
+
+                var applicantIds = pendingApps
+                    .Select(m => m.UserId)
+                    .Where(uid => uid != null)
+                    .ToList();
+
+                if (applicantIds.Any())
+                {
+                    var applicants = await _database.Users
+                        .Find(u => applicantIds.Contains(u.Id))
+                        .ToListAsync();
+                    applicantMap = applicants.ToDictionary(u => u.Id);
+                }
+            }
+            else if (!string.IsNullOrEmpty(currentUserId))
+            {
+                hasPendingRequest = lobby.Members
+                    .Any(m => m.UserId == currentUserId && m.Status == "Pending");
+            }
+
+            // 5. Karma — ดึง user ที่ currentUser rate ไปแล้วในกลุ่มนี้
+            var endorsedUserIds = new HashSet<string>();
+            if (lobby.IsComplete && !string.IsNullOrEmpty(currentUserId))
+            {
+                var karmaGiven = await _database.KarmaHistories
+                    .Find(k => k.FromUserId == currentUserId &&
+                               memberIds.Contains(k.TargetUserId))
+                    .ToListAsync();
+                endorsedUserIds = karmaGiven.Select(k => k.TargetUserId).ToHashSet();
+            }
+
+            // 6. ดึง CurrentUser — ถ้าไม่อยู่ใน MemberMap (visitor/pending) ให้ fetch เพิ่ม
+            User? currentUser = null;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                currentUser = memberMap.TryGetValue(currentUserId, out var cu)
+                    ? cu
+                    : await _database.Users.Find(u => u.Id == currentUserId).FirstOrDefaultAsync();
+            }
+
+            return new LobbyDetailsViewModel
+            {
+                Lobby               = lobby,
+                CurrentUserId       = currentUserId,
+                CurrentUser         = currentUser,
+                IsHost              = isHost,
+                IsMember            = isMember || isHost,
+                HasPendingRequest   = hasPendingRequest,
+                MemberMap           = memberMap,
+                PendingApplications = pendingApps,
+                ApplicantMap        = applicantMap,
+                EndorsedUserIds     = endorsedUserIds,
+            };
         }
     }
 }

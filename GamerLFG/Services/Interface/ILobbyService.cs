@@ -1,4 +1,5 @@
 using GamerLFG.Models;
+using GamerLFG.Models.ViewModels;
 using GamerLFG.Services.Interface.DTOs;
 namespace GamerLFG.Services.Interface
 {
@@ -10,6 +11,8 @@ namespace GamerLFG.Services.Interface
         Task DeleteLobbyAsync (string id);
         Task UpdateLobbyAsync (Lobby lobby);
         Task AddmemberAsync (Lobby current_lobby,User newUser);
-        
+
+        /// <summary>ดึงข้อมูลทั้งหมดที่ Lobby/Details ต้องการ รวมถึง members, applications และ karma</summary>
+        Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId);
     }
 }

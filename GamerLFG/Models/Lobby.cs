@@ -20,7 +20,6 @@ public class Lobby
     
     [BsonRepresentation(BsonType.ObjectId)]
     public string HostId { get; set; }
-    public string HostName {get; set;}
     public string Picture { get; set; }
     public string DiscordLink { get; set; }
 
