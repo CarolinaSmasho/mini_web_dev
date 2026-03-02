@@ -357,7 +357,18 @@
                         <select id="apply-role" class="karma-select mb-2">
                             @foreach (var r in lobby.Roles)
                             {
-                                <option value="@r">@r</option>
+                                var taken = lobby.Members.Count(m => m.Role == r.Name && (m.Status == "Pending" || m.Status == "joined"));
+                                var remaining = r.Quantity - taken;
+                                var isFull = remaining <= 0;
+                                var label = $"{r.Name} ({(isFull ? "FULL" : $"{remaining} slot{(remaining == 1 ? "" : "s")} left")})";
+                                if (isFull)
+                                {
+                                    <option value="@r.Name" disabled>@label</option>
+                                }
+                                else
+                                {
+                                    <option value="@r.Name">@label</option>
+                                }
                             }
                         </select>
                     }

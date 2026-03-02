@@ -39,7 +39,7 @@
             foreach (var role in Model.Roles)
             {
                 <text>
-                itemsArray.push({ id: Date.now() + @(idx++), lable: "@Html.Raw(role.Replace("\"","\\\""))", quantity: 1 });
+                itemsArray.push({ id: Date.now() + @(idx++), lable: "@Html.Raw(role.Name.Replace("\"","\\\""))", quantity: @role.Quantity });
                 </text>
             }
         }

@@ -157,6 +157,22 @@ namespace GamerLFG.Services
 
         public async Task<bool> ApplyToLobbyAsync(string lobbyId, string userId, string role)
         {
+            // Fetch the lobby first to check capacity
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
+            // Find the role slot definition
+            var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == role);
+            if (roleDef != null)
+            {
+                // Count how many members (pending + joined) already hold this role
+                var takenCount = lobby.Members.Count(m =>
+                    m.Role == role && (m.Status == "Pending" || m.Status == "joined"));
+
+                if (takenCount >= roleDef.Quantity)
+                    return false; // role is full
+            }
+
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.Push(l => l.Members, new LobbyMember
             {

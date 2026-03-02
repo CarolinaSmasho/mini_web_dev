@@ -106,11 +106,17 @@ function updateHiddenInput() {
   const container = document.getElementById("roles-hidden-container");
   if (!container) return;
   container.innerHTML = "";
-  itemsArray.forEach(function (item) {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "Roles";
-    input.value = item.lable;
-    container.appendChild(input);
+  itemsArray.forEach(function (item, i) {
+    const nameInput = document.createElement("input");
+    nameInput.type = "hidden";
+    nameInput.name = `Roles[${i}].Name`;
+    nameInput.value = item.lable;
+    container.appendChild(nameInput);
+
+    const qtyInput = document.createElement("input");
+    qtyInput.type = "hidden";
+    qtyInput.name = `Roles[${i}].Quantity`;
+    qtyInput.value = item.quantity || 1;
+    container.appendChild(qtyInput);
   });
 }
