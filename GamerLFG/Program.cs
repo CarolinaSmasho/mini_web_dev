@@ -1,44 +1,49 @@
 using GamerLFG.Models;
 using GamerLFG.service;
 using GamerLFG.Services;
-using MongoDB.Driver;
-using GamerLFG.Services.Interface;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using GamerLFG.Services.Interface;
-using MongoDB.Driver;using Microsoft.AspNetCore.Authentication.Cookies;
 using GamerLFG.Services.Interface;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// --- 1. Configurations & Database ---
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"));
 
+// ลงทะเบียน MongoDB Client
 builder.Services.AddSingleton<IMongoClient>(sp => 
 {
     var connectionString = builder.Configuration.GetSection("MongoDB")["ConnectionString"];
     return new MongoClient(connectionString);
 });
+
+// *** จุดสำคัญ: ลงทะเบียน Database ให้ Service อื่นๆ เรียกใช้ได้ ***
+builder.Services.AddSingleton<IMongoDatabase>(sp => 
+{
+    var client = sp.GetRequiredService<IMongoClient>();
+    var databaseName = builder.Configuration.GetSection("MongoDB")["DatabaseName"]; 
+    return client.GetDatabase(databaseName);
+});
+
+// --- 2. Custom Services ---
 builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<AuthService>();
+builder.Services.AddSingleton<ILobbyService, LobbyService>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
+
+// --- 3. Auth & Session ---
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Auth/Login"; // ถ้ายังไม่ได้ Login ให้เด้งไปหน้านี้
+        options.LoginPath = "/Auth/Login";
         options.LogoutPath = "/Auth/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // ให้จำ Login ไว้ 60 นาที
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ILobbyService, LobbyService>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ILobbyService,LobbyService>();
-// Session (ใช้สำหรับเก็บ UserId หลัง login)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -47,64 +52,45 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// --- 4. Tools (Swagger) ---
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-
-
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
-// --- เพิ่มส่วนนี้เข้าไป ---
-builder.Services.AddSingleton<AuthService>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Auth/Login"; // ถ้ายังไม่ได้ Login ให้เด้งไปหน้านี้
-        options.LogoutPath = "/Auth/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // ให้จำ Login ไว้ 60 นาที
-    });
 var app = builder.Build();
 
-// --- Swagger (dev only) ---
+// --- 5. Pipeline Setup ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "GamerLFG API V1");
-    });
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GamerLFG API V1"));
 }
-
-// --- Seed Products ---
-using (var scope = app.Services.CreateScope())
-{
-    var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
-    await productService.SeedAsync();
-}
-
-// --- Seed Lobby test data ---
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<MongoDBservice>();
-    await LobbySeeder.SeedAsync(db);
-}
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-app.UseRouting();
-app.UseAuthentication();
-app.UseSession();          // ต้องอยู่ก่อน UseAuthorization
-app.UseAuthorization();
+// Seed Data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var productService = services.GetRequiredService<ProductService>();
+    await productService.SeedAsync();
+    
+    var dbService = services.GetRequiredService<MongoDBservice>();
+    await LobbySeeder.SeedAsync(dbService);
+}
 
-app.MapStaticAssets();
+app.UseHttpsRedirection();
+app.UseStaticFiles(); // เปลี่ยนจาก MapStaticAssets ถ้าเป็นเวอร์ชันเก่ากว่า .NET 9
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseSession(); 
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
