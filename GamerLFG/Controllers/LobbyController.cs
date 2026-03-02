@@ -1,60 +1,256 @@
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
-using System.Collections.Generic;
+using GamerLFG.Models.TestData;
 using GamerLFG.Services;
 using GamerLFG.Services.Interface.DTOs;
 using System.Text.Json;
 using GamerLFG.Services.Interface; // สำหรับ ASP.NET Core
-
+using System.Security.Claims;
 namespace GamerLFG.Controllers
 {   
     
     public class LobbyController : Controller
     {
-        // 1. หน้าแสดงรายละเอียด (ที่ใช้ MockData ใน View)
-        // เข้าผ่าน: http://localhost:PORT/Lobby/Details/1
         private readonly ILobbyService _lobbyService;
         public LobbyController(ILobbyService lobbyService)
         {
             _lobbyService = lobbyService;
         }
-        // public LobbyController(LobbyService lobbyService)
-        // {
-        //     _lobbyService = lobbyService;
-        // }
-        public IActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
-            // ตอนนี้เราส่ง Model เปล่าไปก่อน เพราะคุณเขียน MockData ไว้ในหน้า View แล้ว
-            // แต่ต้องส่งไปเพื่อให้ @model GamerLFG.Models.Lobby ไม่ Error
-            var lobby = new Lobby(); 
-            return View(lobby);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);;
+            var viewModel = await _lobbyService.GetLobbyDetailsAsync(id, currentUserId);
+            if (viewModel == null) return NotFound();
+            return View(viewModel);
+        }
+// ยังไม่ชัวร์
+        public async Task<IActionResult> Index()
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            var lobbyData = await _lobbyService.GetAllLobbyAsync(userId);
+            return View(lobbyData);
         }
 
-        public IActionResult Index()
+        // ── DEV ONLY: จำลอง login เป็น user ที่ต้องการ ─────────────────────────
+        // Usage: /Lobby/SwitchUser?userId=000000000000000000000001
+        //        /Lobby/SwitchUser          ← logout (clear session)
+        [HttpGet]
+        public IActionResult SwitchUser(string? userId)
         {
-            return View();
+            if (string.IsNullOrEmpty(userId))
+                HttpContext.Session.Remove("UserId");
+            else
+                HttpContext.Session.SetString("UserId", userId);
+
+            var lobbyId = LobbySeeder.IdLobby;
+            return Redirect($"/Lobby/Details/{lobbyId}");
         }
+
+        // ── DEV ONLY: แสดงหน้า test panel ────────────────────────────────────
+        // Usage: /Lobby/TestPanel
+        [HttpGet]
+        public IActionResult TestPanel()
+        {
+            var lobbyId = LobbySeeder.IdLobby;
+            var users = new[]
+            {
+                new { Label = "SC1 — HOST", UserId = LobbySeeder.IdHost    },
+                new { Label = "SC2 — NOT LOGGED IN", UserId = (string?)null          },
+                new { Label = "SC3/SC4 — VISITOR", UserId = LobbySeeder.IdVisitor },
+                new { Label = "SC5 — PENDING (Visitor)", UserId = LobbySeeder.IdVisitor },
+                new { Label = "SC6/SC7 — MEMBER", UserId = LobbySeeder.IdMember1 },
+            };
+
+            var html = $@"
+                            <!DOCTYPE html><html>
+                            <head><meta charset=""utf-8""><title>Lobby Test Panel</title>
+                            <style>body{{background:#111;color:#ddd;font-family:monospace;padding:40px}}
+                            a{{display:block;margin:8px 0;padding:12px 20px;background:#1a1a1a;border:1px solid #333;
+                            border-radius:8px;color:#f2960d;text-decoration:none;font-size:14px}}
+                            a:hover{{background:#222}} h2{{color:#fff}} code{{color:#2ecc71}}</style>
+                            </head><body>
+                            <h2>🎮 Lobby Test Panel</h2>
+                            <p style='color:#888'>Lobby ID: <code>{lobbyId}</code></p>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdHost}'>SC1 — HOST (active, recruiting open + pending request)</a>
+                            <a href='/Lobby/SwitchUser'>SC2 — NOT LOGGED IN</a>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdVisitor}'>SC3/SC4 — VISITOR (login แล้ว ยังไม่ได้ขอเข้า)</a>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdPending}'>SC5 — PENDING (ส่ง request ไปแล้ว รอ)</a>
+                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdMember1}'>SC6 — MEMBER (ถูกรับเข้าแล้ว)</a>
+                            <hr style='border-color:#333;margin:20px 0'>
+                            <p style='color:#555;font-size:12px'>
+                            หมายเหตุ: SC7/SC8 (Completed) ต้องเปลี่ยน IsComplete=true ใน DB ก่อน<br>
+                            หรือใช้ MongoDB Compass: set <code>IsComplete: true, IsRecruiting: false</code>
+                            </p>
+                            </body></html>";
+                    return Content(html, "text/html; charset=utf-8");
+                            }   
 
         // --- ส่วนของ API ที่เรียกใช้จาก JavaScript (fetch) ในหน้า View ---
 
+
+        //ยังไม่ชัวร์ ^^&
+
         [HttpPost]
-        public IActionResult Apply(string id)
+        public async Task<IActionResult> Apply(string id, string role)
         {
-            // จำลองการกดสมัคร
-            return Json(new { success = true });
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.ApplyToLobbyAsync(id, currentUserId, role);
+            return Json(new { success = result });
         }
 
         [HttpPost]
-        public IActionResult Recruit(string appId)
+        public async Task<IActionResult> CancelRequest(string id)
         {
-            // จำลองการรับคนเข้าทีม
-            return Json(new { success = true });
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.CancelApplicationAsync(id, currentUserId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Recruit(string id, string userId)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.RecruitMemberAsync(id, userId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Reject(string id, string userId)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.RejectApplicantAsync(id, userId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Kick(string id, string userId)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.KickMemberAsync(id, userId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AbandonMission(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.KickMemberAsync(id, currentUserId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteMission(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.CompleteLobbyAsync(id);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TerminateLobby(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.DeleteLobbyAsync(id);
+            return Json(new { success = result, redirectUrl = "/Lobby/Index" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitKarma(string id, string targetUserId, double score)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.SubmitKarmaAsync(currentUserId, targetUserId, score);
+            return Json(new { success = result });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditMission(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return RedirectToAction("Login", "Auth");
+
+            var lobby = await _lobbyService.GetLobbyByIdAsync(id);
+            if (lobby == null) return NotFound();
+
+            if (lobby.HostId != currentUserId)
+                return Forbid();
+
+            var editDto = new EditLobbyDTO
+            {
+                Id = lobby.Id,
+                Title = lobby.Title,
+                Game = lobby.Game,
+                Description = lobby.Description,
+                Picture = lobby.Picture,
+                DiscordLink = lobby.DiscordLink,
+                Moods = lobby.Moods,
+                Roles = lobby.Roles,
+                MaxPlayers = lobby.MaxPlayers,
+                StartEvent = lobby.StartEvent,
+                EndEvent = lobby.EndEvent,
+                StartRecruiting = lobby.StartRecruiting,
+                EndRecruiting = lobby.EndRecruiting,
+                // Roles that are currently held by active members (locked from deletion/rename)
+                OccupiedRoles = lobby.Members
+                    .Where(m => m.Status != "Pending" && !string.IsNullOrEmpty(m.Role))
+                    .Select(m => m.Role)
+                    .Distinct()
+                    .ToList()
+            };
+
+            return View("EditLobby", editDto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditMission(EditLobbyDTO model)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var lobby = await _lobbyService.GetLobbyByIdAsync(model.Id);
+            if (lobby == null) return NotFound();
+
+            if (lobby.HostId != currentUserId)
+                return Forbid();
+
+            model.ApplyTo(lobby);
+            await _lobbyService.UpdateLobbyAsync(lobby);
+
+            return RedirectToAction("Details", new { id = model.Id });
         }
 
         [HttpPost]
         public IActionResult ToggleRecruitment(string id)
         {
-            // จำลองการเปิด-ปิดห้อง
             return Json(new { success = true });
         }
 
@@ -62,15 +258,24 @@ namespace GamerLFG.Controllers
         [HttpGet]
             public IActionResult Create_lobby()
         {
-            return View();  
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.Identity?.Name;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+            var model = new CreateLobbyDTO { HostId = userId ,HostName = userName};
+            return View(model);  
         }
         [HttpPost]
-        [ValidateAntiForgeryToken] // ถ้าใช้ตัวนี้ ใน Form .cshtml ต้องมี <form>...</form> ปกติ
-        public async Task<IActionResult> Create_lobby(CreateLobbyDTO model) // เอา [FromBody] ออก
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create_lobby(CreateLobbyDTO model)
         { 
-            Console.Write(model);
+            // Console.Write(model);
             if (ModelState.IsValid)
             {
+                Console.WriteLine("Model is Valid");
                 var (success, message) = await _lobbyService.CreateLobbyAsync(model);
                 if (!success)
                 {
@@ -78,8 +283,10 @@ namespace GamerLFG.Controllers
                     ModelState.AddModelError(string.Empty, message);
                     return View(model); 
                 }
-                return RedirectToAction("/");
+                return RedirectToAction("Index","Home");
             }
+            Console.Write(model);
+
             return View(model);
         }
 

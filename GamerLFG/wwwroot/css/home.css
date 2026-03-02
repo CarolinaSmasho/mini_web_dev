@@ -226,6 +226,9 @@ body {
   .landscape-menu .profile-btn:hover {
     scale: 1.05;
   }
+  #profile-icon:hover{
+    scale: 1.2;
+  }
 }
 
 .search-form {

@@ -1,7 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace GamerLFG.Models 
+namespace GamerLFG.Models
+
+
 {
     public class KarmaHistory
     {
