@@ -1,12 +1,19 @@
-﻿@{
+﻿@model GamerLFG.Services.Interface.DTOs.LobbyListResponse
+@{
     ViewData["Title"] = "Home Page";
 }
 @using GamerLFG.Models
+@using GamerLFG.Services.Interface.DTOs
 
 
-
+@{
+    List<ShowLobbyDTO>? MyLobby = Model.MyLobbies;
+    List<ShowLobbyDTO>? OtherLobby = Model.OtherLobbies;
+}
 
 <link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
+<script src="~/js/home_page.js" asp-append-version="true" defer></script>
+
 
         <main>
         <div class="mobile-search" id="mobile-search">
@@ -16,13 +23,83 @@
                 </form>
         </div>
 
-            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
-                <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
+           
             
             
             <div class="all-lob">
-            <div class="lobbies">
-            <a asp-controller="Lobby" asp-action="Create_lobby">
+                <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+                <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
+                <div style="display: flex;gap:20px;align-items:center">
+                   <p class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">Hidden</p>
+                    <button id="hidden" class="off" onclick="toggleLobShow()"
+                    style="background-color:black;color:white;margin:1rem"
+                    ><i class="fa fa-toggle-off fa-2x" aria-hidden="true"></i></button> 
+                </div>
+                
+            <div class="lobbies" id="mylob">
+                @foreach(ShowLobbyDTO lob in MyLobby){
+                
+                
+                <div class=my-lobby>
+                <div class="lobby">
+                    <div class="game-pic" style="background-image: url('@lob.Picture');">
+                        <div class="gname">
+                            <p>@lob.Game</p>
+                        </div>
+                    </div>
+                    <div class="host-bar">
+                        <div>
+                            <i class="fa fa-user-o"></i>
+                            <p>Host: @lob.HostName</p>
+                        </div>
+                        @if(lob.isRecuiting){
+                        <i class="fa fa-circle" style="color: green;"></i> 
+                        }
+                        else{
+                        <i class="fa fa-circle" style="color: rgb(81, 147, 205);"></i>    
+                        }
+                    </div>
+                    <h3>@lob.Title</h3>
+                    <div class="slots">
+                        <div class="icon">
+                            @if(lob.MaxPlayers <=10){
+                                @for(int i=0;i< lob.MaxPlayers;i++){
+                                    @if(i>=lob.CurrentPlayers){
+                                    <i class="fa fa-user-o"></i>    
+                                    }
+                                    else{
+                                        <i class="fa fa-user-o" style="color: #ffa431;"></i>  
+                                    }
+                                    
+                                }
+                            }
+                        </div>
+                        <div>
+                            <p>@lob.CurrentPlayers/@lob.MaxPlayers SLOTS</p>
+                        </div>
+                    </div>
+                   <div class="tag-game">
+                            @foreach (string mood in lob.Moods){
+                              <p class="tag-ele">@mood</p>  
+                            }
+                    </div>
+                    <div class="bnt-mylob">
+                    <a href="/Lobby/Details/@lob.Id">
+                        <button class="orange-button">MANAGE LOBBY</button> 
+                    </a>
+                       
+                    </div>
+
+                    </div>
+
+                </div>                 
+            
+            }
+                 
+
+
+
+            <a asp-controller="Lobby" asp-action="Create_lobby" style="width: fit-content;hight:fit-content">
             <div class="add-lobby">
                 <i class="fa fa-plus-circle fa-2x"></i>
                 <p>NEW LOBBY</p>
@@ -31,13 +108,65 @@
 
             </div>
 
-
-            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+                <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-globe" style="color: #ffa431;"></i>Public Feed</h3>
-
-            <div class="lobbies">
+            <div class="lobbies" id="notmine">
                 
+        
+        @foreach(ShowLobbyDTO lob in OtherLobby){
+                <div class="public-lobby">
+                <div class="lobby">
+                    <div class="game-pic" style="background-image: url('@lob.Picture');">
+                        <div class="gname">
+                            <p>@lob.Game</p>
+                        </div>
+                    </div>
+                    <div class="host-bar">
+                        <div>
+                            <i class="fa fa-user-o"></i>
+                            <p>Host: @lob.HostName</p>
+                        </div>
+                        @if(lob.isRecuiting){
+                        <i class="fa fa-circle" style="color: green;"></i> 
+                        }
+                        else{
+                        <i class="fa fa-circle" style="color: red;"></i>    
+                        }
+                    </div>
+                    <h3>@lob.Title</h3>
+                    <div class="slots">
+                        <div class="icon">
+                            @if(lob.MaxPlayers <=10){
+                                @for(int i=0;i< lob.MaxPlayers;i++){
+                                    @if(i>=lob.CurrentPlayers){
+                                    <i class="fa fa-user-o"></i>    
+                                    }
+                                    else{
+                                        <i class="fa fa-user-o" style="color: #ffa431;"></i>  
+                                    }
+                                    
+                                }
+                            }
+                        </div>
+                        <div>
+                            <p>@lob.CurrentPlayers/@lob.MaxPlayers SLOTS</p>
+                        </div>
+                    </div>
+                   <div class="tag-game">
+                            @foreach (string mood in lob.Moods){
+                              <p class="tag-ele">@mood</p>  
+                            }
+                    </div>
+                   <a href="/Lobby/Details/@lob.Id">
+                     <button class="orange-button">JOIN LOBBY</button>   
+                    </a>
+                    
+
+                </div>                 
+                </div>
+            }  
               
             </div>
+
         </div>
         </main>

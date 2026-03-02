@@ -4,6 +4,11 @@ using GamerLFG.Services;
 using MongoDB.Driver;
 using GamerLFG.Services.Interface;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using GamerLFG.Services.Interface;
+using MongoDB.Driver;using Microsoft.AspNetCore.Authentication.Cookies;
+using GamerLFG.Services.Interface;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,60 +33,71 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ILobbyService, LobbyService>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ILobbyService,LobbyService>();
+// Session (ใช้สำหรับเก็บ UserId หลัง login)
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 
-var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
 
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
-
-builder.Services.AddSingleton<IMongoClient>(sp =>
-{
-    return new MongoClient(mongoSettings.ConnectionString);
-});
-builder.Services.AddScoped<IMongoDatabase>(sp =>
-{
-    var client = sp.GetRequiredService<IMongoClient>();
-    return client.GetDatabase(mongoSettings.DatabaseName);
-});
-var app = builder.Build();
 // --- เพิ่มส่วนนี้เข้าไป ---
+builder.Services.AddSingleton<AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login"; // ถ้ายังไม่ได้ Login ให้เด้งไปหน้านี้
+        options.LogoutPath = "/Auth/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // ให้จำ Login ไว้ 60 นาที
+    });
+var app = builder.Build();
+
+// --- Swagger (dev only) ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "GamerLFG API V1");
-        // ถ้าอยากให้เปิดหน้าเว็บมาแล้วเจอ Swagger เลย (ไม่ต้องพิมพ์ /swagger) ให้ใส่บรรทัดนี้:
-        // c.RoutePrefix = string.Empty; 
     });
 }
-// -----------------------
 
-// --- Seed ข้อมูลตัวอย่าง (คงเดิม) ---
+// --- Seed Products ---
 using (var scope = app.Services.CreateScope())
 {
     var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
     await productService.SeedAsync();
 }
 
-
-
-
+// --- Seed Lobby test data ---
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MongoDBservice>();
+    await LobbySeeder.SeedAsync(db);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
+app.UseSession();          // ต้องอยู่ก่อน UseAuthorization
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -90,6 +106,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

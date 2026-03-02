@@ -11,8 +11,7 @@ public class Lobby
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; } // ลบออกด้วย 
-    // [Ref = "user"]
+    public string? Id { get; set; }
 
     public string Title { get; set; }
     public string Game { get; set; }
@@ -20,13 +19,16 @@ public class Lobby
     
     [BsonRepresentation(BsonType.ObjectId)]
     public string HostId { get; set; }
-    public string HostName {get; set;}
+    public string HostName {get;set;}
     public string Picture { get; set; }
     public string DiscordLink { get; set; }
 
     // Settings & Tags
     public List<string> Moods { get; set; } = new();
-    public List<string> Roles { get; set; } = new();
+
+    /// <summary>Roles with quota — each role has a name and max headcount.</summary>
+    public List<LobbyRole> Roles { get; set; } = new();
+
     public int MaxPlayers { get; set; }
     public bool IsRecruiting { get; set; } = true;
     public bool IsComplete { get; set; } = false;
@@ -41,6 +43,13 @@ public class Lobby
     public List<LobbyMember> Members { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+/// <summary>A role slot with a name and maximum number of players allowed.</summary>
+public class LobbyRole
+{
+    public string Name { get; set; }
+    public int Quantity { get; set; } = 1;
 }
 
 public class LobbyMember
