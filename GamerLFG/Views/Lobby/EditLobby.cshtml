@@ -1,6 +1,6 @@
 @{
-    ViewData["Title"] = "New Lobby";
-    string[] Moods = {"Chil","Hardcode","Not Toxic","Toxic","God"};
+    ViewData["Title"] = "Edit Lobby";
+    string[] Moods = {"Chill","Hardcore","Not Toxic","Toxic","God"};
     string[] Games = { 
     "Elden Ring", 
     "Monster Hunter: World", 
@@ -22,18 +22,60 @@
     "Warframe", 
     "Destiny 2", 
     "Minecraft" 
-};
-    
-    
+    };
 }
 @using GamerLFG.Services.Interface.DTOs;
-@model CreateLobbyDTO;
+@model EditLobbyDTO;
 <script src="~/js/create-lobby.js" asp-append-version="true" defer></script>
 <link rel="stylesheet" href="~/css/create_lobby.css" asp-append-version="true">
+<script>
+    // Roles occupied by active members — cannot be removed or renamed
+    const occupiedRoles = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OccupiedRoles));</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @{int idx = 0;}
+        @if (Model.Roles != null && Model.Roles.Any())
+        {
+            foreach (var role in Model.Roles)
+            {
+                <text>
+                itemsArray.push({ id: Date.now() + @(idx++), lable: "@Html.Raw(role.Replace("\"","\\\""))", quantity: 1 });
+                </text>
+            }
+        }
+        
+        @if (Model.Moods != null && Model.Moods.Any())
+        {
+            foreach (var mood in Model.Moods)
+            {
+                <text>
+                var cb = document.getElementById('mood-' + '@mood');
+                if (cb) cb.checked = true;
+                </text>
+            }
+        }
+        
+        // Mark locked based on occupiedRoles, then render
+        itemsArray = itemsArray.map(function(item) {
+            item.locked = occupiedRoles.includes(item.lable);
+            return item;
+        });
+
+        itemsArray.forEach(function(item) {
+            var itemDiv = document.createElement("div");
+            itemDiv.className = "item-box";
+            itemDiv.id = "item-" + item.id;
+            itemDiv.innerHTML = buildRoleCard(item);
+            document.getElementById("roles-added").appendChild(itemDiv);
+        });
+        updateHiddenInput();
+    });
+</script>
+<link rel="stylesheet" href="~/css/create_lobby.css" asp-append-version="true">
 <main>
-    <form asp-controller="Lobby" asp-action="Create_lobby" class="create-form" method="post">
+    <form asp-controller="Lobby" asp-action="EditMission" class="create-form" method="post">
         <div asp-validation-summary="All" class="text-danger"></div>
-       <input type="hidden" asp-for="HostId" value="698b47c7373afbcc2eb802c9">
+        <input type="hidden" asp-for="Id">
         <div class="title">
             <label for="game">Choose Your Game</label>
             <select asp-for="Game" 
@@ -93,26 +135,20 @@
             <input type="text" placeholder="discord" asp-for="DiscordLink">
             
         </div>
-        <div class="assign-role">
-           Choose your Role
-           <select asp-for="HostRole" id="host-role">
-            <option value="olo"></option>
-           </select>
-        </div>
         
         <div class="date">
             <label for="start" class="datetime-local">
                 <div class="calendar">
                  Open Recruit Date <i class="fa fa-calendar"></i>   
                 </div>
-                
+               
                <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start" asp-for="StartRecruiting"> 
             </label>
              <label for="end" class="datetime-local">
                 <div class="calendar">
                   Close Recruit Date <i class="fa fa-calendar"></i>  
                 </div>
-                
+               
               <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end" asp-for="EndRecruiting">  
 
              </label>
@@ -120,7 +156,7 @@
                 <div class="calendar">
                   Start Event Date <i class="fa fa-calendar"></i>  
                 </div>
-                
+               
               <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start-e" asp-for="StartEvent">  
              </label>
 
@@ -128,37 +164,13 @@
                 <div class="calendar">
                   End Event Date <i class="fa fa-calendar"></i>  
                 </div>
-                
+               
               <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end-e" asp-for="EndEvent">  
              </label>
-
-             @* <div class="time-range">
-
-                <div>
-                  <input type="text" name="hour" id='hour' oninput=" this.value = this.value.replace(/[^0-9]/g, '')">
-                  <div id="add-count-btn">
-                    <button type="button" onclick="countingTime(1,'hour')"><i class="fa fa-arrow-up"></i></button>
-                    <button type="button" onclick="countingTime(-1,'hour')"><i class="fa fa-arrow-down"></i></button>
-                    </div>
-                  <p>HOUR</p>
-                </div>
-
-
-                <div>
-                    <input type="text" name="min" id="min" oninput=" this.value = this.value.replace(/[^0-9]/g, '')">
-                    <div id="add-count-btn">
-                        <button type="button" onclick="countingTime(1,'min')"><i class="fa fa-arrow-up"></i></button>
-                        <button type="button" onclick="countingTime(-1,'min')"><i class="fa fa-arrow-down"></i></button>
-                    </div>
-                    <p>MIN</p>
-                </div>
-                  
-             </div> *@
-             
         </div>
 
         <button class="orange-button">
-            CREATE LOBBY
+            SAVE CHANGES
         </button>
     </form>
 </main>

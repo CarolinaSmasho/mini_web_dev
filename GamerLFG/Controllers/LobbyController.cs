@@ -17,10 +17,6 @@ namespace GamerLFG.Controllers
         {
             _lobbyService = lobbyService;
         }
-        // public LobbyController(LobbyService lobbyService)
-        // {
-        //     _lobbyService = lobbyService;
-        // }
         public async Task<IActionResult> Details(string id)
         {
             var currentUserId = HttpContext.Session.GetString("UserId");
@@ -93,23 +89,166 @@ namespace GamerLFG.Controllers
         // --- ส่วนของ API ที่เรียกใช้จาก JavaScript (fetch) ในหน้า View ---
 
         [HttpPost]
-        public IActionResult Apply(string id)
+        public async Task<IActionResult> Apply(string id, string role)
         {
-            // จำลองการกดสมัคร
-            return Json(new { success = true });
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.ApplyToLobbyAsync(id, currentUserId, role);
+            return Json(new { success = result });
         }
 
         [HttpPost]
-        public IActionResult Recruit(string appId)
+        public async Task<IActionResult> CancelRequest(string id)
         {
-            // จำลองการรับคนเข้าทีม
-            return Json(new { success = true });
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.CancelApplicationAsync(id, currentUserId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Recruit(string id, string userId)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.RecruitMemberAsync(id, userId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Reject(string id, string userId)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.RejectApplicantAsync(id, userId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Kick(string id, string userId)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.KickMemberAsync(id, userId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AbandonMission(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.KickMemberAsync(id, currentUserId);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteMission(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.CompleteLobbyAsync(id);
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TerminateLobby(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.DeleteLobbyAsync(id);
+            return Json(new { success = result, redirectUrl = "/Lobby/Index" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitKarma(string id, string targetUserId, double score)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var result = await _lobbyService.SubmitKarmaAsync(currentUserId, targetUserId, score);
+            return Json(new { success = result });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditMission(string id)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return RedirectToAction("Login", "Auth");
+
+            var lobby = await _lobbyService.GetLobbyByIdAsync(id);
+            if (lobby == null) return NotFound();
+
+            if (lobby.HostId != currentUserId)
+                return Forbid();
+
+            var editDto = new EditLobbyDTO
+            {
+                Id = lobby.Id,
+                Title = lobby.Title,
+                Game = lobby.Game,
+                Description = lobby.Description,
+                Picture = lobby.Picture,
+                DiscordLink = lobby.DiscordLink,
+                Moods = lobby.Moods,
+                Roles = lobby.Roles,
+                MaxPlayers = lobby.MaxPlayers,
+                StartEvent = lobby.StartEvent,
+                EndEvent = lobby.EndEvent,
+                StartRecruiting = lobby.StartRecruiting,
+                EndRecruiting = lobby.EndRecruiting,
+                // Roles that are currently held by active members (locked from deletion/rename)
+                OccupiedRoles = lobby.Members
+                    .Where(m => m.Status != "Pending" && !string.IsNullOrEmpty(m.Role))
+                    .Select(m => m.Role)
+                    .Distinct()
+                    .ToList()
+            };
+
+            return View("EditLobby", editDto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditMission(EditLobbyDTO model)
+        {
+            var currentUserId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var lobby = await _lobbyService.GetLobbyByIdAsync(model.Id);
+            if (lobby == null) return NotFound();
+
+            if (lobby.HostId != currentUserId)
+                return Forbid();
+
+            model.ApplyTo(lobby);
+            await _lobbyService.UpdateLobbyAsync(lobby);
+
+            return RedirectToAction("Details", new { id = model.Id });
         }
 
         [HttpPost]
         public IActionResult ToggleRecruitment(string id)
         {
-            // จำลองการเปิด-ปิดห้อง
             return Json(new { success = true });
         }
 

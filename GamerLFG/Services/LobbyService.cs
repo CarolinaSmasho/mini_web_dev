@@ -136,9 +136,110 @@ namespace GamerLFG.Services
         //     await _database.Lobbies.InsertOneAsync(lobby);
         //     return (true,"OK");
         // }
-        public async Task DeleteLobbyAsync(string id) { }
-        public async Task UpdateLobbyAsync(Lobby lobby) { }
+        public async Task<bool> DeleteLobbyAsync(string id)
+        {
+            var result = await _database.Lobbies.DeleteOneAsync(l => l.Id == id);
+            return result.DeletedCount > 0;
+        }
+
+        public async Task UpdateLobbyAsync(Lobby lobby)
+        {
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobby.Id);
+            await _database.Lobbies.ReplaceOneAsync(filter, lobby);
+        }
+
         public async Task AddmemberAsync(Lobby current_lobby, User newUser) { }
+
+        public async Task<Lobby?> GetLobbyByIdAsync(string id)
+        {
+            return await _database.Lobbies.Find(l => l.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> ApplyToLobbyAsync(string lobbyId, string userId, string role)
+        {
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.Push(l => l.Members, new LobbyMember
+            {
+                UserId = userId,
+                Status = "Pending",
+                Role = role
+            });
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> CancelApplicationAsync(string lobbyId, string userId)
+        {
+            var filter = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
+                Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status == "Pending")
+            );
+            var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Pending");
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> RecruitMemberAsync(string lobbyId, string userId)
+        {
+            var filter = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
+                Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status == "Pending")
+            );
+            var update = Builders<Lobby>.Update.Set("Members.$.Status", "joined");
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> RejectApplicantAsync(string lobbyId, string userId)
+        {
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Pending");
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> KickMemberAsync(string lobbyId, string userId)
+        {
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> CompleteLobbyAsync(string lobbyId)
+        {
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.Set(l => l.IsComplete, true)
+                                               .Set(l => l.IsRecruiting, false);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> SubmitKarmaAsync(string fromUserId, string targetUserId, double score)
+        {
+            var karmaHistory = new KarmaHistory
+            {
+                FromUserId = fromUserId,
+                TargetUserId = targetUserId,
+                Score = score,
+                Date = DateTime.UtcNow
+            };
+            await _database.KarmaHistories.InsertOneAsync(karmaHistory);
+
+            var allHistories = await _database.KarmaHistories
+                .Find(k => k.TargetUserId == targetUserId)
+                .ToListAsync();
+
+            if (allHistories.Any())
+            {
+                var averageScore = allHistories.Average(k => k.Score);
+                var userFilter = Builders<User>.Filter.Eq(u => u.Id, targetUserId);
+                var userUpdate = Builders<User>.Update.Set(u => u.KarmaScore, averageScore);
+                await _database.Users.UpdateOneAsync(userFilter, userUpdate);
+            }
+
+            return true;
+        }
 
         public async Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId)
         {

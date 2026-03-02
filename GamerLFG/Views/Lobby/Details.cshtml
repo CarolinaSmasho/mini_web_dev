@@ -110,10 +110,10 @@
                 </div>
             </div>
 
-            @* Squad Composition *@
+            @* Lobby Members *@
             <div class="card-dark">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="mb-0 text-white">Squad Composition</h4>
+                    <h4 class="mb-0 text-white">Lobby Members</h4>
                     <span class="text-secondary">@Model.PlayerIds.Count / @lobby.MaxPlayers</span>
                 </div>
                 <div class="row g-2">
@@ -136,7 +136,7 @@
                                 </div>
                                 @if (isHost && !isMe)
                                 {
-                                    <button class="btn btn-sm btn-outline-danger">Kick</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="kickMember('@lobby.Id', '@pid')">Kick</button>
                                 }
                             </div>
                         </div>
@@ -171,8 +171,8 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-danger">Reject</button>
-                                <button class="btn btn-sm btn-success">Recruit</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="rejectApplicant('@lobby.Id', '@app.UserId')">Reject</button>
+                                <button class="btn btn-sm btn-success" onclick="recruitMember('@lobby.Id', '@app.UserId')">Recruit</button>
                             </div>
                         </div>
                     }
@@ -259,16 +259,16 @@
                                     }
                                     else
                                     {
-                                        <select class="karma-select">
-                                            <option>MVP (+5)</option>
-                                            <option>Leader (+4)</option>
-                                            <option selected>Good Teammate (+3)</option>
-                                            <option>Chill (+2)</option>
-                                            <option>Leaver (-3)</option>
-                                            <option>Toxic (-5)</option>
-                                            <option>AFK (-3)</option>
+                                        <select id="karma-@pid" class="karma-select">
+                                            <option value="5">MVP (+5)</option>
+                                            <option value="4">Leader (+4)</option>
+                                            <option value="3" selected>Good Teammate (+3)</option>
+                                            <option value="2">Chill (+2)</option>
+                                            <option value="-3">Leaver (-3)</option>
+                                            <option value="-5">Toxic (-5)</option>
+                                            <option value="-3">AFK (-3)</option>
                                         </select>
-                                        <button class="karma-btn">Submit Rating</button>
+                                        <button class="karma-btn" onclick="submitKarma('@lobby.Id', '@pid')">Submit Rating</button>
                                     }
                                 </div>
                             </div>
@@ -318,22 +318,22 @@
                 @* ── ACTION BUTTON ── *@
                 @if (isHost && !lobby.IsComplete)
                 {
-                    <button class="btn-primary-cta mb-2">EDIT MISSION</button>
-                    <button class="btn-primary-cta mb-2" style="background:#2ecc71;">COMPLETE MISSION</button>
-                    <button class="btn-danger-outline">TERMINATE LOBBY</button>
+                    <button class="btn-primary-cta mb-2" onclick="editMission('@lobby.Id')">EDIT MISSION</button>
+                    <button class="btn-primary-cta mb-2" style="background:#2ecc71;" onclick="completeMission('@lobby.Id')">COMPLETE MISSION</button>
+                    <button class="btn-danger-outline" onclick="terminateLobby('@lobby.Id')">TERMINATE LOBBY</button>
                 }
                 else if (isHost && lobby.IsComplete)
                 {
-                    <button class="btn-danger-outline">TERMINATE LOBBY</button>
+                    <button class="btn-danger-outline" onclick="terminateLobby('@lobby.Id')">TERMINATE LOBBY</button>
                 }
                 else if (string.IsNullOrEmpty(Model.CurrentUserId))
                 {
-                    <button class="btn-primary-cta">LOGIN TO JOIN</button>
+                    <a href="/Auth/Login"><button class="btn-primary-cta">LOGIN TO JOIN</button></a>
                 }
                 else if (isMember && !lobby.IsComplete)
                 {
                     <button class="btn-muted mb-2">&#10003; RECRUITED</button>
-                    <button class="btn-danger-outline">ABANDON MISSION</button>
+                    <button class="btn-danger-outline" onclick="abandonMission('@lobby.Id')">ABANDON MISSION</button>
                 }
                 else if (isMember && lobby.IsComplete)
                 {
@@ -344,7 +344,7 @@
                     <button class="btn-muted mb-2" style="color:#f39c12; border-color:#f39c12;">
                         &#9203; REQUEST PENDING...
                     </button>
-                    <button class="btn-cancel">Cancel Request</button>
+                    <button class="btn-cancel" onclick="cancelRequest('@lobby.Id')">Cancel Request</button>
                 }
                 else if (!lobby.IsRecruiting)
                 {
@@ -352,7 +352,16 @@
                 }
                 else
                 {
-                    <button class="btn-primary-cta">REQUEST DEPLOYMENT</button>
+                    @if (lobby.Roles.Any())
+                    {
+                        <select id="apply-role" class="karma-select mb-2">
+                            @foreach (var r in lobby.Roles)
+                            {
+                                <option value="@r">@r</option>
+                            }
+                        </select>
+                    }
+                    <button class="btn-primary-cta" onclick="requestDeployment('@lobby.Id')">REQUEST DEPLOYMENT</button>
                 }
             </div>
 
@@ -373,6 +382,92 @@
 
 @section Scripts {
     <script>
+        async function postAction(url, body) {
+            try {
+                const params = new URLSearchParams(body);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString()
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    alert('Error: ' + (response.statusText || errorText));
+                    return { success: false, message: response.statusText };
+                }
+                return await response.json();
+            } catch (e) {
+                console.error(e);
+                return { success: false, message: e.message };
+            }
+        }
+
+        function editMission(id) {
+            window.location = '/Lobby/EditMission?id=' + id;
+        }
+
+        async function completeMission(id) {
+            if (!confirm('Complete this mission?')) return;
+            const result = await postAction('/Lobby/CompleteMission', { id: id });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to complete mission.');
+        }
+
+        async function terminateLobby(id) {
+            if (!confirm('Terminate this lobby? This cannot be undone.')) return;
+            const result = await postAction('/Lobby/TerminateLobby', { id: id });
+            if (result.success) window.location.href = result.redirectUrl || '/Lobby/Index';
+            else alert(result.message || 'Failed to terminate lobby.');
+        }
+
+        async function recruitMember(lobbyId, userId) {
+            const result = await postAction('/Lobby/Recruit', { id: lobbyId, userId: userId });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to recruit member.');
+        }
+
+        async function rejectApplicant(lobbyId, userId) {
+            const result = await postAction('/Lobby/Reject', { id: lobbyId, userId: userId });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to reject applicant.');
+        }
+
+        async function kickMember(lobbyId, userId) {
+            if (!confirm('Kick this member?')) return;
+            const result = await postAction('/Lobby/Kick', { id: lobbyId, userId: userId });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to kick member.');
+        }
+
+        async function requestDeployment(lobbyId) {
+            const roleSelect = document.getElementById('apply-role');
+            const role = roleSelect ? roleSelect.value : 'Member';
+            const result = await postAction('/Lobby/Apply', { id: lobbyId, role: role });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to send deployment request.');
+        }
+
+        async function cancelRequest(lobbyId) {
+            const result = await postAction('/Lobby/CancelRequest', { id: lobbyId });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to cancel request.');
+        }
+
+        async function abandonMission(lobbyId) {
+            if (!confirm('Abandon this mission?')) return;
+            const result = await postAction('/Lobby/AbandonMission', { id: lobbyId });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to abandon mission.');
+        }
+
+        async function submitKarma(lobbyId, targetUserId) {
+            const select = document.getElementById('karma-' + targetUserId);
+            const score = parseFloat(select.value);
+            const result = await postAction('/Lobby/SubmitKarma', { id: lobbyId, targetUserId: targetUserId, score: score });
+            if (result.success) window.location.reload();
+            else alert(result.message || 'Failed to submit karma rating.');
+        }
+
         (function () {
             var el = document.getElementById('timer');
             if (!el) return;
