@@ -46,7 +46,6 @@
                             <a asp-controller="Auth" asp-action="Login"><button class="login-nav-button">Log in</button></a>
                         }
 
-
                         <a asp-controller="User" asp-action="Friends_list"><button class="login-nav-button">Friends</button></a>
                         @* Notifications *@
                         <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
@@ -203,7 +202,7 @@
                                         .then(() => openUserMiniProfile(data.id));
                                 };
                             }
-                            document.getElementById('mini-profile-link').href = `/User/Profiles?userId=${encodeURIComponent(data.id)}`;
+                            document.getElementById('mini-profile-link').href = `/User/Profiles?id=${encodeURIComponent(data.id)}`;
 
                             document.getElementById('global-user-mini-profile-toggle').checked = true;
                         })

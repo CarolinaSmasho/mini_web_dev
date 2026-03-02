@@ -3,40 +3,47 @@
 
 @{
     ViewData["Title"] = "Profile";
-    
-    string Logged_id = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim().ToLower() ?? ""; 
-    
-    string id = Model?.Id?.Trim().ToLower() ?? ""; 
+
+    string Logged_id = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim().ToLower() ?? "";
+
+    string id = Model?.Id?.Trim().ToLower() ?? "";
 
     bool isOwnProfile = (Logged_id == id);
 
-    string username = Model.Username ?? "Unknown User";
+    string Name = Model.Name ?? "Unknown User";
     string pic = Model.Avatar;
     string bio = Model.Bio ?? "No bio available.";
-    
+
     string gameLibraryDisplay = Model.GameLibrary != null ? string.Join(", ", Model.GameLibrary) : "";
-    
+
     string discord = Model.discord ?? "";
     string steam = Model.steam ?? "";
     string twitch = Model.twitch ?? "";
-    
+
     double karmaScore = Model.KarmaScore;
 
     int karmaPercent = Math.Clamp((int)((karmaScore + 100) / 2), 0, 100);
-    
+
     string tierName = "";
     string tierColor = "";
 
-    if (karmaScore >= 50) {
+    if (karmaScore >= 50)
+    {
         tierName = "Excellent";
         tierColor = "#00d2ff";
-    } else if (karmaScore >= 0) {
+    }
+    else if (karmaScore >= 0)
+    {
         tierName = "Good";
         tierColor = "#28a745";
-    } else if (karmaScore > -50) {
+    }
+    else if (karmaScore > -50)
+    {
         tierName = "Warning";
         tierColor = "#ff9800";
-    } else {
+    }
+    else
+    {
         tierName = "Restricted";
         tierColor = "#ff2828";
     }
@@ -46,7 +53,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <link rel="stylesheet" href="~/css/profiles.css" asp-append-version="true" />
 
@@ -67,8 +75,9 @@
                     </div>
                 }
 
-                <h3>@username</h3>
-                <span style="background: @tierColor; color: black; padding: 3px 6px; font-size: 12px; font-weight: bold;">
+                <h3>@Name</h3>
+                <span
+                    style="background: @tierColor; color: black; padding: 3px 6px; font-size: 12px; font-weight: bold;">
                     @tierName Member
                 </span>
             </div>
@@ -81,9 +90,10 @@
                 <div class="bar-bg">
                     <div class="bar-fill" style="width: @(karmaPercent)%;"></div>
                 </div>
-                
+
                 <br>
-                <a asp-controller="Karma" asp-action="KarmaHistory" asp-route-userId="@Model.Id" style="color: orange; text-decoration: none;">[ View History ]</a>
+                <a asp-controller="Karma" asp-action="KarmaHistory" asp-route-userId="@Model.Id"
+                   style="color: orange; text-decoration: none;">[ View History ]</a>
             </div>
         </div>
 
@@ -95,22 +105,28 @@
                     <h2>Profile</h2>
 
                     <label>Display Name</label>
-                    <input type="text" name="Username" value="@username" @(isOwnProfile ? "" : "readonly") />
+                    <input type="text" name="Name" value="@Name" @(isOwnProfile ? "" : "readonly") />
 
                     <label>Bio</label>
                     <textarea name="Bio" rows="3" @(isOwnProfile ? "" : "readonly")>@bio</textarea>
 
                     <label>Games</label>
-                    <textarea name="GameLibraryString" rows="2">@string.Join(", ", Model.GameLibrary ?? new List<string>())</textarea>
+                    <textarea name="GameLibraryString"
+                              rows="2">@string.Join(", ", Model.GameLibrary ?? new List<string>())</textarea>
 
                     <label>Vibe</label>
                     <div id="vibeContainer" style="@(isOwnProfile ? "" : "pointer-events: none;")">
-                        <input type="hidden" name="VibeTagsString" id="VibeTagsString" value="@string.Join(",", Model.VibeTags)" />
+                        <input type="hidden" name="VibeTagsString" id="VibeTagsString"
+                               value="@string.Join(",", Model.VibeTags)" />
 
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Chill") ? "active" : "")" onclick="toggleVibe(this, 'Chill')">Chill</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Tryhard") ? "active" : "")" onclick="toggleVibe(this, 'Tryhard')">Tryhard</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Teacher") ? "active" : "")" onclick="toggleVibe(this, 'Teacher')">Teacher</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Party") ? "active" : "")" onclick="toggleVibe(this, 'Party')">Party</button>
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Chill") ? "active" : "")"
+                                onclick="toggleVibe(this, 'Chill')">Chill</button>
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Tryhard") ? "active" : "")"
+                                onclick="toggleVibe(this, 'Tryhard')">Tryhard</button>
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Teacher") ? "active" : "")"
+                                onclick="toggleVibe(this, 'Teacher')">Teacher</button>
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Party") ? "active" : "")"
+                                onclick="toggleVibe(this, 'Party')">Party</button>
                     </div>
                 </div>
 
@@ -149,31 +165,31 @@
 
 @section Scripts {
     <script>
-        function toggleVibe(btn, vibeName) {
+                function toggleVibe(btn, vibeName) {
 
-            btn.classList.toggle('active');
+                    btn.classList.toggle('active');
 
-            const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
-            
-            const selectedVibes = Array.from(activeButtons).map(b => b.innerText.trim());
-            
-            document.getElementById('VibeTagsString').value = selectedVibes.join(',');
-        }
+                    const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
 
-        function changeAvatar() {
-            var img = document.getElementById('profileImage');
+                    const selectedVibes = Array.from(activeButtons).map(b => b.innerText.trim());
 
-            var currentPic = img.src;
-            var newUrl = prompt("ใส่ URL รูปภาพใหม่ของคุณที่นี่:");
-
-            if (newUrl !== null && newUrl.trim() !== "") {
-                img.src = newUrl.trim();
-                
-                var avatarInput = document.getElementById('avatarInput');
-                if (avatarInput) {
-                    avatarInput.value = newUrl.trim();
+                    document.getElementById('VibeTagsString').value = selectedVibes.join(',');
                 }
-            }
-        }
+
+                function changeAvatar() {
+                    var img = document.getElementById('profileImage');
+
+                    var currentPic = img.src;
+                    var newUrl = prompt("ใส่ URL รูปภาพใหม่ของคุณที่นี่:");
+
+                    if (newUrl !== null && newUrl.trim() !== "") {
+                        img.src = newUrl.trim();
+
+                        var avatarInput = document.getElementById('avatarInput');
+                        if (avatarInput) {
+                            avatarInput.value = newUrl.trim();
+                        }
+                    }
+                }
     </script>
 }

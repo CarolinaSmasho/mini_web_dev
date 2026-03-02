@@ -2,9 +2,11 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
 using GamerLFG.Services;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GamerLFG.Controllers;
-
+[Authorize]
 public class FriendRequestController : Controller
 {
     public class FriendRequestViewModel
@@ -28,7 +30,7 @@ public class FriendRequestController : Controller
     [HttpPost]
     public async Task<IActionResult> Send(string targetUserId)
     {
-        string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1";
+        string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         Console.WriteLine($"[DEBUG] พยายามส่งคำขอจาก: {currentUserId} ไปหา: {targetUserId}");
         bool success = await _friendRequestService.SendRequestAsync(currentUserId, targetUserId);
 
@@ -56,7 +58,7 @@ public class FriendRequestController : Controller
     [HttpPost]
     public async Task<IActionResult> Cancel(string targetUserId)
     {
-        string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1"; 
+        string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         bool success = await _friendRequestService.CancelRequestAsync(currentUserId, targetUserId);
         
         if (success) return Json(new { success = true, message = "ยกเลิกคำขอแล้ว" });
@@ -66,7 +68,9 @@ public class FriendRequestController : Controller
     [HttpGet]
     public async Task<IActionResult> FriendRequestList()
     {
-        string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1";
+
+      
+        string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         var requestList = await _friendRequestService.GetPendingRequestsAsync(currentUserId);
 

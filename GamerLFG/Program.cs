@@ -1,10 +1,8 @@
 using GamerLFG.Models;
 using GamerLFG.service;
 using GamerLFG.Services;
-using GamerLFG.Data;
 using MongoDB.Driver;
 using GamerLFG.Services.Interface;
-using MongoDB.Driver;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +36,6 @@ var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSetti
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
-var mongoSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
 
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
@@ -72,36 +69,6 @@ using (var scope = app.Services.CreateScope())
 
 
 
-
-// --- Seed ข้อมูลตัวอย่าง (Run Phase) ---
-// สร้าง product ตัวอย่างใน MongoDB ถ้ายังว่างอยู่
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    
-    // Seed Product
-    try 
-    {
-        var productService = services.GetRequiredService<ProductService>();
-        await productService.SeedAsync();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Error seeding Product: {ex.Message}");
-    }
-
-    // Seed User / Lobby
-    try
-    {
-        // ตอนนี้บรรทัดล่างนี้จะไม่ Error แล้ว เพราะเราลงทะเบียน IMongoDatabase ไว้ด้านบนแล้ว!
-        var database = services.GetRequiredService<IMongoDatabase>();
-        MongoDbSeeder.SeedAsync(database).Wait();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ An error occurred while seeding the database: {ex.Message}");
-    }
-}
 
 
 // Configure the HTTP request pipeline.

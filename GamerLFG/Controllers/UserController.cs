@@ -13,16 +13,19 @@ public class UserController : Controller
     private readonly IUserService _userService;
     private readonly IFriendRequestService _friendRequestService;
 
-    public UserController(IUserService userService, IFriendRequestService friendRequestService)
+    public UserController(IUserService userService, IFriendRequestService friendRequestService, MongoDBservice mongoDBservice)
     {
         _userService = userService;
         _friendRequestService = friendRequestService;
+        _mongoDBservice = mongoDBservice;
     }
-        
+
+
+    [HttpGet]
     public async Task<IActionResult> Friends_list()
         {
 
-            string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1"; 
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var friendsList = await _userService.GetMyFriendsAsync(currentUserId);
 
@@ -41,17 +44,13 @@ public class UserController : Controller
 
     
 
-    public IActionResult Profiles()
-    {
-        return View();
-    }
+   
     
     [HttpPost] // ระบุว่าเป็น POST
     public async Task<IActionResult> DeleteFriend(string targetUserId)
     {
-        // ดึง ID ของเราจาก Cookie (จากที่ทำ Mock Login ไว้) 
-        // หรือถ้าไม่ได้ทำไว้ ให้ fix เป็น ProSniper99 ไปก่อน
-        string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1"; 
+
+        string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         // สั่งลบเพื่อนใน Service
         bool success = await _userService.RemoveFriendAsync(currentUserId, targetUserId);
@@ -69,7 +68,8 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> GetUserDetails(string userId)
     {
-        string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1"; 
+
+        string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await _userService.SearchUserAsync(userId);
         var me = await _userService.SearchUserAsync(currentUserId);
         if (user == null)
@@ -87,7 +87,7 @@ public class UserController : Controller
         var result = new 
         {
             id = user.Id,
-            username = user.Username,
+            Name = user.Name,
             bio = user.Bio,
             avatar = user.Avatar,
             status = user.VibeTags.FirstOrDefault() ?? "Online",
@@ -111,15 +111,10 @@ public class UserController : Controller
     }
 
 
-
-    public UserController(MongoDBservice mongoDBservice)
-    {
-        _mongoDBservice = mongoDBservice;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Profiles(string id)
     {
+        Console.WriteLine($"[DEBUG]  Profiles {id}");
         if (string.IsNullOrEmpty(id)) 
         {
             id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -143,12 +138,12 @@ public class UserController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateProfile(string id, string Username, string Bio, string Avatar,string GameLibraryString, string VibeTagsString, string discord, string steam, string twitch)
+    public async Task<IActionResult> UpdateProfile(string id, string Name, string Bio, string Avatar,string GameLibraryString, string VibeTagsString, string discord, string steam, string twitch)
     {
         var user = await _mongoDBservice.Users.Find(u => u.Id == id).FirstOrDefaultAsync();
         if (user == null) return NotFound();
 
-        user.Username = Username;
+        user.Name = Name;
         user.Avatar = Avatar;
         user.Bio = Bio;
         user.discord = discord;
