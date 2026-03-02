@@ -18,7 +18,7 @@ namespace GamerLFG.Controllers
         }
         public async Task<IActionResult> Details(string id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);;
             var viewModel = await _lobbyService.GetLobbyDetailsAsync(id, currentUserId);
             if (viewModel == null) return NotFound();
             return View(viewModel);
