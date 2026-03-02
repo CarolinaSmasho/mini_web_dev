@@ -1,13 +1,15 @@
 using GamerLFG.Models;
-
+using GamerLFG.Services.Interface.DTOs;
 namespace GamerLFG.Services.Interface
 {
     public interface ILobbyService
     {
-        Task<List<Lobby>> GetAllLobbyAsync();
-        Task<Lobby> CreateLobbyAsync(Lobby newLobby);
+        Task<LobbyListResponse> GetAllLobbyAsync(string? userId);
+        Task<List<ShowLobbyDTO>> GetNextLobbiesAsync(string? lastId,string? userId, int pageSize = 10);
+        Task <(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby);
         Task DeleteLobbyAsync (string id);
         Task UpdateLobbyAsync (Lobby lobby);
         Task AddmemberAsync (Lobby current_lobby,User newUser);
+        
     }
 }

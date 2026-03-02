@@ -1,21 +1,45 @@
+@model GamerLFG.Models.User
+@using System.Security.Claims
+
 @{
     ViewData["Title"] = "Profile";
     
-    string username = "Kant Kruerad";
-    string pic = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Immanuel_Kant_-_Gemaelde_1.jpg/960px-Immanuel_Kant_-_Gemaelde_1.jpg";
-    string bio = "ดูอยู่ก็รู้อยู่";
-    string games = "18+";
-    string discord = "kant1593";
-    string steam = "kant1593";
-    string twitch = "kant1593";
+    string Logged_id = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim().ToLower() ?? ""; 
     
-    int karmaScore = -75;
-    bool isOwnProfile = true;
+    string id = Model?.Id?.Trim().ToLower() ?? ""; 
 
-    int karmaPercent = (karmaScore + 100) / 2;
+    bool isOwnProfile = (Logged_id == id);
 
-    string tierName = "Restricted";
-    string tierColor = "#ff2828";
+    string username = Model.Username ?? "Unknown User";
+    string pic = Model.Avatar;
+    string bio = Model.Bio ?? "No bio available.";
+    
+    string gameLibraryDisplay = Model.GameLibrary != null ? string.Join(", ", Model.GameLibrary) : "";
+    
+    string discord = Model.discord ?? "";
+    string steam = Model.steam ?? "";
+    string twitch = Model.twitch ?? "";
+    
+    double karmaScore = Model.KarmaScore;
+
+    int karmaPercent = Math.Clamp((int)((karmaScore + 100) / 2), 0, 100);
+    
+    string tierName = "";
+    string tierColor = "";
+
+    if (karmaScore >= 50) {
+        tierName = "Excellent";
+        tierColor = "#00d2ff";
+    } else if (karmaScore >= 0) {
+        tierName = "Good";
+        tierColor = "#28a745";
+    } else if (karmaScore > -50) {
+        tierName = "Warning";
+        tierColor = "#ff9800";
+    } else {
+        tierName = "Restricted";
+        tierColor = "#ff2828";
+    }
 }
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,9 +54,19 @@
     <div class="container">
         <div class="col-left">
             <div class="box" style="text-align: center;">
-                <div class="profile-img">
-                    <img src="@pic" />
-                </div>
+                @if (isOwnProfile)
+                {
+                    <div class="profile-img" onclick="changeAvatar()" style="cursor: pointer;" title="คลิกเพื่อเปลี่ยนรูป">
+                        <img id="profileImage" src="@pic" />
+                    </div>
+                }
+                else
+                {
+                    <div class="profile-img">
+                        <img id="profileImage" src="@pic" />
+                    </div>
+                }
+
                 <h3>@username</h3>
                 <span style="background: @tierColor; color: black; padding: 3px 6px; font-size: 12px; font-weight: bold;">
                     @tierName Member
@@ -49,12 +83,14 @@
                 </div>
                 
                 <br>
-                <a asp-controller="Home" asp-action="KarmaHistory" style="color: orange; text-decoration: none;">[ View History ]</a>
+                <a asp-controller="Karma" asp-action="KarmaHistory" asp-route-userId="@Model.Id" style="color: orange; text-decoration: none;">[ View History ]</a>
             </div>
         </div>
 
         <div class="col-right">
-            <form>
+            <form asp-controller="User" asp-action="UpdateProfile" method="post">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="Avatar" id="avatarInput" value="@pic" />
                 <div class="box">
                     <h2>Profile</h2>
 
@@ -65,14 +101,16 @@
                     <textarea name="Bio" rows="3" @(isOwnProfile ? "" : "readonly")>@bio</textarea>
 
                     <label>Games</label>
-                    <textarea name="games" rows="2" @(isOwnProfile ? "" : "readonly")>@games</textarea>
+                    <textarea name="GameLibraryString" rows="2">@string.Join(", ", Model.GameLibrary ?? new List<string>())</textarea>
 
                     <label>Vibe</label>
-                    <div style="@(isOwnProfile ? "" : "pointer-events: none; opacity: 0.5;")">
-                        <button type="button" class="btn active" onclick="toggleBtn(this)">Chill</button>
-                        <button type="button" class="btn" onclick="toggleBtn(this)">Tryhard</button>
-                        <button type="button" class="btn" onclick="toggleBtn(this)">Teacher</button>
-                        <button type="button" class="btn" onclick="toggleBtn(this)">Party</button>
+                    <div id="vibeContainer" style="@(isOwnProfile ? "" : "pointer-events: none;")">
+                        <input type="hidden" name="VibeTagsString" id="VibeTagsString" value="@string.Join(",", Model.VibeTags)" />
+
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Chill") ? "active" : "")" onclick="toggleVibe(this, 'Chill')">Chill</button>
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Tryhard") ? "active" : "")" onclick="toggleVibe(this, 'Tryhard')">Tryhard</button>
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Teacher") ? "active" : "")" onclick="toggleVibe(this, 'Teacher')">Teacher</button>
+                        <button type="button" class="btn @(Model.VibeTags.Contains("Party") ? "active" : "")" onclick="toggleVibe(this, 'Party')">Party</button>
                     </div>
                 </div>
 
@@ -82,26 +120,26 @@
                     <label>Discord</label>
                     <div class="input-group">
                         <span class="material-symbols-outlined">chat_bubble</span>
-                        <input type="text" value="@discord" @(isOwnProfile ? "" : "readonly") />
+                        <input type="text" name="discord" value="@discord" @(isOwnProfile ? "" : "readonly") />
                     </div>
 
                     <label>Steam</label>
                     <div class="input-group">
                         <span class="material-symbols-outlined">sports_esports</span>
-                        <input type="text" value="@steam" @(isOwnProfile ? "" : "readonly") />
+                        <input type="text" name="steam" value="@steam" @(isOwnProfile ? "" : "readonly") />
                     </div>
 
                     <label>Twitch</label>
                     <div class="input-group">
                         <span class="material-symbols-outlined">live_tv</span>
-                        <input type="text" value="@twitch" @(isOwnProfile ? "" : "readonly") />
+                        <input type="text" name="twitch" value="@twitch" @(isOwnProfile ? "" : "readonly") />
                     </div>
                 </div>
 
                 @if (isOwnProfile)
                 {
                     <div style="text-align: right;">
-                        <button type="button" class="btn-save" onclick="alert('Saved!')">SAVE DATA</button>
+                        <button type="submit" class="btn-save">SAVE DATA</button>
                     </div>
                 }
             </form>
@@ -111,11 +149,30 @@
 
 @section Scripts {
     <script>
-        function toggleBtn(btn) {
-            if (btn.classList.contains('active')) {
-                btn.classList.remove('active');
-            } else {
-                btn.classList.add('active');
+        function toggleVibe(btn, vibeName) {
+
+            btn.classList.toggle('active');
+
+            const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
+            
+            const selectedVibes = Array.from(activeButtons).map(b => b.innerText.trim());
+            
+            document.getElementById('VibeTagsString').value = selectedVibes.join(',');
+        }
+
+        function changeAvatar() {
+            var img = document.getElementById('profileImage');
+
+            var currentPic = img.src;
+            var newUrl = prompt("ใส่ URL รูปภาพใหม่ของคุณที่นี่:");
+
+            if (newUrl !== null && newUrl.trim() !== "") {
+                img.src = newUrl.trim();
+                
+                var avatarInput = document.getElementById('avatarInput');
+                if (avatarInput) {
+                    avatarInput.value = newUrl.trim();
+                }
             }
         }
     </script>

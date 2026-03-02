@@ -2,6 +2,9 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GamerLFG.Models;
 using GamerLFG.Services;
+using MongoDB.Driver;
+using GamerLFG.service;
+using System.Security.Claims;
 
 namespace GamerLFG.Controllers;
 
@@ -94,6 +97,8 @@ public class UserController : Controller
 
         return Json(result);
     }
+    
+    private readonly MongoDBservice _mongoDBservice;
 
 
 // สร้าง URL พิเศษไว้สำหรับสลับบัญชีชั่วคราว
@@ -107,6 +112,70 @@ public class UserController : Controller
 
 
 
+    public UserController(MongoDBservice mongoDBservice)
+    {
+        _mongoDBservice = mongoDBservice;
+    }
 
+    [HttpGet]
+    public async Task<IActionResult> Profiles(string id)
+    {
+        if (string.IsNullOrEmpty(id)) 
+        {
+            id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+            if (string.IsNullOrEmpty(id)) return RedirectToAction("Login", "Auth");
+        }
 
+        var user = await _mongoDBservice.Users
+            .Find(u => u.Id == id)
+            .FirstOrDefaultAsync();
+
+        if (user == null) return NotFound();
+
+        var karmaRecords = await _mongoDBservice.KarmaHistories
+            .Find(k => k.TargetUserId == id)
+            .ToListAsync();
+
+        user.KarmaScore = karmaRecords.Sum(k => k.Score); 
+
+        return View(user);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateProfile(string id, string Username, string Bio, string Avatar,string GameLibraryString, string VibeTagsString, string discord, string steam, string twitch)
+    {
+        var user = await _mongoDBservice.Users.Find(u => u.Id == id).FirstOrDefaultAsync();
+        if (user == null) return NotFound();
+
+        user.Username = Username;
+        user.Avatar = Avatar;
+        user.Bio = Bio;
+        user.discord = discord;
+        user.steam = steam;
+        user.twitch = twitch;
+
+        if (!string.IsNullOrEmpty(GameLibraryString))
+        {
+            user.GameLibrary = GameLibraryString.Split(',')
+                .Select(s => s.Trim())
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList();
+        }
+
+        if (!string.IsNullOrEmpty(VibeTagsString))
+        {
+            user.VibeTags = VibeTagsString.Split(',')
+                .Select(v => v.Trim())
+                .ToList();
+        }
+        else
+        {
+            user.VibeTags = new List<string>();
+        }
+
+        await _mongoDBservice.Users.ReplaceOneAsync(u => u.Id == id, user);
+
+        return RedirectToAction("Profiles", new { id = id });
+    }
 }

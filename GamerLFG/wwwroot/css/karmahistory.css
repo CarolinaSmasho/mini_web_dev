@@ -34,6 +34,7 @@ body {
     background-color: #121212;
     border: 1px solid #555;
     padding: 25px;
+    border-radius: 15px;
 }
 
 .header-row {
@@ -70,6 +71,7 @@ h1 {
     padding: 15px;
     background: #090909;
     border: 1px solid #333;
+    border-radius: 15px;
 }
 
 .item-left {
@@ -86,6 +88,7 @@ h1 {
     justify-content: center;
     border: 1px solid #333;
     background: #1a1a1a;
+    border-radius: 5px;
 }
 
 .text-green { 
