@@ -1,0 +1,101 @@
+@model List<GamerLFG.Controllers.FriendRequestController.FriendRequestViewModel>
+
+@{
+    ViewData["Title"] = "Friend Request";
+}
+
+<link rel="stylesheet" href="~/css/friends_request.css" asp-append-version="true" />
+
+<h1>Friends Request</h1>
+<ul class="nav-tabs">
+    <li id="friends" class="rbx-tab"><a asp-controller="User" asp-action="Friends_list">
+        <span class="text-lead">Friends</span><span class="rbx-tab-subtitle"></span></a>
+    </li>
+    <li id="requests" class="rbx-tab active"><a asp-controller="FriendRequest" asp-action="FriendRequestList"><span
+        class="text-lead">Requests</span><span class="rbx-tab-subtitle"></span></a>
+    </li>
+</ul>
+
+<ul class="friend-cards">
+
+    @if (Model != null && Model.Count > 0)
+    {
+        @foreach (var friend in Model)
+        {
+            <li id="@friend.SenderId" class="list-item friend-card">
+                <div class="friend-card-container">
+                    <div class="friend-card-content">
+                        <div class="friend-card-fullbody" data-testid="friend-card-container"><a href="/users/69313896/profile"
+                                                                                                 class="friend-card-link" data-testid="friend-card-link"><span
+                            class="thumbnail-2d-container friend-card-image"><img class="" src="@friend.SenderAvatar"
+                                                                                  alt="" title=""></span></a>
+                            <div class="friend-status"></div>
+                        </div>
+                        <div class="friend-card-caption"><span>
+                            <div class="friend-name-container"><a href="/users/69313896/profile"
+                                                                      class="text-overflow friend-name">@friend.SenderName</a></div>
+                                <div class="friend-card-label"> @friend.SenderName </div>
+                                <p class="text-overflow friend-name">@friend.SentAt</p>
+                            </span>
+                        </div>
+                        <div class="friend-card-btns">
+                            <button type="button" onclick="ignoreRequest('@friend.RequestId', '@friend.SenderId')"
+                                    class="ignore-friend btn-secondary-md btn-min-width">
+                                Ignore
+                            </button>
+
+                            <button type="button" onclick="acceptRequest('@friend.RequestId', '@friend.SenderId')"
+                                    class="accept-friend btn-cta-md btn-min-width">
+                                Accept
+                            </button>
+                        </div>
+                    </li>
+                }
+            }
+    else
+            {
+                <p>ยังไม่มีคำขอเข้ามา</p>
+            }
+
+        </ul>
+
+        <script>
+            function acceptRequest(requestId, senderId) {
+
+                if (confirm("ยอมรับคำขอเป็นเพื่อน?")) {
+                    fetch(`/FriendRequest/Accept?requestId=${requestId}`, {
+                        method: 'POST'
+                    })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                alert("เพิ่มเพื่อนสำเร็จ!");
+                                let card = document.getElementById(senderId);
+                                if (card) card.remove();
+                            } else {
+                                alert("เกิดข้อผิดพลาด: " + result.message);
+                            }
+                        })
+                        .catch(err => console.error(err));
+                }
+            }
+
+            function ignoreRequest(requestId, senderId) {
+
+                if (confirm("ปฏิเสธคำขอนี้ใช่หรือไม่?")) {
+                    fetch(`/FriendRequest/Reject?requestId=${requestId}`, {
+                        method: 'POST'
+                    })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                let card = document.getElementById(senderId);
+                                if (card) card.remove();
+                            } else {
+                                alert("เกิดข้อผิดพลาด: " + result.message);
+                            }
+                        })
+                        .catch(err => console.error(err));
+                }
+            }
+        </script>

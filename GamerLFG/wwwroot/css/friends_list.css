@@ -8,6 +8,9 @@ h1 {
   border-radius: 10px;
   padding: 20px;
 }
+p {
+  color: white;
+}
 .nav-tabs {
   display: flex;
   width: 100%;
@@ -42,12 +45,14 @@ a:visited {
 .friends-filter {
   padding: 7px;
   margin-bottom: 20px;
+  /* display: flex; */
   width: fit-content;
   background-color: #292929;
 }
 
 .friends-filter-searchbar-input {
   background-color: #808080;
+  /* display: flex; */
 }
 .friends-filter-searchbar-input::placeholder {
   color: #ffa31a;

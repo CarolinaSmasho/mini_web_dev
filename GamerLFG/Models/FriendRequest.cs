@@ -7,10 +7,10 @@ public class FriendRequest
     public string Id { get; set; }
 
     [BsonRepresentation(BsonType.ObjectId)]
-    public string User1Id { get; set; }
+    public string UserSender { get; set; }
 
     [BsonRepresentation(BsonType.ObjectId)]
-    public string User2Id { get; set; }
+    public string UserReceiver { get; set; }
 
     public string Status { get; set; } // 'pending', 'accepted'
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

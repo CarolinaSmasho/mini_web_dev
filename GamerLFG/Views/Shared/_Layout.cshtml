@@ -127,36 +127,85 @@
     </div>
 
     <script>
-        function openUserModal(userId) {
-        // 1. ตั้งค่า Default ระหว่างรอโหลด
-        document.getElementById('modal-display-name').innerText = "Loading...";
-        document.getElementById('modal-username').innerText = "...";
+                function openUserMiniProfile(userId) {
+                    // 1. ตั้งค่า Default ระหว่างรอโหลด
+                    document.getElementById('mini-profile-display-name').innerText = "Loading...";
+                    document.getElementById('mini-profile-username').innerText = "...";
+                    let actionBtn = document.getElementById('mini-profile-action-btn');
+                    actionBtn.innerText = "Loading...";
+                    actionBtn.onclick = null;
+                    // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
+                    fetch(`/User/GetUserDetails?UserId=${userId}`)
+                        .then(response => {
+                            if (!response.ok) throw new Error("User not found");
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Data from API:", data);
+                            // 3. เอาข้อมูลที่ได้มาหยอดใส่ mini-profile
+                            document.getElementById('mini-profile-display-name').innerText = data.username;
+                            document.getElementById('mini-profile-username').innerText = data.username;
+                            document.getElementById('mini-profile-status').innerText = data.status;
+                            document.getElementById('mini-profile-bio').innerText = data.bio;
+                            if (data.isFriend) {
+                                actionBtn.innerText = "Delete Friend";
+                                actionBtn.style.backgroundColor = "#dc3545";
+                                actionBtn.style.color = "white";
 
-        // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
-        fetch(`/Home/GetUserDetails?id=${userId}`)
-        .then(response => {
-        if (!response.ok) throw new Error("User not found");
-        return response.json();
-        })
-        .then(data => {
-        // 3. เอาข้อมูลที่ได้มาหยอดใส่ Modal
-        document.getElementById('modal-display-name').innerText = data.displayName;
-        document.getElementById('modal-username').innerText = data.username;
-        document.getElementById('modal-status').innerText = data.status;
-        document.getElementById('modal-bio').innerText = data.bio;
+                                actionBtn.onclick = function () {
+                                    if (confirm(`ลบ ${data.username} ออกจากเพื่อน?`)) {
+                                        fetch(`/User/DeleteFriend?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                            .then(r => r.json())
+                                            .then(() => {
+                                                openUserMiniProfile(data.id)
+                                                let friendCard = document.getElementById(data.id);
 
-        // อัปเดตลิ้งก์ปุ่ม
-        document.getElementById('modal-profile-link').href = `/users/${data.id}/profile`;
+                                                if (friendCard) {
 
-        // 4. สั่งเปิด Modal
-        document.getElementById('global-user-modal-toggle').checked = true;
-        })
-        .catch(err => {
-        console.error(err);
-        alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
-        });
-        }
-    </script>
+                                                    friendCard.remove();
+
+                                                }
+
+
+
+                                            }
+                                            );
+
+                                    }
+                                };
+
+                            } else if (data.isPending) {
+                                actionBtn.innerText = "Cancel Request";
+                                actionBtn.style.backgroundColor = "#6c757d";
+                                actionBtn.style.color = "white";
+
+                                actionBtn.onclick = function () {
+                                    fetch(`/FriendRequest/Cancel?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                        .then(r => r.json())
+                                        .then(() => openUserMiniProfile(data.id));
+                                };
+
+                            } else {
+                                actionBtn.innerText = "Add Friend";
+                                actionBtn.style.backgroundColor = "#28a745";
+                                actionBtn.style.color = "white";
+
+                                actionBtn.onclick = function () {
+                                    fetch(`/FriendRequest/Send?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                        .then(r => r.json())
+                                        .then(() => openUserMiniProfile(data.id));
+                                };
+                            }
+                            document.getElementById('mini-profile-link').href = `/User/Profiles?id=${encodeURIComponent(data.id)}`;
+
+                            document.getElementById('global-user-mini-profile-toggle').checked = true;
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
+                        });
+                }
+            </script>
     @* Noti
     <script>
     document.addEventListener('DOMContentLoaded', function () {

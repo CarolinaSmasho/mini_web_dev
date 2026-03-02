@@ -1,6 +1,9 @@
 using GamerLFG.Models;
 using GamerLFG.service;
 using GamerLFG.Services;
+using MongoDB.Driver;
+using GamerLFG.Services.Interface;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using GamerLFG.Services.Interface;
 using MongoDB.Driver;using Microsoft.AspNetCore.Authentication.Cookies;
 using GamerLFG.Services.Interface;
@@ -20,6 +23,14 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 });
 builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login"; // ถ้ายังไม่ได้ Login ให้เด้งไปหน้านี้
+        options.LogoutPath = "/Auth/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // ให้จำ Login ไว้ 60 นาที
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ILobbyService, LobbyService>();
@@ -39,6 +50,9 @@ builder.Services.AddSession(options =>
 
 
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
+// --- เพิ่มส่วนนี้เข้าไป ---
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -82,6 +96,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseSession();          // ต้องอยู่ก่อน UseAuthorization
 app.UseAuthorization();
 

@@ -1,3 +1,4 @@
+@model List<GamerLFG.Models.User>
 @{
     ViewData["Title"] = "Friends List";
 }
@@ -8,105 +9,120 @@
 
 
 <ul class="nav-tabs">
-    <li id="friends" class="rbx-tab active"><a asp-controller="Friends" asp-action="Friends_list">
+    <li id="friends" class="rbx-tab active"><a asp-controller="User" asp-action="Friends_list">
         <span class="text-lead">Friends</span></a>
     </li>
-    <li id="requests" class="rbx-tab"><a asp-controller="Friends" asp-action="Friends_request"><span
+    <li id="requests" class="rbx-tab"><a asp-controller="FriendRequest" asp-action="FriendRequestList"><span
         class="text-lead">Requests</span></a>
     </li>
 </ul>
 
-        <div class="friends-filter">
-            <div class="friends-filter-searchbar-container">
-                <span class="icon-search"></span>
-                <input class="friends-filter-searchbar-input" type="text" placeholder="Search Users" value="">
-            </div>
-        </div>
+<div class="friends-filter">
+    <div class="friends-filter-searchbar-container">
+        <span class="icon-search"></span>
+        <input id="searchInput" class="friends-filter-searchbar-input" type="text" placeholder="Search Users">
+    </div>
+</div>
+
+<div id="searchResultsContainer" class="friend-card-containers">
+    <ul id="searchResultList" class="friend-cards">
+    </ul>
+</div>
 
 
-            <div class="friend-card-containers">
-                <ul class="friend-cards">
-                    <li id="7417146387" onclick="openUserModal('7417146387')" class="list-item friend-card">
-                        <div class="friend-card-container">
-                            <div class="friend-card-content">
-                                <div class="friend-card-fullbody"><a
-                                    href="/users/7417146387/profile" class="friend-card-link"
-                                    ><span class="friend-card-image"><img
-                                    class=""
-                                    src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-9EA88B00D33EEA35B275F701D0177CE6-Png/150/150/AvatarHeadshot/Webp/noFilter"
-                                    alt="" title=""></span></a>
-                                    <div class="avatar-status"></div>
-                                </div>
-                                <div class="friend-card-caption"><span>
-                                    <div class="avatar-name-container"><a href="/users/7417146387/profile"
-                                                                              class="text-overflow avatar-name">xldn</a></div>
-                                        <div class="friend-card-label"> qkrxldn </div>
-                                        <div class="friend-card-label">Offline</div>
-                                    </span></div>
-                                </div>
+<div id="friend_containers" class="friend-card-containers">
+    <ul class="friend-cards">
+
+        @if (Model != null && Model.Count > 0)
+        {
+            @foreach (var friend in Model)
+            {
+                <li id="@friend.Id" onclick="openUserMiniProfile('@friend.Id')" class="list-item friend-card">
+                    <div class="friend-card-container">
+                        <div class="friend-card-content">
+                            <div class="friend-card-fullbody">
+                                <a href="/users/@friend.Id/profile" class="friend-card-link">
+                                    <span class="friend-card-image">
+                                        <img src="@friend.Avatar" alt="@friend.Username" title="@friend.Username">
+                                    </span>
+                                </a>
+                                <div class="avatar-status"></div>
                             </div>
-                        </li>
 
-                        <li id="7417146387" onclick="openUserModal('7417146387')" class="list-item friend-card">
+                            <div class="friend-card-caption">
+                                <span>
+                                    <div class="avatar-name-container">
+                                        <a href="/users/@friend.Id/profile" class="text-overflow avatar-name">
+                                            @friend.Username
+                                        </a>
+                                    </div>
+                                    <div class="friend-card-label">
+                                        @(friend.VibeTags.Any() ? friend.VibeTags.First() : "Offline")
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <p>ยังไม่มีเพื่อนในรายชื่อ</p>
+        }
+
+    </ul>
+</div>
+
+<script>
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+        let keyword = e.target.value;
+
+        if (keyword.trim() === '') {
+            document.getElementById('searchResultList').innerHTML = '';
+            document.getElementById('friend_containers').style.display = "block"
+            return;
+        }
+
+        // ยิง Fetch API ไปหา Controller ของเรา
+        fetch(`/User/SearchAPI?keyword=${encodeURIComponent(keyword)}`)
+            .then(response => response.json())
+            .then(users => {
+                let resultHtml = '';
+
+                if (users.length === 0) {
+                    resultHtml = '<li><p>ไม่พบผู้ใช้ที่ค้นหา</p></li>';
+                    document.getElementById('friend_containers').style.display = "None"
+                } else {
+                    document.getElementById('friend_containers').style.display = "None"
+                    users.forEach(user => {
+                        resultHtml += `
+                        <li id="${user.id}" onclick="openUserMiniProfile('${user.id}')" class="list-item friend-card">
                             <div class="friend-card-container">
                                 <div class="friend-card-content">
-                                    <div class="avatar friend-card-fullbody" data-testid="friend-card-container"><a
-                                        href="/users/7417146387/profile" class="friend-card-link"
-                                        data-testid="friend-card-link"><span class="thumbnail-2d-container friend-card-image "><img
-                                        class=""
-                                        src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-9EA88B00D33EEA35B275F701D0177CE6-Png/150/150/AvatarHeadshot/Webp/noFilter"
-                                        alt="" title=""></span></a>
-                                        <div class="avatar-status"></div>
+                                    <div class="friend-card-fullbody">
+                                        <a href="/users/${user.id}/profile" class="friend-card-link">
+                                            <span class="friend-card-image">
+                                                <img src="${user.avatar || 'https://via.placeholder.com/150'}" alt="${user.username}">
+                                            </span>
+                                        </a>
                                     </div>
-                                    <div class="friend-card-caption"><span>
-                                        <div class="avatar-name-container"><a href="/users/7417146387/profile"
-                                                                                  class="text-overflow avatar-name">xldn</a></div>
-                                            <div class="friend-card-label"> qkrxldn </div>
-                                            <div class="friend-card-label">Offline</div>
-                                        </span></div>
+                                    <div class="friend-card-caption">
+                                        <span>
+                                            <div class="avatar-name-container">
+                                                <a href="/users/${user.id}/profile" class="text-overflow avatar-name">${user.username}</a>
+                                            </div>
+                                            <div class="friend-card-label">${user.bio || 'ไม่มีข้อมูลแนะนำตัว'}</div>
+                                        </span>
                                     </div>
                                 </div>
-                            </li>
-                            <li id="2895051752" onclick="openUserModal('2895051752')" class="list-item friend-card">
-                                <div class="friend-card-container">
-                                    <div class="friend-card-content">
-                                        <div class="avatar friend-card-fullbody" data-testid="friend-card-container"><a
-                                            href="/users/2895051752/profile" class="friend-card-link"
-                                            data-testid="friend-card-link"><span class="thumbnail-2d-container friend-card-image "><img
-                                            class=""
-                                            src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-E6C51E685A9221CE8B1C6A8AB7CFC520-Png/150/150/AvatarHeadshot/Webp/noFilter"
-                                            alt="" title=""></span></a>
-                                            <div class="avatar-status"></div>
-                                        </div>
-                                        <div class="friend-card-caption"><span>
-                                            <div class="avatar-name-container"><a href="/users/2895051752/profile"
-                                                                                      class="text-overflow avatar-name">IloveMEOWMUK</a></div>
-                                                <div class="text-overflow friend-card-label"> IloveAUGAIG </div>
-                                                <div class="friend-card-label">Offline</div>
-                                            </span></div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li id="1172879974" onclick="openUserModal('1172879974')" class="list-item friend-card">
-                                    <div class="friend-card-container">
-                                        <div class="friend-card-content">
-                                            <div class="avatar friend-card-fullbody" data-testid="friend-card-container"><a
-                                                href="/users/1172879974/profile" class="friend-card-link"
-                                                data-testid="friend-card-link"><span class="thumbnail-2d-container friend-card-image "><img
-                                                class=""
-                                                src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-9102217385B597094DC692B076927682-Png/150/150/AvatarHeadshot/Webp/noFilter"
-                                                alt="" title=""></span></a>
-                                                <div class="avatar-status"></div>
-                                            </div>
-                                            <div class="friend-card-caption"><span>
-                                                <div class="avatar-name-container"><a href="/users/1172879974/profile"
-                                                                                          class="text-overflow avatar-name">Sleep</a></div>
-                                                    <div class="text-overflow friend-card-label"> SpiritaulSniping </div>
-                                                    <div class="friend-card-label">Offline</div>
-                                                </span></div>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                </ul>
                             </div>
+                        </li>`;
+                    });
+                }
+
+                document.getElementById('searchResultList').innerHTML = resultHtml;
+            })
+            .catch(error => console.error('Error searching users:', error));
+    });
+</script>
