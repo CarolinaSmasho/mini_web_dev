@@ -40,13 +40,14 @@
                         <a asp-controller="Auth" asp-action="Logout"
                                onclick="return confirm('Ayo bro are you sure you wanna logout?')"><button
                             class="logout-nav-button"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></a>
+                            <a asp-controller="User" asp-action="Friends_list"><button class="login-nav-button">Friends</button></a>
                         }
                 else
                         {
                             <a asp-controller="Auth" asp-action="Login"><button class="login-nav-button">Log in</button></a>
                         }
 
-                        <a asp-controller="User" asp-action="Friends_list"><button class="login-nav-button">Friends</button></a>
+
                         @* Notifications *@
                         <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
                             <div class="notification-container-link" style="position: relative; display: inline-block;">
@@ -149,8 +150,8 @@
                         .then(data => {
                             console.log("Data from API:", data);
                             // 3. เอาข้อมูลที่ได้มาหยอดใส่ mini-profile
-                            document.getElementById('mini-profile-display-name').innerText = data.username;
-                            document.getElementById('mini-profile-username').innerText = data.username;
+                            document.getElementById('mini-profile-display-name').innerText = data.name;
+                            document.getElementById('mini-profile-username').innerText = data.name;
                             document.getElementById('mini-profile-status').innerText = data.status;
                             document.getElementById('mini-profile-bio').innerText = data.bio;
                             if (data.isFriend) {
