@@ -52,6 +52,16 @@ public class FriendRequestController : Controller
         if (success) return Json(new { success = true, message = "ปฏิเสธคำขอและลบทิ้งแล้ว" });
         return BadRequest(new { success = false, message = "เกิดข้อผิดพลาดในการลบคำขอ" });
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Cancel(string targetUserId)
+    {
+        string currentUserId = Request.Cookies["CurrentUserId"] ?? "65d8a0b1c2d3e4f5a6b7c8d1"; 
+        bool success = await _friendRequestService.CancelRequestAsync(currentUserId, targetUserId);
+        
+        if (success) return Json(new { success = true, message = "ยกเลิกคำขอแล้ว" });
+        return BadRequest(new { success = false, message = "ไม่สามารถยกเลิกได้" });
+    }
     
     [HttpGet]
     public async Task<IActionResult> FriendRequestList()
@@ -81,7 +91,6 @@ public class FriendRequestController : Controller
             }
         }
 
-        // 🟢 4. จุดไคลแม็กซ์! เปลี่ยนจาก Json เป็น View และโยนกล่องข้อมูลไปให้มัน
         return View(requestViewModels);
     }
 

@@ -123,18 +123,37 @@
                         actionBtn.style.color = "white";
 
                         actionBtn.onclick = function () {
-                            alert(`ลบ ${data.username} ออกจากเพื่อน`);
-                            fetch(`/User/DeleteFriend?targetUserId=${encodeURIComponent(data.id)}`, {
-                                method: 'POST' // 🟢 สำคัญมาก: ต้องบอกว่าเป็น POST
-                            }).then(response => response.json())
-                                .then(result => {
-                                    openUserMiniProfile(data.id);
-                                    let friendCard = document.getElementById(data.id);
-                                    if (friendCard) {
-                                        friendCard.remove(); 
+                            if (confirm(`ลบ ${data.username} ออกจากเพื่อน?`)) {
+                                fetch(`/User/DeleteFriend?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                    .then(r => r.json())
+                                    .then(() => {
+                                        openUserMiniProfile(data.id)
+                                        let friendCard = document.getElementById(data.id);
+
+                                        if (friendCard) {
+
+                                            friendCard.remove();
+
+                                        }
+
+
+
                                     }
-                                })
-                        }
+                                    );
+
+                            }
+                        };
+
+                    } else if (data.isPending) {
+                        actionBtn.innerText = "Cancel Request";
+                        actionBtn.style.backgroundColor = "#6c757d";
+                        actionBtn.style.color = "white";
+
+                        actionBtn.onclick = function () {
+                            fetch(`/FriendRequest/Cancel?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                .then(r => r.json())
+                                .then(() => openUserMiniProfile(data.id));
+                        };
 
                     } else {
                         actionBtn.innerText = "Add Friend";
@@ -142,19 +161,13 @@
                         actionBtn.style.color = "white";
 
                         actionBtn.onclick = function () {
-                            alert(`กำลังส่งคำขอ ${data.username} เป็นเพื่อน`);
-                            fetch(`/FriendRequest/Send?targetUserId=${encodeURIComponent(data.id)}`, {
-                                method: 'POST' // 🟢 สำคัญมาก: ต้องบอกว่าเป็น POST
-                            }).then(response => response.json())
-                                .then(result => {
-                                    console.log("Add Friend Result:", result);
-                                    openUserMiniProfile(data.id);
-                                })
+                            fetch(`/FriendRequest/Send?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                .then(r => r.json())
+                                .then(() => openUserMiniProfile(data.id));
                         };
                     }
-                    document.getElementById('mini-profile-link').href = `/users/${data.id}/profile`;
+                    document.getElementById('mini-profile-link').href = `/User/Profiles?userId=${encodeURIComponent(data.id)}`;
 
-                    // 4. สั่งเปิด mini-profile
                     document.getElementById('global-user-mini-profile-toggle').checked = true;
                 })
                 .catch(err => {

@@ -56,7 +56,6 @@
                                             @friend.Username
                                         </a>
                                     </div>
-                                    <div class="friend-card-label"> @friend.Username </div>
                                     <div class="friend-card-label">
                                         @(friend.VibeTags.Any() ? friend.VibeTags.First() : "Offline")
                                     </div>
@@ -93,6 +92,7 @@
 
                 if (users.length === 0) {
                     resultHtml = '<li><p>ไม่พบผู้ใช้ที่ค้นหา</p></li>';
+                    document.getElementById('friend_containers').style.display = "None"
                 } else {
                     document.getElementById('friend_containers').style.display = "None"
                     users.forEach(user => {

@@ -60,7 +60,6 @@
         </ul>
 
         <script>
-            // ฟังก์ชันกดยอมรับเพื่อน
             function acceptRequest(requestId, senderId) {
 
                 if (confirm("ยอมรับคำขอเป็นเพื่อน?")) {
@@ -71,7 +70,6 @@
                         .then(result => {
                             if (result.success) {
                                 alert("เพิ่มเพื่อนสำเร็จ!");
-                                // ลบการ์ดใบนี้ทิ้งจากหน้าจอแบบเนียนๆ
                                 let card = document.getElementById(senderId);
                                 if (card) card.remove();
                             } else {
@@ -82,7 +80,6 @@
                 }
             }
 
-            // ฟังก์ชันกดปฏิเสธ/ลบคำขอ
             function ignoreRequest(requestId, senderId) {
 
                 if (confirm("ปฏิเสธคำขอนี้ใช่หรือไม่?")) {
@@ -92,7 +89,6 @@
                         .then(response => response.json())
                         .then(result => {
                             if (result.success) {
-                                // ไม่ต้อง alert กวนใจ ลบทิ้งเงียบๆ เลย
                                 let card = document.getElementById(senderId);
                                 if (card) card.remove();
                             } else {

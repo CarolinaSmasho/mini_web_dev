@@ -8,10 +8,12 @@ namespace GamerLFG.Controllers;
 public class UserController : Controller
 {
     private readonly IUserService _userService;
+    private readonly IFriendRequestService _friendRequestService;
 
     public UserController(IUserService userService, IFriendRequestService friendRequestService)
     {
         _userService = userService;
+        _friendRequestService = friendRequestService;
     }
         
     public async Task<IActionResult> Friends_list()
@@ -73,6 +75,12 @@ public class UserController : Controller
         }
         bool isAlreadyFriend = me?.FriendIds?.Contains(userId) ?? false;
        
+        bool isPendingRequest = false;
+        if (!isAlreadyFriend)
+        {
+            isPendingRequest = await _friendRequestService.HasPendingRequestAsync(currentUserId, userId);
+        }
+
         var result = new 
         {
             id = user.Id,
@@ -80,7 +88,8 @@ public class UserController : Controller
             bio = user.Bio,
             avatar = user.Avatar,
             status = user.VibeTags.FirstOrDefault() ?? "Online",
-            isFriend = isAlreadyFriend
+            isFriend = isAlreadyFriend,
+            isPending = isPendingRequest
         };
 
         return Json(result);

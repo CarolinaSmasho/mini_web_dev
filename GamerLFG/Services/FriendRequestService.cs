@@ -65,11 +65,11 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> RejectRequestAsync(string requestId)
-{
-    // คำสั่ง DeleteOneAsync จะลบ Object แถวนั้นออกจาก Database ทิ้งไปเลย
-    var result = await _requestCollection.DeleteOneAsync(r => r.Id == requestId);
-    return result.DeletedCount > 0;
-}
+        {
+            // คำสั่ง DeleteOneAsync จะลบ Object แถวนั้นออกจาก Database ทิ้งไปเลย
+            var result = await _requestCollection.DeleteOneAsync(r => r.Id == requestId);
+            return result.DeletedCount > 0;
+        }
 
         public async Task<List<FriendRequest>> GetPendingRequestsAsync(string userId)
         {
@@ -78,6 +78,27 @@ namespace GamerLFG.Services
                          Builders<FriendRequest>.Filter.Eq(r => r.Status, "pending");
                          
             return await _requestCollection.Find(filter).ToListAsync();
+        }
+
+        public async Task<bool> HasPendingRequestAsync(string senderId, string receiverId)
+        {
+            var request = await _requestCollection.Find(r => 
+                r.UserSender == senderId && 
+                r.UserReceiver == receiverId && 
+                r.Status == "pending"
+            ).FirstOrDefaultAsync();
+            
+            return request != null;
+        }
+
+        public async Task<bool> CancelRequestAsync(string senderId, string receiverId)
+        {
+            var result = await _requestCollection.DeleteOneAsync(r => 
+                r.UserSender == senderId && 
+                r.UserReceiver == receiverId && 
+                r.Status == "pending"
+            );
+            return result.DeletedCount > 0;
         }
     }
 }

@@ -16,5 +16,9 @@ namespace GamerLFG.Services
         
         // 3. ดึงรายการคำขอที่รอการยืนยัน (เอาไว้โชว์หน้ากระดิ่งแจ้งเตือน)
         Task<List<FriendRequest>> GetPendingRequestsAsync(string userId);
+
+        Task<bool> CancelRequestAsync(string senderId, string receiverId);
+
+        Task<bool> HasPendingRequestAsync(string senderId, string receiverId);
     }
 }
