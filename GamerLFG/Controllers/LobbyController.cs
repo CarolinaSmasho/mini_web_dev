@@ -62,12 +62,13 @@ namespace GamerLFG.Controllers
             return View(model);  
         }
         [HttpPost]
-        [ValidateAntiForgeryToken] // ถ้าใช้ตัวนี้ ใน Form .cshtml ต้องมี <form>...</form> ปกติ
-        public async Task<IActionResult> Create_lobby(CreateLobbyDTO model) // เอา [FromBody] ออก
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create_lobby(CreateLobbyDTO model)
         { 
-            Console.Write(model);
+            // Console.Write(model);
             if (ModelState.IsValid)
             {
+                Console.WriteLine("Model is Valid");
                 var (success, message) = await _lobbyService.CreateLobbyAsync(model);
                 if (!success)
                 {
@@ -77,6 +78,8 @@ namespace GamerLFG.Controllers
                 }
                 return RedirectToAction("Index","Home");
             }
+            Console.Write(model);
+
             return View(model);
         }
 

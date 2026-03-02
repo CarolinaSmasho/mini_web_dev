@@ -28,7 +28,8 @@ namespace GamerLFG.Services
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
-                MaxPlayers = lob.MaxPlayers
+                MaxPlayers = lob.MaxPlayers,
+                isRecuiting = lob.IsRecruiting
                 
             }).ToList();
             var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
@@ -85,6 +86,12 @@ namespace GamerLFG.Services
         public async Task<(bool success, string message)> CreateLobbyAsync(CreateLobbyDTO newLobby) 
         {
             try {
+                var timeValid = newLobby.TimeValidation();
+                if (!timeValid.valid)
+                {
+
+                    return (false,timeValid.erMessage);
+                }
                 var lobby = newLobby.ToEntity();
                 
                 // Debug ดูว่า Entity พร้อมใช้งานไหม
@@ -95,6 +102,7 @@ namespace GamerLFG.Services
                 // ถ้ามาถึงตรงนี้ได้ แสดงว่าคำสั่งส่งออกไปสำเร็จ
                 return (true, "OK");
             }
+            
             catch (MongoException ex) {
                 // ดัก Error เฉพาะจาก MongoDB
                 Console.WriteLine($"MongoDB Error: {ex.Message}");

@@ -4,6 +4,7 @@ using GamerLFG.Models;
 using System.Text.Json;
 using System.Linq;
 using MongoDB.Bson;
+using System.Runtime.CompilerServices;
 namespace GamerLFG.Services.Interface.DTOs
 {
     public class ShowLobbyDTO
@@ -31,18 +32,20 @@ namespace GamerLFG.Services.Interface.DTOs
         [Required(ErrorMessage = "กรุณาระบุชื่อเกม")]
         public string Game { get; set; }
 
+        [Required(ErrorMessage = "กรุณาใส่รายละเอียด (Description อะ)")]
         public string Description { get; set; }//
         
         public string HostId {get;set;}
         public string HostName {get;set;}
-        public string Picture { get; set; } //
-
+        public string Picture { get; set; } 
+        = "https://pbs.twimg.com/profile_images/1871124858840752128/pLV1ZYMU_400x400.jpg"//
+;
         [Required(ErrorMessage = "กรุณาใส่ลิงก์ Discord เพื่อใช้สื่อสาร")]
         [Url(ErrorMessage = "รูปแบบลิงก์ไม่ถูกต้อง")]
         public string DiscordLink { get; set; }
 
         // Tags สำหรับเลือกแนวการเล่น เช่น "Chill", "Serious"
-        public List<string> Moods { get; set; } = new(); //
+        public List<string> Moods { get; set;} = new(); //
 
         // ตำแหน่งที่ต้องการ เช่น "Tank", "Healer"
         public List<string> Roles { get; set; } = new(); //
@@ -61,15 +64,40 @@ namespace GamerLFG.Services.Interface.DTOs
 
         // หมายเหตุ: Start/End Recruiting อาจจะตั้งค่า Default 
         // หรือรับมาจากหน้าฟอร์มก็ได้ แล้วแต่การออกแบบ UI ของคุณ
+        [Required(ErrorMessage = "กรุณาระบุเวลาเริ่มสมัครกิจกรรม")]
         public DateTime StartRecruiting { get; set; }
+        [Required(ErrorMessage = "กรุณาระบุเวลาสิ้นสุดรับสมัครกิจกรรม")]
         public DateTime EndRecruiting { get; set; }
 
+        public (bool valid, string erMessage) TimeValidation()
+        {   
+            DateTime minAllowedTime = DateTime.UtcNow.AddMinutes(10);
+            if(this.StartRecruiting < this.EndRecruiting )
+            {
+                return (false, "เวลาเริ่มรับสมัครต้องก่อนเวลาปิดรับสมัคร");
+            }
+            if(this.StartRecruiting < minAllowedTime)
+            {
+                return (false,"เวลาเริ่ม Recuiting ต้องไม่เป็นอดีต");
+            
+            }
+            if(this.StartEvent < this.EndRecruiting)
+            {
+                return (false,"เวลา StartEvent ต้องมากกว่าเวลา EndRecuituing");
+            }
+            if(this.StartEvent >= this.EndEvent )
+            {
+                return (false,"เวลา StartEvent ต้องไม่มากกว่าหรือเท่ากับเวลา EndEvent");
+            }
+            return (true,"Time is Valid");
+        }
         public Lobby ToEntity()
         {
-            // 1. ดึง JSON string ออกมาจาก Array ตัวแรก
-            string jsonContent = this.Roles.FirstOrDefault();
+            // Console.WriteLine(this.Roles);
+            string jsonContent = this.Roles?.FirstOrDefault();
+            Console.WriteLine(jsonContent);
             List<string> rawRoles = new List<string>();
-            if (!string.IsNullOrEmpty(jsonContent))
+            if (!string.IsNullOrEmpty(jsonContent) && jsonContent != "[]")
             {
                 // 2. Parse ก้อน JSON string นั้น
                 using JsonDocument doc = JsonDocument.Parse(jsonContent);
@@ -78,9 +106,14 @@ namespace GamerLFG.Services.Interface.DTOs
                rawRoles = doc.RootElement.EnumerateArray()
                     .Select(item => item.GetRawText())
                     .ToList();
-                
+
 
             }
+            else
+            {
+                rawRoles = new List<string> { $"{{\"label\": \"All Class\", \"quantity\": {this.MaxPlayers}}}"};
+            }
+            // Console.WriteLine(this.Moods.GetType());
             return new Lobby
             {
                 

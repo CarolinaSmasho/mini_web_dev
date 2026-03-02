@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "New Lobby";
-    string[] Moods = {"Chil","Hardcode","No Toxic","Toxic","God"};
+    string[] Moods = {"Toxic","God","Chil","NoToxic","Hardcode"};
     string[] Games = { 
     "Elden Ring", 
     "Monster Hunter: World", 
@@ -99,10 +99,10 @@
             
         </div>
         <div class="assign-role">
-           Choose your Role (Default = อะไรก็ได้)
+           Choose your Role (Default = อะไรก็ได้ = All Class)
            
            <div class=moods id="host-role-display">
-            <input type="radio" name="HostRole" value="default" class="check-box" id="default">
+            <input type="radio" name="HostRole" value="All Class" class="check-box" id="default">
             <label for="default" class="mood-label">Default</label>
            </div>
 
@@ -165,7 +165,7 @@
              
         </div>
 
-        <button class="orange-button">
+        <button class="orange-button" onclick="updateHiddenInput()">
             CREATE LOBBY
         </button>
     </form>

@@ -67,10 +67,20 @@
                     <a asp-controller="Auth" asp-action="Login"><button class="orange-button">Log In</button></a>
                 }
                 
-                <a asp-controller="User" asp-action="Profiles"><button class="orange-button">Profile</button></a>
-                
+                <a asp-controller="User" asp-action="Profiles">
+                    <button class="orange-button">Profile</button>
+                </a>
+
+                <a asp-controller="User" asp-action="Friends_list">
+                    <button class="orange-button">Friends</button>
+                </a>
+
+                <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
                 <button class="orange-button">Notics</button>
-                <button class="orange-button">Create Lobby</button>
+                </a>
+                <a asp-controller="Lobby" asp-action="Create_lobby">
+                    <button class="orange-button">Create Lobby</button>
+                </a>
             </div>
             
         </div> 
@@ -88,7 +98,6 @@
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 

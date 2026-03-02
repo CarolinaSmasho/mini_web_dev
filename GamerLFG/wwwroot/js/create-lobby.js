@@ -115,6 +115,8 @@ function removeItem(id) {
 
 function updateHiddenInput() {
     document.getElementById("ItemsData").value = JSON.stringify(itemsArray);
+    // const localInput = document.getElementById("myDateTime").value; // "2026-03-02T20:48"
+    
 
 }
 
@@ -135,3 +137,22 @@ const addRoleToHost = (newRole) => {
     hostDiv.appendChild(item);
     hostDiv.appendChild(inputLabel);
 }
+
+// function validateLobbyData() {
+//     const maxPlayer = parseInt(document.getElementById("amountPlayer").value);
+    
+//     // ตรวจสอบว่ามี Role ใน itemsArray หรือยัง
+//     if (itemsArray.length === 0) {
+//         alert("ต้องเพิ่มอย่างน้อย 1 Role ก่อนสร้าง Lobby นะครับ!");
+//         return false;
+//     }
+
+//     // ตรวจสอบจำนวนผู้เล่นรวม
+//     let totalAssigned = itemsArray.reduce((sum, item) => sum + item.quantity, 0);
+//     if (totalAssigned > maxPlayer) {
+//         alert("จำนวนผู้เล่นใน Role รวมกันเกินจำนวน Max Player!");
+//         return false;
+//     }
+
+//     return true;
+// }
