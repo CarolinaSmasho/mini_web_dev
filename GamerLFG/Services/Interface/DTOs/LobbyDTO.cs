@@ -94,9 +94,11 @@ namespace GamerLFG.Services.Interface.DTOs
         public Lobby ToEntity()
         {
             // Console.WriteLine(this.Roles);
-
-
+            Console.WriteLine("      start    ");
+            Console.WriteLine(this.Roles);
+            Console.WriteLine("      end       ");
             string jsonContent = this.Roles?.FirstOrDefault();
+            
             List<LobbyRole> lobbyRoles = new List<LobbyRole>();
 
             if (!string.IsNullOrEmpty(jsonContent) && jsonContent != "[]")
