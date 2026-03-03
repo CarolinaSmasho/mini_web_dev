@@ -147,6 +147,12 @@ grid-auto-columns: minmax(90px, auto);
     display: flex;  
     justify-content: space-between;
 }
+.icon{
+    display: grid;
+    grid-template-columns: repeat(8, minmax(27px, 1fr));
+
+
+}
 .game-pic {
     width: 100%;       /* กำหนดให้ container กว้างเท่ากับ Card */
     overflow: hidden;  /* กันส่วนเกินหลุดออกมา (เผื่อไว้) */

@@ -72,7 +72,7 @@ function addToDOM() {
 
 
     if(roleIn.value == ""){
-        roleIn.value="All Class"
+        roleIn.value="Others"
     }
     const newItem = {
         id: Date.now(),

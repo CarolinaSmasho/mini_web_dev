@@ -50,7 +50,7 @@ namespace GamerLFG.Services.Interface.DTOs
 
         /// <summary>Role slots with quotas, bound from form via Roles[i].Name / Roles[i].Quantity.</summary>
         public List<string> Roles { get; set; } = new();
-        public string HostRole { get; set; } = "All Class";
+        public string HostRole { get; set; } = "Others";
 
         [Required]
         [Range(2, 100, ErrorMessage = "จำนวนผู้เล่นต้องอยู่ระหว่าง 2 - 100 คน")]
@@ -94,9 +94,9 @@ namespace GamerLFG.Services.Interface.DTOs
         public Lobby ToEntity()
         {
             // Console.WriteLine(this.Roles);
-            Console.WriteLine("      start    ");
-            Console.WriteLine(this.Roles);
-            Console.WriteLine("      end       ");
+            // Console.WriteLine("      start    ");
+            // Console.WriteLine(this.Roles);
+            // Console.WriteLine("      end       ");
             string jsonContent = this.Roles?.FirstOrDefault();
             
             List<LobbyRole> lobbyRoles = new List<LobbyRole>();
@@ -114,7 +114,8 @@ namespace GamerLFG.Services.Interface.DTOs
             }
             else
             {
-                lobbyRoles.Append(new LobbyRole {
+                // Console.WriteLine("             iam in              ");
+                lobbyRoles.Add(new LobbyRole {
                         Name = "Others",
                         Quantity = this.MaxPlayers
                     });
@@ -127,7 +128,7 @@ namespace GamerLFG.Services.Interface.DTOs
                 Game = this.Game, //
                 Description = this.Description, //
                 HostId = this.HostId,
-                // HostName = this.HostName,
+                HostName = this.HostName,
                 Picture = this.Picture, //
                 DiscordLink = this.DiscordLink, //
                 Moods = this.Moods, //

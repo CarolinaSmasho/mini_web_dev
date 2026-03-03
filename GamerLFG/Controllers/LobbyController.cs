@@ -6,15 +6,20 @@ using GamerLFG.Services.Interface.DTOs;
 using System.Text.Json;
 using GamerLFG.Services.Interface; // สำหรับ ASP.NET Core
 using System.Security.Claims;
+using GamerLFG.service;
+using MongoDB.Driver;
 namespace GamerLFG.Controllers
 {   
     
+
     public class LobbyController : Controller
     {
         private readonly ILobbyService _lobbyService;
-        public LobbyController(ILobbyService lobbyService)
+        public LobbyController(ILobbyService lobbyService,MongoDBservice mongoDBservice)
         {
             _lobbyService = lobbyService;
+            _mongoDBservice = mongoDBservice;
+
         }
         public async Task<IActionResult> Details(string id)
         {
@@ -24,6 +29,7 @@ namespace GamerLFG.Controllers
             return View(viewModel);
         }
 // ยังไม่ชัวร์
+        private readonly MongoDBservice _mongoDBservice;
         public async Task<IActionResult> Index()
         {
             var userId = HttpContext.Session.GetString("UserId");
@@ -256,16 +262,24 @@ namespace GamerLFG.Controllers
 
 
         [HttpGet]
-            public IActionResult Create_lobby()
+            public async Task<IActionResult> Create_lobby()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = User.Identity?.Name;
-
+            var user = await _mongoDBservice.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            var userName = user.Name;
+            Console.WriteLine(userName);
             if (userId == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
-            var model = new CreateLobbyDTO { HostId = userId ,HostName = userName};
+            var model = new CreateLobbyDTO();
+            model.HostId = userId;
+            model.HostName = userName;
+            model.StartRecruiting = DateTime.Now;
+            model.EndRecruiting = DateTime.Now.AddDays(1); // ตัวอย่าง: ให้สิ้นสุดพรุ่งนี้
+            model.StartEvent = DateTime.Now.AddDays(2);
+            model.EndEvent = DateTime.Now.AddDays(2).AddHours(3);
+
             return View(model);  
         }
         [HttpPost]
