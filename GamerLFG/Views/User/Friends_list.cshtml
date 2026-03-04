@@ -19,7 +19,6 @@
 
 <div class="friends-filter">
     <div class="friends-filter-searchbar-container">
-        <span class="icon-search"></span>
         <input id="searchInput" class="friends-filter-searchbar-input" type="text" placeholder="Search Users">
     </div>
 </div>
@@ -43,7 +42,7 @@
                             <div class="friend-card-fullbody">
                                 <a href="/users/@friend.Id/profile" class="friend-card-link">
                                     <span class="friend-card-image">
-                                        <img src="@friend.Avatar" alt="@friend.Username" title="@friend.Username">
+                                        <img src="@friend.Avatar" alt="@friend.Name" title="@friend.Name">
                                     </span>
                                 </a>
                                 <div class="avatar-status"></div>
@@ -103,14 +102,14 @@
                                     <div class="friend-card-fullbody">
                                         <a href="/users/${user.id}/profile" class="friend-card-link">
                                             <span class="friend-card-image">
-                                                <img src="${user.avatar || 'https://via.placeholder.com/150'}" alt="${user.username}">
+                                                <img src="${user.avatar || 'https://via.placeholder.com/150'}" alt="${user.name}">
                                             </span>
                                         </a>
                                     </div>
                                     <div class="friend-card-caption">
                                         <span>
                                             <div class="avatar-name-container">
-                                                <a href="/users/${user.id}/profile" class="text-overflow avatar-name">${user.username}</a>
+                                                <a href="/users/${user.id}/profile" class="text-overflow avatar-name">${user.name}</a>
                                             </div>
                                             <div class="friend-card-label">${user.bio || 'ไม่มีข้อมูลแนะนำตัว'}</div>
                                         </span>
