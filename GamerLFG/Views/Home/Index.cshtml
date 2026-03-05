@@ -8,7 +8,8 @@
 
 @{
     List<ShowLobbyDTO>? MyLobby = Model.MyLobbies;
-    List<ShowLobbyDTO>? OtherLobby = Model.OtherLobbies;
+    List<ShowLobbyDTO>? OtherLobby = new List<ShowLobbyDTO>();
+    OtherLobby.AddRange(Model.OtherLobbies);
 }
 <link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -166,6 +167,12 @@
                 </div>
             }  
               
+            </div>
+
+            <div class="add-lobby" onclick="giveMeMore()">
+                <i class="fa fa-plus-circle fa-2x"></i>
+                <p>More</p>
+                <input type="hidden" id="last-lob" value="@OtherLobby[OtherLobby.Count-1].Id">
             </div>
 
         </div>

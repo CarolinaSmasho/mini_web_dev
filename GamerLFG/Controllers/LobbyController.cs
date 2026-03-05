@@ -23,7 +23,11 @@ namespace GamerLFG.Controllers
         }
         public async Task<IActionResult> Details(string id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);;
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            };
             var viewModel = await _lobbyService.GetLobbyDetailsAsync(id, currentUserId);
             if (viewModel == null) return NotFound();
             return View(viewModel);
@@ -198,9 +202,14 @@ namespace GamerLFG.Controllers
         [HttpGet]
         public async Task<IActionResult> EditMission(string id)
         {
-            var currentUserId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(currentUserId))
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null)
+            {
                 return RedirectToAction("Login", "Auth");
+            };
+            // var currentUserId = HttpContext.Session.GetString("UserId");
+            // if (string.IsNullOrEmpty(currentUserId))
+            //     return RedirectToAction("Login", "Auth");
 
             var lobby = await _lobbyService.GetLobbyByIdAsync(id);
             if (lobby == null) return NotFound();
@@ -265,13 +274,14 @@ namespace GamerLFG.Controllers
             public async Task<IActionResult> Create_lobby()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _mongoDBservice.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
-            var userName = user.Name;
-            Console.WriteLine(userName);
             if (userId == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
+            var user = await _mongoDBservice.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            var userName = user.Name;
+            Console.WriteLine(userName);
+            
             var model = new CreateLobbyDTO();
             model.HostId = userId;
             model.HostName = userName;

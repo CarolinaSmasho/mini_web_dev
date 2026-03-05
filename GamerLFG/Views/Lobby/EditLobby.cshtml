@@ -89,12 +89,14 @@
             <input asp-for="Description" type="text"  placeholder="description">
         </div>
         <div>
-                    <input type="number" asp-for="MaxPlayers" id="min" oninput=" this.value = this.value.replace(/[^2-100]/g, '')">
-                    <div id="add-count-btn">
-                        <button type="button" onclick="countingTime(1,'min')"><i class="fa fa-arrow-up"></i></button>
-                        <button type="button" onclick="countingTime(-1,'min')"><i class="fa fa-arrow-down"></i></button>
+                    
+                    <div id="btn-player-amount">
+                        
+                        <button type="button" onclick="counting(-1,'amountPlayer',2,100)" class="org-btn"><i class="fa fa-arrow-left"></i></button>
+                        <input type="text" asp-for="MaxPlayers" id="amountPlayer" min="2" max="100" value="2" >
+                        <button type="button" onclick="counting(1,'amountPlayer',2,100)" class="org-btn"><i class="fa fa-arrow-right"></i></button>
                     </div>
-                    <p>MIN</p>
+                    
         </div>
 
         <div class="require">
@@ -118,11 +120,12 @@
 
         <div class="mood-select">
             <p>TACTICAL PROTOCAL TAGS</p>
-            <div class=moods>
-                @foreach(string mood in Moods){
+            <div class="moods">
+                @foreach(string mood in Moods)
+                {
                 <input type="checkbox" name="Moods" id="mood-@mood" value="@mood" class="check-box"> 
                 <label class="mood-label" for=@mood>@mood</label>
-            }   
+                }   
             </div>
 
         </div>

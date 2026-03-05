@@ -24,6 +24,17 @@ public class HomeController : Controller
         return View(allLob);
     }
 
+    [HttpPost] // ต้องระบุว่าเป็น Post ให้ตรงกับ fetch
+    public async Task<IActionResult> GetNextLobby([FromBody] ShowLobbyDTO lastLob)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (lastLob == null) return BadRequest("ไม่มีห้องแล้ววว");
+        List<ShowLobbyDTO> lobbies = await _lobbyService.GetNextLobbiesAsync(lastLob.Id,userId); // เรียกใช้ Service จริงๆ ตรงนี้
+        return PartialView("_LobbyCardsPartial", lobbies);
+    }
+
+ 
+
     public IActionResult Privacy()
     {
         return View();
