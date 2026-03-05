@@ -14,6 +14,7 @@
     string pic = Model.Avatar;
     string bio = Model.Bio;
 
+    string VibeTagsDisplay = Model.VibeTags != null ? string.Join(", ", Model.VibeTags) : "";
     string gameLibraryDisplay = Model.GameLibrary != null ? string.Join(", ", Model.GameLibrary) : "";
 
     string discord = Model.discord;
@@ -116,7 +117,7 @@
                     <label>Vibe</label>
                     <div id="vibeContainer" style="@(isOwnProfile ? "" : "pointer-events: none;")">
                         <input type="hidden" name="VibeTagsString" id="VibeTagsString"
-                               value="@string.Join(",", Model.VibeTags)" />
+                               value="@VibeTagsDisplay" />
 
                         <button type="button" class="btn @(Model.VibeTags.Contains("Chill") ? "active" : "")"
                                 onclick="toggleVibe(this, 'Chill')">Chill</button>
