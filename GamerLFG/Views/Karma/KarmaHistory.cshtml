@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = "Karma History";
 
-    string Username = ViewBag.Username ?? "Unknown User";
-    double karmascore = ViewBag.TotalScore ?? 0;
+    string Username = ViewBag.Username;
+    double karmascore = ViewBag.TotalScore;
 
     string totalColor = karmascore >= 0 ? "#28a745" : "#ff2828";
 }

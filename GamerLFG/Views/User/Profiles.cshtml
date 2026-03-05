@@ -4,21 +4,21 @@
 @{
     ViewData["Title"] = "Profile";
 
-    string Logged_id = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim().ToLower() ?? "";
+    string Logged_id = User.FindFirstValue(ClaimTypes.NameIdentifier)?.Trim().ToLower();
 
-    string id = Model?.Id?.Trim().ToLower() ?? "";
+    string id = Model?.Id?.Trim().ToLower();
 
     bool isOwnProfile = (Logged_id == id);
 
-    string Name = Model.Name ?? "Unknown User";
+    string Name = Model.Name;
     string pic = Model.Avatar;
-    string bio = Model.Bio ?? "No bio available.";
+    string bio = Model.Bio;
 
     string gameLibraryDisplay = Model.GameLibrary != null ? string.Join(", ", Model.GameLibrary) : "";
 
-    string discord = Model.discord ?? "";
-    string steam = Model.steam ?? "";
-    string twitch = Model.twitch ?? "";
+    string discord = Model.discord;
+    string steam = Model.steam;
+    string twitch = Model.twitch;
 
     double karmaScore = Model.KarmaScore;
 
@@ -64,7 +64,7 @@
             <div class="box" style="text-align: center;">
                 @if (isOwnProfile)
                 {
-                    <div class="profile-img" onclick="changeAvatar()" style="cursor: pointer;" title="คลิกเพื่อเปลี่ยนรูป">
+                    <div class="profile-img" onclick="changeAvatar()" style="cursor: pointer;">
                         <img id="profileImage" src="@pic" />
                     </div>
                 }
@@ -166,7 +166,6 @@
 @section Scripts {
     <script>
                 function toggleVibe(btn, vibeName) {
-
                     btn.classList.toggle('active');
 
                     const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
