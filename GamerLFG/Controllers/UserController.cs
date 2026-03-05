@@ -157,6 +157,10 @@ public class UserController : Controller
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToList();
         }
+        else
+        {
+            user.GameLibrary = new List<string>();
+        }
 
         if (!string.IsNullOrEmpty(VibeTagsString))
         {

@@ -111,8 +111,7 @@
                     <textarea name="Bio" rows="3" @(isOwnProfile ? "" : "readonly")>@bio</textarea>
 
                     <label>Games</label>
-                    <textarea name="GameLibraryString"
-                              rows="2">@string.Join(", ", Model.GameLibrary ?? new List<string>())</textarea>
+                    <textarea name="GameLibraryString" rows="2">@gameLibraryDisplay</textarea>
 
                     <label>Vibe</label>
                     <div id="vibeContainer" style="@(isOwnProfile ? "" : "pointer-events: none;")">
