@@ -122,22 +122,27 @@ async function submitKarma(lobbyId, targetUserId) {
   var el = document.getElementById("timer");
   if (!el) return;
   var secs = parseInt(el.dataset.seconds) || 0;
-  function tick() {
-    if (secs <= 0) {
-      el.textContent = "EXPIRED";
+  var label = el.dataset.label || "";
+
+  function fmt(s) {
+    if (s <= 0) return null;
+    var d = Math.floor(s / 86400);
+    var h = Math.floor((s % 86400) / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    if (d > 0) return d + "d " + String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+    return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+  }
+
+  function render() {
+    var time = fmt(secs);
+    if (!time) {
+      el.innerHTML = '<span class="cd-timer">EXPIRED</span>';
       return;
     }
-    var h = Math.floor(secs / 3600);
-    var m = Math.floor((secs % 3600) / 60);
-    var s = secs % 60;
-    el.textContent =
-      String(h).padStart(2, "0") +
-      ":" +
-      String(m).padStart(2, "0") +
-      ":" +
-      String(s).padStart(2, "0");
+    el.innerHTML = '<span style="color:#888;">' + label + '</span> <span class="cd-timer">' + time + '</span>';
     secs--;
-    setTimeout(tick, 1000);
+    setTimeout(render, 1000);
   }
-  tick();
+  render();
 })();

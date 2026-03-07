@@ -4,7 +4,6 @@
     var isHost  = Model.IsHost;
     var isMember = Model.IsMember;
     var hasPendingRequest = Model.HasPendingRequest;
-    var remainingSecs = (int)Math.Max(0, (lobby.EndRecruiting - DateTime.Now).TotalSeconds);
 }
 
 <link rel="stylesheet" href="~/css/lobby-details.css" asp-append-version="true">
@@ -213,27 +212,71 @@
                 <h5 class="text-white mb-3" style="font-size:15px;">Mission Info</h5>
                 <hr class="divider">
 
-                @if (lobby.IsComplete)
-                {
-                    <div class="p-3 mb-3 text-center" style="background:#0d1a0d; border:1px solid #2ecc7144; border-radius:8px;">
-                        <p class="text-success fw-bold mb-0">MISSION COMPLETED</p>
-                    </div>
+                @{
+                    // MongoDB returns UTC — convert lobby dates to local time for comparison & display
+                    var startRecruit = lobby.StartRecruiting.ToLocalTime();
+                    var endRecruit   = lobby.EndRecruiting.ToLocalTime();
+                    var startEvent   = lobby.StartEvent.ToLocalTime();
+                    var endEvent     = lobby.EndEvent.ToLocalTime();
+
+                    var now = DateTime.Now;
+                    // Determine current phase: 0=pre-recruit, 1=recruiting, 2=intermission, 3=mission, 4=completed
+                    int phase;
+                    if (now < startRecruit)    phase = 0;
+                    else if (now < endRecruit) phase = 1;
+                    else if (now < startEvent) phase = 2;
+                    else if (now < endEvent)   phase = 3;
+                    else                       phase = 4;
+
+                    // countdown: seconds until next phase
+                    DateTime? phaseEnd = phase switch {
+                        0 => startRecruit,
+                        1 => endRecruit,
+                        2 => startEvent,
+                        3 => endEvent,
+                        _ => null
+                    };
+                    var countdownSecs = phaseEnd.HasValue ? (int)Math.Max(0, (phaseEnd.Value - now).TotalSeconds) : 0;
+
+                    string[] nextLabels = { "เปิดรับสมัครใน", "ปิดรับสมัครใน", "เริ่ม Mission ใน", "จบ Mission ใน", "" };
+
+                    string Cls(int p) => p < phase ? "past" : p == phase ? "active" : "";
+                    string Fmt(DateTime dt) => dt.ToString("MMM dd, HH:mm");
                 }
-                else
-                {
-                    <div class="info-row">
-                        <span class="label">Recruit ends</span>
-                        <span class="value" style="font-size:12px;">@lobby.EndRecruiting.ToString("MMM dd, HH:mm")</span>
-                    </div>
-                    <div class="p-2 mb-2 text-center" style="background:#0a0a0a; border:1px solid #f2960d33; border-radius:8px;">
-                        <span class="font-monospace fw-bold" style="color:#f2960d; font-size:18px;" id="timer" data-seconds="@remainingSecs">--:--:--</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="label">Session</span>
-                        <span class="value">@lobby.StartEvent.ToString("HH:mm") - @lobby.EndEvent.ToString("HH:mm")</span>
-                    </div>
-                    <hr class="divider">
-                }
+
+                <ul class="timeline">
+                    <li class="tl-item @Cls(0)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Pre-Recruit</div>
+                        <div class="tl-time">สร้างห้อง — รอเปิดรับสมัคร</div>
+                        @if (phase == 0) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[0]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(1)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Recruiting</div>
+                        <div class="tl-time">@Fmt(startRecruit) — @Fmt(endRecruit)</div>
+                        @if (phase == 1) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[1]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(2)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Intermission</div>
+                        <div class="tl-time">@Fmt(endRecruit) — @Fmt(startEvent)</div>
+                        @if (phase == 2) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[2]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(3)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Mission</div>
+                        <div class="tl-time">@Fmt(startEvent) — @Fmt(endEvent)</div>
+                        @if (phase == 3) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[3]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(4)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Completed</div>
+                        <div class="tl-time">หลัง @Fmt(endEvent)</div>
+                    </li>
+                </ul>
+
+                <hr class="divider">
 
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     @foreach (var mood in lobby.Moods)
@@ -280,9 +323,11 @@
                     <button class="btn-action btn-muted" style="color:#f39c12; border-color:#f39c12;">REQUEST PENDING...</button>
                     <button class="btn-cancel" onclick="cancelRequest('@lobby.Id')">Cancel Request</button>
                 }
-                else if (!lobby.IsRecruiting)
+                else if (!lobby.IsRecruiting || phase == 0)
                 {
-                    <button class="btn-action btn-muted">RECRUITMENT CLOSED</button>
+                    <button class="btn-action btn-muted">
+                        @(phase == 0 ? "RECRUITMENT NOT STARTED" : "RECRUITMENT CLOSED")
+                    </button>
                 }
                 else
                 {

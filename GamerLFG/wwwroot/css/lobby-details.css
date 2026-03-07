@@ -224,3 +224,120 @@ body {
   border-top: 1px solid #2a2a2a;
   margin: 12px 0;
 }
+
+/* ── Timeline (git-graph style) ── */
+.timeline {
+  position: relative;
+  padding: 0;
+  margin: 0 0 12px;
+  list-style: none;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: #2a2a2a;
+}
+.tl-item {
+  position: relative;
+  padding-left: 32px;
+  padding-bottom: 18px;
+}
+.tl-item:last-child {
+  padding-bottom: 0;
+}
+.tl-dot {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #333;
+  border: 2px solid #444;
+  z-index: 1;
+}
+/* past phases — line turns bright */
+.tl-item.past .tl-dot {
+  background: #555;
+  border-color: #777;
+}
+.tl-item.past ~ .tl-item:not(.past):not(.active)  .tl-dot {
+  background: #333;
+  border-color: #444;
+}
+/* active phase — glowing dot */
+.tl-item.active .tl-dot {
+  background: #f2960d;
+  border-color: #f2960d;
+  box-shadow: 0 0 8px #f2960d88;
+}
+/* progress bar between past/active nodes */
+.timeline .tl-item.past + .tl-item::before,
+.timeline .tl-item.active::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: -18px;
+  bottom: calc(100% - 8px);
+  width: 2px;
+  background: #f2960d;
+  z-index: 0;
+}
+.timeline .tl-item.past::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: -18px;
+  bottom: 0;
+  width: 2px;
+  background: #f2960d;
+  z-index: 0;
+}
+.timeline .tl-item:first-child::before,
+.timeline .tl-item:first-child.past::before {
+  display: none;
+}
+.tl-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 1px;
+}
+.tl-item.past .tl-title {
+  color: #777;
+}
+.tl-item.active .tl-title {
+  color: #f2960d;
+}
+.tl-time {
+  font-size: 11px;
+  color: #444;
+}
+.tl-item.past .tl-time {
+  color: #555;
+}
+.tl-item.active .tl-time {
+  color: #bbb;
+}
+.tl-countdown {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #0a0a0a;
+  border: 1px solid #f2960d33;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tl-countdown .cd-timer {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 14px;
+  color: #f2960d;
+}
