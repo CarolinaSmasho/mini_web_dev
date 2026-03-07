@@ -27,6 +27,7 @@ a:hover, a:active, a:focus {
 .lobbies{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+    justify-content: center;
     gap: 30px;
     padding: 20px;
     margin-top: 2rem;
@@ -38,7 +39,7 @@ a:hover, a:active, a:focus {
 }
 .lobby{
     background-color: aliceblue;
-    width: clamp(275px, 100%, 310px);
+    width: clamp(275px, 100%, 320px);
     padding: 1rem;
     color: aliceblue;
     background-color: #1b1b1b;
@@ -258,10 +259,18 @@ main .orange-button{
   .search-space{
     max-width: 70%;
   }
+  .lobbies
+    {
+        padding: 0px;
+    }
 }
 
 @media screen and (max-width:450px) and(min-width:380px){
   .search-space{
     max-width:  80%;
   }
+  .lobbies
+    {
+        padding: 0px;
+    }
 }
