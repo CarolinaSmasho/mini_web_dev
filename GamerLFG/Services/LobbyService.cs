@@ -31,7 +31,8 @@ namespace GamerLFG.Services
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
-                MaxPlayers = lob.MaxPlayers
+                MaxPlayers = lob.MaxPlayers,
+                Status = lob.GetStatus()
                 
             }).ToList();
             var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
@@ -43,7 +44,8 @@ namespace GamerLFG.Services
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
-                MaxPlayers = lob.MaxPlayers
+                MaxPlayers = lob.MaxPlayers,
+                Status = lob.GetStatus()
                 
             }).ToList();
 
@@ -84,7 +86,8 @@ namespace GamerLFG.Services
                     Picture = lob.Picture,
                     Moods = lob.Moods,
                     CurrentPlayers = lob.Members.Count,
-                    MaxPlayers = lob.MaxPlayers
+                    MaxPlayers = lob.MaxPlayers,
+                    Status = lob.GetStatus()
                     }).ToList();
                 }
 
@@ -152,22 +155,36 @@ namespace GamerLFG.Services
             return await _database.Lobbies.Find(l => l.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> ApplyToLobbyAsync(string lobbyId, string userId, string role)
+        public async Task<(bool success, string message)> ApplyToLobbyAsync(string lobbyId, string userId, string role)
         {
             // Fetch the lobby first to check capacity
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
-            if (lobby == null) return false;
+            if (lobby == null) return (false, "Lobby not found.");
+
+            // ตรวจสอบสถานะรวมเวลา: ต้องอยู่ในช่วง Recruiting เท่านั้น
+            var status = lobby.GetStatus();
+            if (status != LobbyStatus.Recruiting)
+            {
+                var reason = status switch
+                {
+                    LobbyStatus.ComingSoon   => "Recruitment has not started yet.",
+                    LobbyStatus.EventOngoing => "Recruitment is closed — the event has already started.",
+                    LobbyStatus.Completed    => "This lobby has been completed.",
+                    LobbyStatus.Cancelled    => "Recruitment is closed.",
+                    _                        => "Recruitment is currently closed."
+                };
+                return (false, reason);
+            }
 
             // Find the role slot definition
             var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == role);
             if (roleDef != null)
             {
-                // Count how many members (pending + joined) already hold this role
-                var takenCount = lobby.Members.Count(m =>
-                    m.Role == role && (m.Status == "Pending" || m.Status == "joined"));
+                // Count ALL members holding this role (Host + joined + Pending)
+                var takenCount = lobby.Members.Count(m => m.Role == role);
 
                 if (takenCount >= roleDef.Quantity)
-                    return false; // role is full
+                    return (false, "This role is already full.");
             }
 
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
@@ -178,7 +195,9 @@ namespace GamerLFG.Services
                 Role = role
             });
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
+            return result.ModifiedCount > 0
+                ? (true, "OK")
+                : (false, "Failed to submit request.");
         }
 
         public async Task<bool> CancelApplicationAsync(string lobbyId, string userId)
@@ -252,6 +271,46 @@ namespace GamerLFG.Services
             }
 
             return true;
+        }
+
+        public async Task<bool> ChangeMemberRoleAsync(string lobbyId, string userId, string newRole)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
+            var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status != "Pending");
+            if (member == null) return false;
+
+            // Validate that the new role exists in lobby roles
+            var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == newRole);
+            if (roleDef == null) return false;
+
+            // Count how many active members already hold this role (excluding the current user)
+            var takenCount = lobby.Members.Count(m =>
+                m.Role == newRole && m.UserId != userId && m.Status != "Pending");
+
+            if (takenCount >= roleDef.Quantity)
+                return false; // role is full
+
+            // Update the member's role
+            var filter = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
+                Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status != "Pending")
+            );
+            var update = Builders<Lobby>.Update.Set("Members.$.Role", newRole);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> ToggleRecruitmentAsync(string lobbyId)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.Set(l => l.IsRecruiting, !lobby.IsRecruiting);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
         }
 
         public async Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId)
