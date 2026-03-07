@@ -19,23 +19,31 @@
 
         <main>
         <div class="mobile-search" id="mobile-search">
-                <form action="" class="search-form">
-                    <input type="text" placeholder="Search.." name="search" class="search-space">
-                    <button type="submit"><i class="fa fa-search fa-3x"></i></button>
+                <form action="" class="search-form" id="search-form">
+                    <input type="text" placeholder="Search.." name="search" class="search-space" id="searchID">
+                    <button type="button" onclick="togleSearch()" ><i class="fa fa-search fa-3x" id="searchBtn"></i></button>
+                    
                 </form>
+                
         </div>
-
+        <div id="tag-search" class="lob_off" style="margin-top:1px;padding:0px;">
+            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+                <i class="fa fa-search" style="color: #ffa431;"></i>Search Result</h3>
+        </div>
+        <div id="resultsContainer" class="lobbies">
+        </div>
            
             
             
-            <div class="all-lob">
+        <div class="all-lob" id="all-lob">
                 <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
                 <div style="display: flex;gap:20px;align-items:center">
                    <p class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">Hidden</p>
                     <button id="hidden" class="off" onclick="toggleLobShow()"
-                    style="background-color:black;color:white;margin:1rem"
-                    ><i class="fa fa-toggle-off fa-2x" aria-hidden="true"></i></button> 
+                    style="background-color:black;color:white;margin:1rem">
+                    <i class="fa fa-toggle-off fa-2x" aria-hidden="true" ></i>
+                    </button> 
                 </div>
                 
             <div class="lobbies" id="mylob">
@@ -109,7 +117,7 @@
 
             </div>
 
-                <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+        <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-globe" style="color: #ffa431;"></i>Public Feed</h3>
             <div class="lobbies" id="notmine">
                 
