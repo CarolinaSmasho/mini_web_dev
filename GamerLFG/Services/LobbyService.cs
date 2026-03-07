@@ -256,8 +256,6 @@ namespace GamerLFG.Services
                     IsRead = false,
                     Date = DateTime.UtcNow
                 };
-
-                
                 await _database.Notifications.InsertOneAsync(notification);
             }
             return result.ModifiedCount > 0;
