@@ -152,11 +152,26 @@ namespace GamerLFG.Services
             return await _database.Lobbies.Find(l => l.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> ApplyToLobbyAsync(string lobbyId, string userId, string role)
+        public async Task<(bool success, string message)> ApplyToLobbyAsync(string lobbyId, string userId, string role)
         {
             // Fetch the lobby first to check capacity
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
-            if (lobby == null) return false;
+            if (lobby == null) return (false, "Lobby not found.");
+
+            // ตรวจสอบสถานะรวมเวลา: ต้องอยู่ในช่วง Recruiting เท่านั้น
+            var status = lobby.GetStatus();
+            if (status != LobbyStatus.Recruiting)
+            {
+                var reason = status switch
+                {
+                    LobbyStatus.ComingSoon   => "Recruitment has not started yet.",
+                    LobbyStatus.EventOngoing => "Recruitment is closed — the event has already started.",
+                    LobbyStatus.Completed    => "This lobby has been completed.",
+                    LobbyStatus.Cancelled    => "Recruitment is closed.",
+                    _                        => "Recruitment is currently closed."
+                };
+                return (false, reason);
+            }
 
             // Find the role slot definition
             var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == role);
@@ -166,7 +181,7 @@ namespace GamerLFG.Services
                 var takenCount = lobby.Members.Count(m => m.Role == role);
 
                 if (takenCount >= roleDef.Quantity)
-                    return false; // role is full
+                    return (false, "This role is already full.");
             }
 
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
@@ -177,7 +192,9 @@ namespace GamerLFG.Services
                 Role = role
             });
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
+            return result.ModifiedCount > 0
+                ? (true, "OK")
+                : (false, "Failed to submit request.");
         }
 
         public async Task<bool> CancelApplicationAsync(string lobbyId, string userId)

@@ -114,8 +114,8 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(currentUserId))
                 return Unauthorized(new { success = false, message = "Not logged in" });
 
-            var result = await _lobbyService.ApplyToLobbyAsync(id, currentUserId, role);
-            return Json(new { success = result });
+            var (success, message) = await _lobbyService.ApplyToLobbyAsync(id, currentUserId, role);
+            return Json(new { success, message });
         }
 
         [HttpPost]

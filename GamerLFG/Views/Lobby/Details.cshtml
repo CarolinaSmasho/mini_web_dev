@@ -323,10 +323,14 @@
                     <button class="btn-action btn-muted" style="color:#f39c12; border-color:#f39c12;">REQUEST PENDING...</button>
                     <button class="btn-cancel" onclick="cancelRequest('@lobby.Id')">Cancel Request</button>
                 }
-                else if (!lobby.IsRecruiting || phase == 0)
+                else if (!lobby.IsRecruiting || phase != 1)
                 {
                     <button class="btn-action btn-muted">
-                        @(phase == 0 ? "RECRUITMENT NOT STARTED" : "RECRUITMENT CLOSED")
+                        @(phase == 0 ? "RECRUITMENT NOT STARTED"
+                        : phase == 2 ? "RECRUITMENT CLOSED"
+                        : phase == 3 ? "MISSION IN PROGRESS"
+                        : phase == 4 ? "MISSION COMPLETED"
+                        : "RECRUITMENT CLOSED")
                     </button>
                 }
                 else
