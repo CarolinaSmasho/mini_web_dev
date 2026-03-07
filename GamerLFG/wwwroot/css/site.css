@@ -38,72 +38,71 @@ body {
   text-align: start;
 }
 
-/* ================= GLOBAL MODAL CSS (วางใน site.css) ================= */
-
-/* 1. ซ่อน Checkbox ตัวควบคุม */
 .mini-profile-checkbox {
   display: none;
 }
 
-/* 2. ฉากหลัง (Overlay) - ปกติซ่อนไว้ (display: none) */
 .mini-profile-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* สีดำโปร่งแสง */
-  backdrop-filter: blur(4px); /* เบลอฉากหลัง */
-  z-index: 9999; /* ให้อยู่บนสุดเสมอ */
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
 
-  display: none; /* [สำคัญ] ซ่อนไว้ก่อน */
+  display: none;
   justify-content: center;
   align-items: center;
 }
 
-/* 3. สั่งให้แสดงเมื่อ Checkbox ถูกติ๊ก (โดย JS) */
+/*แสดงเมื่อ Checkbox ถูกกด*/
 .mini-profile-checkbox:checked ~ .mini-profile-overlay {
   display: flex;
 }
 
-/* 4. กล่อง Modal (ดีไซน์ตามรูป Dark Theme) */
 .mini-profile-content {
-  background-color: #1e1e1e; /* พื้นหลังสีเทาเข้มเกือบดำ */
+  background-color: #1e1e1e;
   padding: 25px;
-  border-radius: 20px; /* มุมโค้งมน */
-  width: 320px; /* ความกว้าง */
+  border-radius: 20px;
+  width: fit-content;
+  min-width: 320px;
+  max-width: 90vw;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* เงาฟุ้งๆ */
-  color: white; /* ตัวหนังสือสีขาว */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: white;
 }
 
-/* 5. ส่วนหัว (Header) */
 .mini-profile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: none; /* ลบเส้นขอบเดิมของ Bootstrap ออก */
+  border-bottom: none;
   padding: 0;
 }
 
 .mini-profile-title-box {
-  background-color: #111; /* กล่องชื่อสีดำเข้ม */
+  background-color: #111;
   padding: 10px 20px;
   border-radius: 12px;
   flex-grow: 1;
   margin-right: 15px;
   text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .mini-profile-title {
-  color: #ffa31a; /* สีส้ม */
+  color: #ffa31a;
   font-weight: bold;
   font-size: 1.1rem;
 }
 
-/* ปุ่มปิด (วงกลม) */
+/*ปุ่มปิด*/
 .mini-profile-close-btn {
   background-color: #444;
   color: white;
@@ -115,22 +114,20 @@ body {
   align-items: center;
   cursor: pointer;
   font-weight: bold;
-  transition: 0.2s;
+  flex-shrink: 0;
 }
 .mini-profile-close-btn:hover {
   background-color: #666;
 }
 
-/* 6. ส่วนเนื้อหา (Body) */
 .mini-profile-body p {
   margin-bottom: 8px;
   font-size: 0.95rem;
 }
 .mini-profile-body span {
-  color: #ccc; /* สีตัวอักษรข้อมูลให้จางลงหน่อย */
+  color: #ccc;
 }
 
-/* 7. ปุ่มกดด้านล่าง (Actions) */
 .mini-profile-actions {
   display: flex;
   flex-direction: column;
@@ -151,7 +148,7 @@ body {
 }
 
 .mini-profile-action-btn:hover {
-  background-color: #ffa31a; /* ชี้แล้วเปลี่ยนเป็นสีส้ม */
-  color: #000; /* ตัวหนังสือดำ */
+  background-color: #ffa31a;
+  color: #000;
   border-color: #ffa31a;
 }

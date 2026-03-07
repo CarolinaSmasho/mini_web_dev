@@ -72,7 +72,7 @@ function addToDOM() {
 
 
     if(roleIn.value == ""){
-        roleIn.value="All Class"
+        roleIn.value="Others"
     }
     const newItem = {
         id: Date.now(),
@@ -146,6 +146,7 @@ function removeItem(id) {
 
 function updateHiddenInput() {
     document.getElementById("ItemsData").value = JSON.stringify(itemsArray);
+    console.log(JSON.stringify(itemsArray));
     // const localInput = document.getElementById("myDateTime").value; // "2026-03-02T20:48"
     
 

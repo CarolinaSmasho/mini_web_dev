@@ -4,6 +4,7 @@ using GamerLFG.service;
 using GamerLFG.Services.Interface;
 using GamerLFG.Services.Interface.DTOs;
 using MongoDB.Driver;
+using MongoDB.Bson;
 namespace GamerLFG.Services
 {
     public class LobbyService : ILobbyService
@@ -89,6 +90,8 @@ namespace GamerLFG.Services
                     Status = lob.GetStatus()
                     }).ToList();
                 }
+
+        //
 
         public async Task<(bool success, string message)> CreateLobbyAsync(CreateLobbyDTO newLobby) 
         {
@@ -324,7 +327,7 @@ namespace GamerLFG.Services
                 .Where(m => m.Status != "Pending")
                 .Select(m => m.UserId)
                 .ToList();
-
+            
             var memberUsers = memberIds.Any()
                 ? await _database.Users.Find(u => memberIds.Contains(u.Id)).ToListAsync()
                 : new List<User>();
@@ -400,6 +403,51 @@ namespace GamerLFG.Services
                 EndorsedUserIds     = endorsedUserIds,
             };
         }
-    }
-}
 
+        public async Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 20)
+        {
+            
+                var builder = Builders<Lobby>.Filter;
+                var notYours = Builders<Lobby>.Filter.Ne(l => l.HostId, userId);
+                var filter = builder.Regex(x => x.Title, new BsonRegularExpression(lobName, "i"));
+                var findByUserName = Builders<Lobby>.Filter.Eq(l => l.HostName,userName);
+                List<Lobby> nextLobby = new();
+                if (userName == "")
+                {
+                    nextLobby = await _database.Lobbies.Find(filter & notYours)
+                                    .SortBy(l => l.Id)
+                                    .Limit(pageSize)
+                                    .ToListAsync();
+                }
+                else
+                {
+                    nextLobby = await _database.Lobbies.Find(findByUserName)
+                                    .SortBy(l => l.Id)
+                                    .Limit(pageSize)
+                                    .ToListAsync();
+                }    
+
+                var nextHostIds = nextLobby.Select(l => l.HostId).Where(id => id != null).Distinct().ToList();
+                var nextHostUsers = nextHostIds.Any()
+                    ? await _database.Users.Find(u => nextHostIds.Contains(u.Id)).ToListAsync()
+                    : new List<User>();
+                var nextHostMap = nextHostUsers.ToDictionary(u => u.Id);
+
+                return nextLobby.Select(lob => new ShowLobbyDTO{
+                    Id = lob.Id,
+                    Title  = lob.Title,
+                    Game = lob.Game,
+                    Description = lob.Description,
+                    HostName  = nextHostMap.TryGetValue(lob.HostId ?? "", out var hu) ? hu.Username : lob.HostId,
+                    Picture = lob.Picture,
+                    Moods = lob.Moods,
+                    CurrentPlayers = lob.Members.Count,
+                    MaxPlayers = lob.MaxPlayers
+                    }).ToList();
+        }
+    }
+
+    
+       
+
+}

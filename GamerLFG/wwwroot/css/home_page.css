@@ -3,9 +3,9 @@ main{
     position: relative;
     background-color: #292929;
     margin:1rem;
-    
+    padding-bottom: 2rem;
     border-radius: 1rem;
-    min-height: 10000vh;
+    /* min-height: 10000vh; */
     box-sizing: border-box;
     /* overflow: hidden; */
 
@@ -51,6 +51,9 @@ a:hover, a:active, a:focus {
     flex-direction: column;
     width: 100%;
     position: sticky;
+    padding: 1rem;
+    gap: 1rem;
+    
     
 }
 main .mobile-search{
@@ -60,6 +63,7 @@ main .mobile-search{
         top: 70px;
         background-color: #292929;
         z-index: 1000;
+        
     }
 
 
@@ -69,7 +73,7 @@ main .mobile-search{
     }
     .search-space{
         flex-grow: 1;
-        max-width: 600px;
+        max-width: 900px;
     }
    
 
@@ -146,6 +150,12 @@ grid-auto-columns: minmax(90px, auto);
 .slots{
     display: flex;  
     justify-content: space-between;
+}
+.icon{
+    display: grid;
+    grid-template-columns: repeat(8, minmax(27px, 1fr));
+
+
 }
 .game-pic {
     width: 100%;       /* กำหนดให้ container กว้างเท่ากับ Card */

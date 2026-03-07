@@ -35,7 +35,7 @@ namespace GamerLFG.Services
             }
 
             // ใช้ Regex ในการค้นหา (ตัว "i" หมายถึง Case-Insensitive ไม่สนตัวพิมพ์เล็ก-ใหญ่)
-            var filter = Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression(keyword, "i"));
+            var filter = Builders<User>.Filter.Regex(u => u.Name, new BsonRegularExpression(keyword, "i"));
             
             var searchResults = await _userCollection.Find(filter).ToListAsync();
 

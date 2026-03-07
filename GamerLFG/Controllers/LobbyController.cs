@@ -9,15 +9,21 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace GamerLFG.Controllers
 {
+using GamerLFG.service;
+using MongoDB.Driver;
+namespace GamerLFG.Controllers
+{   
+    
 
     public class LobbyController : Controller
     {
         private readonly ILobbyService _lobbyService;
-        public LobbyController(ILobbyService lobbyService)
+        public LobbyController(ILobbyService lobbyService,MongoDBservice mongoDBservice)
         {
             _lobbyService = lobbyService;
+            _mongoDBservice = mongoDBservice;
+
         }
         public async Task<IActionResult> Details(string id)
         {
@@ -233,6 +239,10 @@ namespace GamerLFG.Controllers
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(currentUserId))
                 return RedirectToAction("Login", "Auth");
+            };
+            // var currentUserId = HttpContext.Session.GetString("UserId");
+            // if (string.IsNullOrEmpty(currentUserId))
+            //     return RedirectToAction("Login", "Auth");
 
             var lobby = await _lobbyService.GetLobbyByIdAsync(id);
             if (lobby == null) return NotFound();
@@ -312,17 +322,26 @@ namespace GamerLFG.Controllers
 
 
         [HttpGet]
-        public IActionResult Create_lobby()
+            public async Task<IActionResult> Create_lobby()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = User.Identity?.Name;
-
             if (userId == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
-            var model = new CreateLobbyDTO { HostId = userId, HostName = userName };
-            return View(model);
+            var user = await _mongoDBservice.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            var userName = user.Name;
+            Console.WriteLine(userName);
+            
+            var model = new CreateLobbyDTO();
+            model.HostId = userId;
+            model.HostName = userName;
+            model.StartRecruiting = DateTime.Now;
+            model.EndRecruiting = DateTime.Now.AddDays(1); // ตัวอย่าง: ให้สิ้นสุดพรุ่งนี้
+            model.StartEvent = DateTime.Now.AddDays(2);
+            model.EndEvent = DateTime.Now.AddDays(2).AddHours(3);
+
+            return View(model);  
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
