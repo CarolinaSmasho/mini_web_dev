@@ -112,7 +112,7 @@
                     <textarea name="Bio" rows="3" @(isOwnProfile ? "" : "readonly")>@bio</textarea>
 
                     <label>Games</label>
-                    <textarea name="GameLibraryString" rows="2">@gameLibraryDisplay</textarea>
+                    <textarea name="GameLibraryString" rows="2" @(isOwnProfile ? "" : "readonly")>@gameLibraryDisplay</textarea>
 
                     <label>Vibe</label>
                     <div id="vibeContainer" style="@(isOwnProfile ? "" : "pointer-events: none;")">
