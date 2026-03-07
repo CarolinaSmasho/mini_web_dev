@@ -115,105 +115,86 @@
                         <div class="mini-profile-title-box">
                             <span id="mini-profile-display-name" class="mini-profile-title">Loading...</span>
                         </div>
-                        <label for="global-user-mini-profile-toggle" class="mini-profile-close-btn">X</label>
+
+                        <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>
+                            <span>&#9776;</span>
+                        </div>
+
+                        <div id="mobile-menu" class="nav-mobile-hidden">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a asp-controller="Auth" asp-action="Logout"
+                                       onclick="return confirm('Ayo bro are you sure you wanna logout?')"><button class="orange-button">Log
+                                    Out</button></a>
+                                }else
+                                {
+                                    <a asp-controller="Auth" asp-action="Login"><button class="orange-button">Log In</button></a>
+                                }
+
+                                <a asp-controller="User" asp-action="Profiles">
+                                    <button class="orange-button">Profile</button>
+                                </a>
+
+                                <a asp-controller="User" asp-action="Friends_list">
+                                    <button class="orange-button">Friends</button>
+                                </a>
+
+                                <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
+                                    <button class="orange-button">Notics</button>
+                                </a>
+                                <a asp-controller="Lobby" asp-action="Create_lobby">
+                                    <button class="orange-button">Create Lobby</button>
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </header>
+
+                    <div class="container">
+                        <main role="main" class="pb-3">
+                            @RenderBody()
+                        </main>
                     </div>
 
-                    <div class="mini-profile-body" style="color: white; padding: 10px;">
-                        <p><strong>Username:</strong> <span id="mini-profile-username">-</span></p>
-                        <p><strong>Status:</strong> <span id="mini-profile-status">-</span></p>
-                        <p><strong>Bio:</strong> <span id="mini-profile-bio">-</span></p>
+                    <footer class="border-top footer text-muted">
+
+                    </footer>
+
+                    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+                    <script src="~/js/site.js" asp-append-version="true"></script>
+                    @await RenderSectionAsync("Scripts", required: false)
+
+
+
+                    <input type="checkbox" id="global-user-mini-profile-toggle" class="mini-profile-checkbox">
+
+                    <div class="mini-profile-overlay">
+                        <div class="mini-profile-content">
+                            <div class="mini-profile-header">
+                                <div class="mini-profile-title-box">
+                                    <span id="mini-profile-display-name" class="mini-profile-title">Loading...</span>
+                                </div>
+                                <label for="global-user-mini-profile-toggle" class="mini-profile-close-btn">X</label>
+                            </div>
+
+                            @* <div class="mini-profile-body" style="color: white; padding: 10px;">
+                                <p><strong>Username:</strong> <span id="mini-profile-username">-</span></p>
+                                <p><strong>Status:</strong> <span id="mini-profile-status">-</span></p>
+                                <p><strong>Bio:</strong> <span id="mini-profile-bio">-</span></p>
+                            </div> *@
+
+                            <div class="mini-profile-actions">
+                                <a id="mini-profile-link" href="#" class="mini-profile-action-btn">ดู Profile</a>
+                                <button id="mini-profile-action-btn" class="mini-profile-action-btn" onclick=""></button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mini-profile-actions">
-                        <a id="mini-profile-link" href="#" class="mini-profile-action-btn">ดู Profile</a>
-                        <button id="mini-profile-action-btn" class="mini-profile-action-btn" onclick=""></button>
-                    </div>
-                </div>
-    </div>
 
 
 
-    <script>
-        function openUserMiniProfile(userId) {
-            // 1. ตั้งค่า Default ระหว่างรอโหลด
-            document.getElementById('mini-profile-display-name').innerText = "Loading...";
-            document.getElementById('mini-profile-username').innerText = "...";
-            let actionBtn = document.getElementById('mini-profile-action-btn');
-            actionBtn.innerText = "Loading...";
-            actionBtn.onclick = null;
-            // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
-            fetch(`/User/GetUserDetails?UserId=${userId}`)
-                .then(response => {
-                    if (!response.ok) throw new Error("User not found");
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Data from API:", data);
-                    // 3. เอาข้อมูลที่ได้มาหยอดใส่ mini-profile
-                    document.getElementById('mini-profile-display-name').innerText = data.username;
-                    document.getElementById('mini-profile-username').innerText = data.username;
-                    document.getElementById('mini-profile-status').innerText = data.status;
-                    document.getElementById('mini-profile-bio').innerText = data.bio;
-                    if (data.isFriend) {
-                        actionBtn.innerText = "Delete Friend";
-                        actionBtn.style.backgroundColor = "#dc3545";
-                        actionBtn.style.color = "white";
-
-                        actionBtn.onclick = function () {
-                            if (confirm(`ลบ ${data.username} ออกจากเพื่อน?`)) {
-                                fetch(`/User/DeleteFriend?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
-                                    .then(r => r.json())
-                                    .then(() => {
-                                        openUserMiniProfile(data.id)
-                                        let friendCard = document.getElementById(data.id);
-
-                                        if (friendCard) {
-
-                                            friendCard.remove();
-
-                                        }
-
-
-
-                                    }
-                                    );
-
-                            }
-                        };
-
-                    } else if (data.isPending) {
-                        actionBtn.innerText = "Cancel Request";
-                        actionBtn.style.backgroundColor = "#6c757d";
-                        actionBtn.style.color = "white";
-
-                        actionBtn.onclick = function () {
-                            fetch(`/FriendRequest/Cancel?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
-                                .then(r => r.json())
-                                .then(() => openUserMiniProfile(data.id));
-                        };
-
-                    } else {
-                        actionBtn.innerText = "Add Friend";
-                        actionBtn.style.backgroundColor = "#28a745";
-                        actionBtn.style.color = "white";
-
-                        actionBtn.onclick = function () {
-                            fetch(`/FriendRequest/Send?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
-                                .then(r => r.json())
-                                .then(() => openUserMiniProfile(data.id));
-                        };
-                    }
-                    document.getElementById('mini-profile-link').href = `/User/Profiles?id=${encodeURIComponent(data.id)}`;
-
-                    document.getElementById('global-user-mini-profile-toggle').checked = true;
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
-                });
-        }
-    </script>
-    @* Noti
+                    @* Noti
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         const bell = document.getElementById('notifBell');
@@ -233,7 +214,86 @@
         }
     });
     </script> *@
-</body>
+                </body>
+                <script>
+                    function openUserMiniProfile(userId) {
+                        // 1. ตั้งค่า Default ระหว่างรอโหลด
+                        document.getElementById('mini-profile-display-name').innerText = "Loading...";
+                        @* document.getElementById('mini-profile-username').innerText = "..."; *@
+                            let actionBtn = document.getElementById('mini-profile-action-btn');
+                        actionBtn.innerText = "Loading...";
+                        actionBtn.onclick = null;
+                        // 2. Ajax (Fetch) ไปขอข้อมูลจาก Controller
+                        fetch(`/User/GetUserDetails?UserId=${userId}`)
+                            .then(response => {
+                                if (!response.ok) throw new Error("User not found");
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log("Data from API:", data);
+                                // 3. เอาข้อมูลที่ได้มาหยอดใส่ mini-profile
+                                document.getElementById('mini-profile-display-name').innerText = data.name;
+                                @* document.getElementById('mini-profile-username').innerText = data.username; *@
+                                    @* document.getElementById('mini-profile-status').innerText = data.status; *@
+                                    @* document.getElementById('mini-profile-bio').innerText = data.bio; *@
+                                                                                                                                                    if (data.isFriend) {
+                                    actionBtn.innerText = "Delete Friend";
+                                    actionBtn.style.backgroundColor = "#dc3545";
+                                    actionBtn.style.color = "white";
+
+                                    actionBtn.onclick = function () {
+                                        if (confirm(`ลบ ${data.username} ออกจากเพื่อน?`)) {
+                                            fetch(`/User/DeleteFriend?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                                .then(r => r.json())
+                                                .then(() => {
+                                                    openUserMiniProfile(data.id)
+                                                    let friendCard = document.getElementById(data.id);
+
+                                                    if (friendCard) {
+
+                                                        friendCard.remove();
+
+                                                    }
 
 
-</html>
+
+                                                }
+                                                );
+
+                                        }
+                                    };
+
+                                } else if (data.isPending) {
+                                    actionBtn.innerText = "Cancel Request";
+                                    actionBtn.style.backgroundColor = "#6c757d";
+                                    actionBtn.style.color = "white";
+
+                                    actionBtn.onclick = function () {
+                                        fetch(`/FriendRequest/Cancel?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                            .then(r => r.json())
+                                            .then(() => openUserMiniProfile(data.id));
+                                    };
+
+                                } else {
+                                    actionBtn.innerText = "Add Friend";
+                                    actionBtn.style.backgroundColor = "#28a745";
+                                    actionBtn.style.color = "white";
+
+                                    actionBtn.onclick = function () {
+                                        fetch(`/FriendRequest/Send?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                            .then(r => r.json())
+                                            .then(() => openUserMiniProfile(data.id));
+                                    };
+                                }
+                                document.getElementById('mini-profile-link').href = `/User/Profiles?id=${encodeURIComponent(data.id)}`;
+
+                                document.getElementById('global-user-mini-profile-toggle').checked = true;
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
+                            });
+                    }
+                </script>
+
+            </html>

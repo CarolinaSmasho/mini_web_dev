@@ -33,8 +33,8 @@ a:visited {
 
 .rbx-tab a {
   display: block;
-  color: white; /* สีข้อความขาว */
-  text-decoration: none; /* เอาขีดเส้นใต้ออก */
+  color: white;
+  text-decoration: none;
   width: 100%;
 }
 
@@ -43,16 +43,17 @@ a:visited {
 }
 
 .friends-filter {
-  padding: 7px;
+  padding: 5px;
   margin-bottom: 20px;
   /* display: flex; */
   width: fit-content;
   background-color: #292929;
+  border-radius: 8px;
 }
 
 .friends-filter-searchbar-input {
   background-color: #808080;
-  /* display: flex; */
+  max-width: 200px;
 }
 .friends-filter-searchbar-input::placeholder {
   color: #ffa31a;
