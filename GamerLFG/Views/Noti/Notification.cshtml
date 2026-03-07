@@ -63,4 +63,17 @@
         })
         .catch(err => console.error("Error marking as read:", err));
     }
+
+    
+    function redirectBasedOnType(type,relateObjectId) {
+        if (type === 'friend_request') {
+            window.location.href = '/FriendRequest/FriendRequestList';
+        }
+        else if (type === 'friend_accept'){
+             window.location.href = '/User/Friends_list';
+        }
+        else if (type === "lobby_request_apply" || type ==="lobby_accepted" || type === "lobby_rejected"){
+            window.location.href = '/Lobby/Details/' + relateObjectId;
+        }
+    }
 </script>

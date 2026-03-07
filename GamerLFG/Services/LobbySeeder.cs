@@ -34,33 +34,78 @@ namespace GamerLFG.Services
             {
                 new() {
                     Id = IdHost, Username = "Notatord_Commander",
+                    Name = "Notatord",
                     Email = "host@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord_Commander",
+                    Bio = "Guild leader since 2015. I lead, you follow.",
                     KarmaScore = 4.8,
+                    VibeTags = new() { "Competitive", "Tryhard", "Leader" },
+                    GameLibrary = new() { "Valorant", "Elden Ring", "League of Legends", "Overwatch 2", "Minecraft" },
+                    FriendIds = new() { IdMember1, IdMember2 },
+                    discord = "Notatord#1234",
+                    steam = "notatord_cmd",
+                    twitch = "notatord_live",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-6),
                 },
                 new() {
                     Id = IdMember1, Username = "Dew_The_Slayer",
+                    Name = "Dew",
                     Email = "member1@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew_The_Slayer",
+                    Bio = "DPS main. If it moves, it dies.",
                     KarmaScore = 4.2,
+                    VibeTags = new() { "Competitive", "Chill" },
+                    GameLibrary = new() { "Valorant", "Elden Ring", "CS2" },
+                    FriendIds = new() { IdHost, IdMember2 },
+                    discord = "DewSlayer#5678",
+                    steam = "dew_slayer",
+                    twitch = "dew_plays",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-4),
                 },
                 new() {
                     Id = IdMember2, Username = "TanK_Artisan",
+                    Name = "Tank",
                     Email = "member2@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=TanK_Artisan",
+                    Bio = "I tank so you don't have to. Shield up!",
                     KarmaScore = 3.9,
+                    VibeTags = new() { "Chill", "Casual" },
+                    GameLibrary = new() { "Overwatch 2", "League of Legends", "Minecraft" },
+                    FriendIds = new() { IdHost, IdMember1 },
+                    discord = "TankArt#9012",
+                    steam = "tank_artisan",
+                    twitch = "",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-3),
                 },
                 new() {
                     Id = IdVisitor, Username = "Looker_Guy",
+                    Name = "Looker",
                     Email = "visitor@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Looker_Guy",
+                    Bio = "Just browsing lobbies. Might join if the vibe is right.",
                     KarmaScore = 3.5,
+                    VibeTags = new() { "Casual" },
+                    GameLibrary = new() { "Minecraft", "Stardew Valley" },
+                    FriendIds = new(),
+                    discord = "Looker#3456",
+                    steam = "looker_guy",
+                    twitch = "",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-1),
                 },
                 new() {
                     Id = IdPending, Username = "Newbie_Player",
+                    Name = "Newbie",
                     Email = "pending@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Newbie_Player",
+                    Bio = "New to gaming, looking for friends!",
                     KarmaScore = 3.0,
+                    VibeTags = new() { "Casual", "Friendly" },
+                    GameLibrary = new() { "Valorant" },
+                    FriendIds = new(),
+                    discord = "Newbie#7890",
+                    steam = "newbie_player",
+                    twitch = "",
+                    CreatedAt = DateTime.UtcNow.AddDays(-7),
                 },
             };
 
@@ -73,29 +118,10 @@ namespace GamerLFG.Services
                 Console.WriteLine($"[LobbySeeder] upserted user: {user.Username}");
             }
 
-            // ── Lobbies — insert เฉพาะตอนที่ยังไม่มี ──────────────────────────
-            var now = DateTime.Now;
-            var lobbyIds = new[] {
-                IdLobby1_BeforeRecruit, IdLobby2_Recruiting,
-                IdLobby3_Intermission,  IdLobby4_Mission,
-                IdLobby5_Completed
-            };
+            // ── Lobbies — upsert ทุกครั้งเพื่อให้เวลาอ้างอิงจาก now ปัจจุบัน ──
+            var now = DateTime.UtcNow;
 
-            var existingCount = await db.Lobbies
-                .Find(Builders<Lobby>.Filter.In(l => l.Id, lobbyIds))
-                .CountDocumentsAsync();
-
-            if (existingCount >= lobbyIds.Length)
-            {
-                Console.WriteLine("[LobbySeeder] lobby มีอยู่แล้วครบ ข้าม");
-                return;
-            }
-
-            // ลบ lobby เก่าที่อาจเหลือค้างแล้ว seed ใหม่ทั้งหมด
-            await db.Lobbies.DeleteManyAsync(
-                Builders<Lobby>.Filter.In(l => l.Id, lobbyIds));
-
-            Console.WriteLine("[LobbySeeder] กำลัง insert lobbies 5 สถานการณ์...");
+            Console.WriteLine("[LobbySeeder] กำลัง upsert lobbies 5 สถานการณ์...");
 
             var defaultMembers = new List<LobbyMember>
             {
@@ -119,6 +145,7 @@ namespace GamerLFG.Services
                 Description     = "ห้องนี้ยังไม่เปิดรับสมัคร รอสักครู่นะครับ",
                 Picture         = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
                 HostId          = IdHost,
+                HostName        = "Notatord_Commander",
                 MaxPlayers      = 5,
                 IsRecruiting    = false,
                 IsComplete      = false,
@@ -142,6 +169,7 @@ namespace GamerLFG.Services
                 Description     = "เปิดรับสมัครอยู่ครับ เข้ามาเลย!",
                 Picture         = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
                 HostId          = IdHost,
+                HostName        = "Notatord_Commander",
                 MaxPlayers      = 5,
                 IsRecruiting    = true,
                 IsComplete      = false,
@@ -165,6 +193,7 @@ namespace GamerLFG.Services
                 Description     = "ปิดรับสมัครแล้ว รอเวลาเริ่มแข่งครับ",
                 Picture         = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
                 HostId          = IdHost,
+                HostName        = "Notatord_Commander",
                 MaxPlayers      = 5,
                 IsRecruiting    = false,
                 IsComplete      = false,
@@ -188,6 +217,7 @@ namespace GamerLFG.Services
                 Description     = "กำลังเล่นอยู่ครับ ห้ามรบกวน!",
                 Picture         = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
                 HostId          = IdHost,
+                HostName        = "Notatord_Commander",
                 MaxPlayers      = 5,
                 IsRecruiting    = false,
                 IsComplete      = false,
@@ -211,6 +241,7 @@ namespace GamerLFG.Services
                 Description     = "ภารกิจเสร็จสิ้นแล้วครับ ขอบคุณทุกคน!",
                 Picture         = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
                 HostId          = IdHost,
+                HostName        = "Notatord_Commander",
                 MaxPlayers      = 5,
                 IsRecruiting    = false,
                 IsComplete      = true,
@@ -225,9 +256,16 @@ namespace GamerLFG.Services
                 CreatedAt       = now.AddDays(-8),
             };
 
-            await db.Lobbies.InsertManyAsync(new[] { lobby1, lobby2, lobby3, lobby4, lobby5 });
+            var lobbies = new[] { lobby1, lobby2, lobby3, lobby4, lobby5 };
+            foreach (var lobby in lobbies)
+            {
+                await db.Lobbies.ReplaceOneAsync(
+                    l => l.Id == lobby.Id,
+                    lobby,
+                    new ReplaceOptions { IsUpsert = true });
+            }
 
-            Console.WriteLine("[LobbySeeder] Seed สำเร็จ! 5 lobbies ทุกสถานการณ์");
+            Console.WriteLine("[LobbySeeder] Seed สำเร็จ! upsert 5 lobbies ทุกสถานการณ์");
         }
     }
 }
