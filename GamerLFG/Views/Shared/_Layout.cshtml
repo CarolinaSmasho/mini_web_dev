@@ -71,10 +71,14 @@
                 <a asp-controller="User" asp-action="Profiles">
                     <button class="orange-button">Profile</button>
                 </a>
-
-                <a asp-controller="User" asp-action="Friends_list">
-                    <button class="orange-button">Friends</button>
-                </a>
+                @if(User.Identity.IsAuthenticated){
+                    <a asp-controller="User" asp-action="Friends_list">
+                            <button class="orange-button">Friends</button>
+                        </a>
+                }else{
+                        
+                    }
+                
 
                 <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
                 <button class="orange-button">Notics</button>
