@@ -335,16 +335,18 @@ namespace GamerLFG.Services
             var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status != "Pending");
             if (member == null) return false;
 
-            // Validate that the new role exists in lobby roles
-            var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == newRole);
-            if (roleDef == null) return false;
+            // "Other" is always allowed without slot limits
+            if (newRole != "Other")
+            {
+                var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == newRole);
+                if (roleDef == null) return false;
 
-            // Count how many active members already hold this role (excluding the current user)
-            var takenCount = lobby.Members.Count(m =>
-                m.Role == newRole && m.UserId != userId && m.Status != "Pending");
+                var takenCount = lobby.Members.Count(m =>
+                    m.Role == newRole && m.UserId != userId && m.Status != "Pending");
 
-            if (takenCount >= roleDef.Quantity)
-                return false; // role is full
+                if (takenCount >= roleDef.Quantity)
+                    return false; // role is full
+            }
 
             // Update the member's role
             var filter = Builders<Lobby>.Filter.And(

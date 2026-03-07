@@ -83,18 +83,41 @@
                                                     <option value="@r.Name" disabled>@r.Name (FULL)</option>
                                                 }
                                             }
+                                            @{
+                                                var isOther = mem?.Role == "Other";
+                                            }
+                                            @if (isOther)
+                                            {
+                                                <option value="Other" selected>Other</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Other">Other</option>
+                                            }
                                         </select>
+                                    }
+                                    else if (canChangeRole && !lobby.Roles.Any())
+                                    {
+                                        <small style="color:#f2960d;">Other</small>
                                     }
                                     else
                                     {
-                                        <small style="color:#f2960d;">@(mem?.Role ?? "Member")</small>
+                                        <small style="color:#f2960d;">@(mem?.Role ?? "Other")</small>
                                     }
                                 </div>
                                 @if (isHost && !isMe && !lobby.IsComplete)
                                 {
                                     <button class="btn btn-sm btn-outline-danger" style="font-size:11px; padding:3px 8px;" onclick="kickMember('@lobby.Id', '@pid')">Kick</button>
                                 }
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="openUserMiniProfile('@pid')">@pid</button>
+                                @if (!isMe && isMember){
+                                    <button type="button" class="kebab-btn ms-auto" onclick="openUserMiniProfile('@pid')">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                            <circle cx="8" cy="3" r="1.5"/>
+                                            <circle cx="8" cy="8" r="1.5"/>
+                                            <circle cx="8" cy="13" r="1.5"/>
+                                        </svg>
+                                    </button>
+                                }
                             </div>
                         </div>
                     }
@@ -123,6 +146,9 @@
                                 <div>
                                     <p class="mb-0 fw-bold text-white" style="font-size:13px;">@(ap?.Username ?? "Unknown")</p>
                                     <small style="color:#f2960d; font-size:11px;">@app.Role</small>
+                                    <small style="color:@(ap?.KarmaScore >= 3 ? "#2ecc71" : ap?.KarmaScore >= 0 ? "#f39c12" : "#e74c3c"); font-size:11px; margin-left:6px;">
+                                        ★ @(ap?.KarmaScore.ToString("0.0") ?? "0.0")
+                                    </small>
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
@@ -336,25 +362,23 @@
                 }
                 else
                 {
-                    @if (lobby.Roles.Any())
-                    {
-                        <select id="apply-role" class="karma-select mb-2">
-                            @foreach (var r in lobby.Roles)
+                    <select id="apply-role" class="karma-select mb-2">
+                        @foreach (var r in lobby.Roles)
+                        {
+                            var taken = lobby.Members.Count(m => m.Role == r.Name);
+                            var remaining = r.Quantity - taken;
+                            var isFull = remaining <= 0;
+                            if (isFull)
                             {
-                                var taken = lobby.Members.Count(m => m.Role == r.Name);
-                                var remaining = r.Quantity - taken;
-                                var isFull = remaining <= 0;
-                                if (isFull)
-                                {
-                                    <option value="@r.Name" disabled>@r.Name (FULL)</option>
-                                }
-                                else
-                                {
-                                    <option value="@r.Name">@r.Name (@remaining left)</option>
-                                }
+                                <option value="@r.Name" disabled>@r.Name (FULL)</option>
                             }
-                        </select>
-                    }
+                            else
+                            {
+                                <option value="@r.Name">@r.Name (@remaining left)</option>
+                            }
+                        }
+                        <option value="Other">Other</option>
+                    </select>
                     <button class="btn-action btn-orange" onclick="requestDeployment('@lobby.Id')">REQUEST DEPLOYMENT</button>
                 }
             </div>
