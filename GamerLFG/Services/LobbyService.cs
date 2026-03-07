@@ -192,7 +192,8 @@ namespace GamerLFG.Services
             {
                 UserId = userId,
                 Status = "Pending",
-                Role = role
+                Role = role,
+                AppliedAt = DateTime.UtcNow
             });
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0
@@ -212,21 +213,57 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> RecruitMemberAsync(string lobbyId, string userId)
-        {
+        {   //lobby title
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
             var filter = Builders<Lobby>.Filter.And(
                 Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
                 Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status == "Pending")
             );
             var update = Builders<Lobby>.Update.Set("Members.$.Status", "joined");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+             //noti ahh
+            if (result.ModifiedCount > 0)
+            {
+                var notification = new Notification
+                {
+                    Type = "lobby_accepted", 
+                    RelateObjectId = lobbyId, 
+                    UserId = userId, 
+                    Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณได้รับการอนุมัติแล้ว",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                };
+
+                // บันทึกลงตาราง Notifications
+                await _database.Notifications.InsertOneAsync(notification);
+            }
             return result.ModifiedCount > 0;
         }
 
         public async Task<bool> RejectApplicantAsync(string lobbyId, string userId)
-        {
+        {   
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+                
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Pending");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+             //noti ahh
+            if (result.ModifiedCount > 0)
+            {
+                var notification = new Notification
+                {
+                    Type = "lobby_rejected",
+                    RelateObjectId = lobbyId,
+                    UserId = userId, 
+                    Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณถูกปฏิเสธ",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                };
+                await _database.Notifications.InsertOneAsync(notification);
+            }
             return result.ModifiedCount > 0;
         }
 
@@ -324,9 +361,9 @@ namespace GamerLFG.Services
 
             if (lobby == null) return null;
 
-            // 2. ดึง user ของทุก member (Status != "Pending")
+            // 2. ดึง user ของทุก member (Status != "Pending" && != "Invited")
             var memberIds = lobby.Members
-                .Where(m => m.Status != "Pending")
+                .Where(m => m.Status != "Pending" && m.Status != "Invited")
                 .Select(m => m.UserId)
                 .ToList();
             
@@ -339,7 +376,7 @@ namespace GamerLFG.Services
             // 3. กำหนด role flags
             bool isHost   = currentUserId == lobby.HostId;
             bool isMember = lobby.Members.Any(m =>
-                m.UserId == currentUserId && m.Status != "Pending");
+                m.UserId == currentUserId && m.Status != "Pending" && m.Status != "Invited");
 
             // 4. Pending members (มองเห็นเฉพาะ Host) + hasPendingRequest (สำหรับ Visitor)
             var pendingApps  = new List<LobbyMember>();
@@ -391,6 +428,44 @@ namespace GamerLFG.Services
                     : await _database.Users.Find(u => u.Id == currentUserId).FirstOrDefaultAsync();
             }
 
+            // 7. Friend invite data
+            var invitableFriends = new List<User>();
+            bool hasPendingInvite = false;
+            string? invitedByName = null;
+
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                // Check if currentUser has a pending invite (Status == "Invited")
+                var inviteMember = lobby.Members.FirstOrDefault(m => m.UserId == currentUserId && m.Status == "Invited");
+                if (inviteMember != null)
+                {
+                    hasPendingInvite = true;
+                    if (inviteMember.InvitedBy != null)
+                    {
+                        var inviter = memberMap.TryGetValue(inviteMember.InvitedBy, out var inv)
+                            ? inv
+                            : await _database.Users.Find(u => u.Id == inviteMember.InvitedBy).FirstOrDefaultAsync();
+                        invitedByName = inviter?.Username ?? "someone";
+                    }
+                }
+
+                // Populate invitable friends for members when lobby is recruiting
+                if ((isMember || isHost) && lobby.GetStatus() == LobbyStatus.Recruiting && currentUser != null)
+                {
+                    var allMemberUserIds = lobby.Members.Select(m => m.UserId).ToHashSet();
+                    var invitableFriendIds = currentUser.FriendIds
+                        .Where(fid => !allMemberUserIds.Contains(fid))
+                        .ToList();
+
+                    if (invitableFriendIds.Any())
+                    {
+                        invitableFriends = await _database.Users
+                            .Find(u => invitableFriendIds.Contains(u.Id))
+                            .ToListAsync();
+                    }
+                }
+            }
+
             return new LobbyDetailsViewModel
             {
                 Lobby               = lobby,
@@ -399,6 +474,9 @@ namespace GamerLFG.Services
                 IsHost              = isHost,
                 IsMember            = isMember || isHost,
                 HasPendingRequest   = hasPendingRequest,
+                HasPendingInvite    = hasPendingInvite,
+                InvitedByName       = invitedByName,
+                InvitableFriends    = invitableFriends,
                 MemberMap           = memberMap,
                 PendingApplications = pendingApps,
                 ApplicantMap        = applicantMap,

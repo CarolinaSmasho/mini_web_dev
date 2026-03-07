@@ -72,7 +72,9 @@
         else if (type === 'friend_accept'){
              window.location.href = '/User/Friends_list';
         }
-        else if (type === "lobby_request_apply" || type ==="lobby_accepted" || type === "lobby_rejected"){
+        else if (type === "lobby_request_apply" || type ==="lobby_accepted" || type === "lobby_rejected"
+            || type === "lobby_invite" || type === "lobby_invite_request" || type === "lobby_invite_approved"
+            || type === "lobby_invite_rejected" || type === "lobby_invite_declined"){
             window.location.href = '/Lobby/Details/' + relateObjectId;
         }
     }
