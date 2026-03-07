@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/GamerLFG.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
+    
     <script src="~/js/nav-control.js" asp-append-version="true" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
@@ -176,8 +177,18 @@
                 if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
                     dropdown.classList.remove('show-notif');
                 }
-            });
-        }
+            })
+            .catch(err => console.error("Error fetching unread count:", err));
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/Noti/GetUnreadCount')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    document.getElementById('global-notif-dot').style.display = 'block';
+                }
+            })
+            .catch(err => console.error("Error fetching unread count:", err));
     });
     </script> *@
         </body>
