@@ -15,7 +15,7 @@ public class FriendRequestController : Controller
         public string SenderId { get; set; }
         public string SenderName { get; set; }
         public string SenderAvatar { get; set; }
-        public DateTime SentAt { get; set; }
+        public string SentAt { get; set; }
     }
     private readonly IFriendRequestService _friendRequestService;
     private readonly IUserService _userService;
@@ -88,9 +88,10 @@ public class FriendRequestController : Controller
                 {
                     RequestId = req.Id,
                     SenderId = sender.Id,
-                    SenderName = sender.Username,
+                    SenderName = sender.Name,
                     SenderAvatar = sender.Avatar,
-                    SentAt = req.CreatedAt
+                    // 🟢 แปลงเป็นเวลาไทย (+7) -> สั่งจัดฟอร์แมต วัน/เดือน/ปี -> ใช้ Culture "th-TH" เพื่อให้ปีเป็น พ.ศ.
+                    SentAt = req.CreatedAt.ToLocalTime().ToString("d/M/yyyy", new System.Globalization.CultureInfo("th-TH"))
                 });
             }
         }

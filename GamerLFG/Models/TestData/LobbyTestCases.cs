@@ -27,6 +27,7 @@ namespace GamerLFG.Models.TestData
         private static User Host => new()
         {
             Id       = IdHost,
+            Name     = "Nota",
             Username = "Notatord_Commander",
             Avatar   = "https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord",
             KarmaScore = 4.8,
@@ -34,6 +35,7 @@ namespace GamerLFG.Models.TestData
         private static User Member1 => new()
         {
             Id       = IdMember1,
+            Name     = "Dew",
             Username = "Dew_The_Slayer",
             Avatar   = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew",
             KarmaScore = 4.2,
