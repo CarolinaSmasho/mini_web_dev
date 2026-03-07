@@ -159,9 +159,8 @@ namespace GamerLFG.Services
             var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == role);
             if (roleDef != null)
             {
-                // Count how many members (pending + joined) already hold this role
-                var takenCount = lobby.Members.Count(m =>
-                    m.Role == role && (m.Status == "Pending" || m.Status == "joined"));
+                // Count ALL members holding this role (Host + joined + Pending)
+                var takenCount = lobby.Members.Count(m => m.Role == role);
 
                 if (takenCount >= roleDef.Quantity)
                     return false; // role is full
@@ -249,6 +248,46 @@ namespace GamerLFG.Services
             }
 
             return true;
+        }
+
+        public async Task<bool> ChangeMemberRoleAsync(string lobbyId, string userId, string newRole)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
+            var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status != "Pending");
+            if (member == null) return false;
+
+            // Validate that the new role exists in lobby roles
+            var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == newRole);
+            if (roleDef == null) return false;
+
+            // Count how many active members already hold this role (excluding the current user)
+            var takenCount = lobby.Members.Count(m =>
+                m.Role == newRole && m.UserId != userId && m.Status != "Pending");
+
+            if (takenCount >= roleDef.Quantity)
+                return false; // role is full
+
+            // Update the member's role
+            var filter = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
+                Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status != "Pending")
+            );
+            var update = Builders<Lobby>.Update.Set("Members.$.Role", newRole);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> ToggleRecruitmentAsync(string lobbyId)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.Set(l => l.IsRecruiting, !lobby.IsRecruiting);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
         }
 
         public async Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId)

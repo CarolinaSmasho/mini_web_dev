@@ -1,0 +1,226 @@
+body {
+  background-color: #0d0d0d;
+}
+.card-dark {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  color: #d0d0d0;
+}
+.hero-img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  opacity: 0.8;
+}
+.badge-role {
+  background: #f2960d;
+  color: #000;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.slot-empty {
+  background: #111;
+  border: 1px dashed #333;
+  height: 56px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  font-size: 12px;
+}
+.member-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #d0d0d0;
+}
+.member-card.you {
+  border-color: #2ecc71;
+  background: #0d1f0d;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 2px solid #f2960d;
+  object-fit: cover;
+}
+.btn-action {
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  width: 100%;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.btn-orange {
+  background: #f2960d;
+  color: #000;
+}
+.btn-orange:hover {
+  background: #e08800;
+}
+.btn-green {
+  background: #2ecc71;
+  color: #000;
+}
+.btn-green:hover {
+  background: #27ae60;
+}
+.btn-red {
+  background: transparent;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+.btn-muted {
+  background: #222;
+  color: #666;
+  border: 1px solid #333;
+  cursor: not-allowed;
+}
+.btn-cancel {
+  background: transparent;
+  color: #777;
+  border: 1px solid #333;
+  padding: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.comms-box {
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-left: 4px solid;
+  color: #d0d0d0;
+}
+.karma-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  color: #d0d0d0;
+}
+.karma-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  margin: 0 auto 8px;
+  border: 2px solid #333;
+}
+.karma-select {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  color: #ddd;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.karma-btn {
+  background: #f2960d22;
+  color: #f2960d;
+  border: 1px solid #f2960d44;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  width: 100%;
+  cursor: pointer;
+}
+.evaluated-tag {
+  background: #2ecc7122;
+  border: 1px solid #2ecc7144;
+  color: #2ecc71;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+/* Toggle switch */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #111;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.toggle-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #e74c3c;
+  border-radius: 12px;
+  transition: 0.2s;
+}
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.toggle-switch input:checked + .toggle-slider {
+  background: #2ecc71;
+}
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.info-row .label {
+  color: #888;
+}
+.info-row .value {
+  color: #fff;
+  font-weight: 600;
+}
+.divider {
+  border: none;
+  border-top: 1px solid #2a2a2a;
+  margin: 12px 0;
+}

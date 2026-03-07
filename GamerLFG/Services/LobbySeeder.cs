@@ -27,31 +27,31 @@ namespace GamerLFG.Services
             {
                 new() {
                     Id = IdHost, Username = "Notatord_Commander",
-                    Email = "host@test.com", PasswordHash = "test",
+                    Email = "host@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Notatord_Commander",
                     KarmaScore = 4.8,
                 },
                 new() {
                     Id = IdMember1, Username = "Dew_The_Slayer",
-                    Email = "member1@test.com", PasswordHash = "test",
+                    Email = "member1@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Dew_The_Slayer",
                     KarmaScore = 4.2,
                 },
                 new() {
                     Id = IdMember2, Username = "TanK_Artisan",
-                    Email = "member2@test.com", PasswordHash = "test",
+                    Email = "member2@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=TanK_Artisan",
                     KarmaScore = 3.9,
                 },
                 new() {
                     Id = IdVisitor, Username = "Looker_Guy",
-                    Email = "visitor@test.com", PasswordHash = "test",
+                    Email = "visitor@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Looker_Guy",
                     KarmaScore = 3.5,
                 },
                 new() {
                     Id = IdPending, Username = "Newbie_Player",
-                    Email = "pending@test.com", PasswordHash = "test",
+                    Email = "pending@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
                     Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Newbie_Player",
                     KarmaScore = 3.0,
                 },
@@ -80,24 +80,31 @@ namespace GamerLFG.Services
             {
                 Id          = IdLobby,
                 Title       = "ไต่แรงค์ Valorant คืนนี้ขอคนไม่ตึงมาก",
-                Game        = "Valorant",
+                Game        = "Elden Ring",
                 Description = "หาเพื่อนร่วมทีมตำแหน่ง Sentinel และ Duelist ครับ เล่นขำๆ เน้นฮา ไม่เน้นหัวร้อน",
                 Picture     = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
                 HostId      = IdHost,
                 MaxPlayers  = 5,
-                IsRecruiting = true,
+                IsRecruiting = false,
                 IsComplete  = false,
-                Moods       = new() { "Chill", "Voice Chat", "Competitive" },
+                Moods       = new() { "Chill" },
+                Roles       = new()
+                {
+                    new() { Name = "Leader",     Quantity = 1 },
+                    new() { Name = "Controller", Quantity = 2 },
+                },
                 DiscordLink = null,
-                EndRecruiting = DateTime.Now.AddHours(2),
-                StartEvent  = DateTime.Now.AddHours(3),
-                EndEvent    = DateTime.Now.AddHours(5),
+                StartRecruiting = DateTime.UtcNow,
+                EndRecruiting   = DateTime.UtcNow.AddHours(2),
+                StartEvent      = DateTime.UtcNow.AddHours(3),
+                EndEvent        = DateTime.UtcNow.AddHours(5),
                 Members = new()
                 {
                     new() { UserId = IdHost,    Status = "Host",    Role = "Leader"     },
                     new() { UserId = IdMember1, Status = "joined",  Role = "Controller" },
-                    new() { UserId = IdPending, Status = "Pending", Role = "Support"    }, // SC5
+                    new() { UserId = IdPending, Status = "Pending", Role = "Controller" }, // SC5 — role ต้องอยู่ใน Roles
                 },
+                CreatedAt = DateTime.UtcNow,
             };
 
             await db.Lobbies.InsertOneAsync(lobby);

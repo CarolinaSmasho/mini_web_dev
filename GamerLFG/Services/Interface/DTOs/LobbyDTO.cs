@@ -184,6 +184,17 @@ namespace GamerLFG.Services.Interface.DTOs
         [System.Text.Json.Serialization.JsonIgnore]
         public List<string> OccupiedRoles { get; set; } = new();
 
+        /// <summary>
+        /// Role name -> count of active members in that role.
+        /// NOT bound from form — server-side only, passed to View for JS constraints.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public Dictionary<string, int> OccupiedRoleCounts { get; set; } = new();
+
+        /// <summary>Number of active (non-Pending) members currently in the lobby.</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public int CurrentMemberCount { get; set; }
+
         [Required]
         [Range(2, 100, ErrorMessage = "จำนวนผู้เล่นต้องอยู่ระหว่าง 2 - 100 คน")]
         public int MaxPlayers { get; set; }
@@ -212,27 +223,36 @@ namespace GamerLFG.Services.Interface.DTOs
             existing.EndEvent = this.EndEvent;
 
             // ── Role protection ──────────────────────────────────────────────
-            // Collect role names currently held by active members
-            var takenRoleNames = existing.Members
-                .Where(m => m.Status != "Pending" && !string.IsNullOrEmpty(m.Role))
-                .Select(m => m.Role)
-                .Distinct()
-                .ToList();
+            // Count ALL members per role (joined + pending) as minimum quota
+            var roleMemberCounts = existing.Members
+                .Where(m => !string.IsNullOrEmpty(m.Role))
+                .GroupBy(m => m.Role)
+                .ToDictionary(g => g.Key, g => g.Count());
 
             // Start from submitted roles
             var merged = new List<LobbyRole>(this.Roles);
 
-            // Re-add any occupied role that the host tried to delete (protection)
-            foreach (var takenName in takenRoleNames)
+            foreach (var kvp in roleMemberCounts)
             {
-                if (!merged.Any(r => r.Name == takenName))
+                var existingRole = merged.FirstOrDefault(r => r.Name == kvp.Key);
+                if (existingRole == null)
                 {
-                    // Restore with quantity 1 as minimum fallback
-                    merged.Add(new LobbyRole { Name = takenName, Quantity = 1 });
+                    // Re-add occupied role that the host tried to delete
+                    merged.Add(new LobbyRole { Name = kvp.Key, Quantity = kvp.Value });
+                }
+                else if (existingRole.Quantity < kvp.Value)
+                {
+                    // Enforce minimum quantity = number of active members in this role
+                    existingRole.Quantity = kvp.Value;
                 }
             }
 
             existing.Roles = merged;
+
+            // ── MaxPlayers protection ────────────────────────────────────────
+            var activeMemberCount = existing.Members.Count(m => m.Status != "Pending");
+            if (existing.MaxPlayers < activeMemberCount)
+                existing.MaxPlayers = activeMemberCount;
         }
     }
 
