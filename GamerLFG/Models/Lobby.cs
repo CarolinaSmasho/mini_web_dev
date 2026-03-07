@@ -7,6 +7,15 @@ using System.ComponentModel;
 
 namespace GamerLFG.Models
 {
+    public enum LobbyStatus
+    {
+        ComingSoon,   // ยังไม่ถึงวัน StartRecruiting
+        Recruiting,   // StartRecruiting <= now <= EndRecruiting
+        EventOngoing, // EndRecruiting < now <= EndEvent (event กำลังเกิดขึ้น)
+        Completed,    // IsComplete = true หรือเลย EndEvent
+        Cancelled     // IsRecruiting = false ก่อนถึง StartEvent
+    }
+
 public class Lobby
 {
     [BsonId]
@@ -32,6 +41,26 @@ public class Lobby
     public int MaxPlayers { get; set; }
     public bool IsRecruiting { get; set; } = true;
     public bool IsComplete { get; set; } = false;
+
+    /// <summary>คำนวณสถานะปัจจุบันของ lobby จากวันที่และ flags</summary>
+    public LobbyStatus GetStatus()
+    {
+        var now = DateTime.UtcNow;
+
+        if (IsComplete || now > EndEvent)
+            return LobbyStatus.Completed;
+
+        if (now >= StartEvent)
+            return LobbyStatus.EventOngoing;
+
+        if (!IsRecruiting && now < StartEvent)
+            return LobbyStatus.Cancelled;
+
+        if (now >= StartRecruiting && now <= EndRecruiting)
+            return LobbyStatus.Recruiting;
+
+        return LobbyStatus.ComingSoon;
+    }
 
     // Time Management
     public DateTime StartRecruiting { get; set; }

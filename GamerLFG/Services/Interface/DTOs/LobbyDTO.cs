@@ -23,6 +23,9 @@ namespace GamerLFG.Services.Interface.DTOs
 
         public bool isRecuiting {get;set;}
         public DateTime EndEvent {get;set;}
+
+        /// <summary>สถานะปัจจุบันของ lobby คำนวณจาก GetStatus()</summary>
+        public LobbyStatus Status {get;set;}
     }
 
     public class CreateLobbyDTO

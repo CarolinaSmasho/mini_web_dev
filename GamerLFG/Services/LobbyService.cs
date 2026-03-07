@@ -30,7 +30,8 @@ namespace GamerLFG.Services
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
-                MaxPlayers = lob.MaxPlayers
+                MaxPlayers = lob.MaxPlayers,
+                Status = lob.GetStatus()
                 
             }).ToList();
             var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
@@ -42,7 +43,8 @@ namespace GamerLFG.Services
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
-                MaxPlayers = lob.MaxPlayers
+                MaxPlayers = lob.MaxPlayers,
+                Status = lob.GetStatus()
                 
             }).ToList();
 
@@ -83,7 +85,8 @@ namespace GamerLFG.Services
                     Picture = lob.Picture,
                     Moods = lob.Moods,
                     CurrentPlayers = lob.Members.Count,
-                    MaxPlayers = lob.MaxPlayers
+                    MaxPlayers = lob.MaxPlayers,
+                    Status = lob.GetStatus()
                     }).ToList();
                 }
 
