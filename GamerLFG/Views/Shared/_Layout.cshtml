@@ -9,59 +9,111 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GamerLFG.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true">
-        <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
-        <script src="~/js/nav-control.js" asp-append-version="true" defer></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
+    <script src="~/js/nav-control.js" asp-append-version="true" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+</head>
 
-    </head>
+<body>
+    
 
-    <body>
+    <header class="header">
+        <div class="nav-bar">
 
-
-        <header class="header">
-            <div class="nav-bar">
-
-                <div style="display: flex;" class="gamerhub-logo"
-                     onclick="location.href='@Url.Action(action: "Index", "Home")'">
-                    <p style="color: #ffffff;">Gamer</p>
-                    <p style="margin-left: 5px;padding: 0px 3px;background-color:#ffa431 ;border-radius: 10px;"
-                       class="hub-text">hub</p>
-                </div>
+            <div style="display: flex;" class="gamerhub-logo" onclick="location.href='@Url.Action(action: "Index", "Home")'">
+                <p style="color: #ffffff;">Gamer</p>
+                <p style="margin-left: 5px;padding: 0px 3px;background-color:#ffa431 ;border-radius: 10px;" class="hub-text">hub</p>
+            </div>
 
 
-                <div class="landscape-menu">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <a asp-controller="Auth" asp-action="Logout"
-                               onclick="return confirm('Ayo bro are you sure you wanna logout?')"><button
-                            class="logout-nav-button"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></a>
-                            <a asp-controller="User" asp-action="Friends_list" id="friend-button"><button
-                                class="login-nav-button">Friends</button></a>
-                            }
-                else
-                            {
-                                <a asp-controller="Auth" asp-action="Login"><button class="login-nav-button">Log in</button></a>
-                            }
+            <div class="landscape-menu">
+                @if(User.Identity.IsAuthenticated){
+                    <a asp-controller="Auth" asp-action="Logout" onclick="return confirm('Ayo bro are you sure you wanna logout?')"><button class="logout-nav-button"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></a>
+                    <a asp-controller="User" asp-action="Friends_list" id="friend-button"><button class="login-nav-button" >Friends</button></a>
+                }
+                else{
+                    <a asp-controller="Auth" asp-action="Login"><button class="login-nav-button">Log in</button></a>
+                }
+                
+                
+                
+                @* Notifications *@
+                <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
+                    <div class="notification-container-link" style="position: relative; display: inline-block;">
+                        <button id= "notifBell" class="logout-nav-button" style="position: relative;">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="notif-dot" id="global-notif-dot" style="display: none;"></span>
+                        </button>
+                    </div>
+                </a>
+                
+                <a  asp-controller="User" asp-action="Profiles">
+                    <i class="fa fa-user-circle fa-3x" style="color:white;" id="profile-icon"></i>
+                </a>
+            </div>
+
+            <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>
+                <span>&#9776;</span>
+            </div>
+
+            <div id="mobile-menu" class="nav-mobile-hidden">
+                @if(User.Identity.IsAuthenticated){
+                    <a asp-controller="Auth" asp-action="Logout" onclick="return confirm('Ayo bro are you sure you wanna logout?')"><button class="orange-button">Log Out</button></a>
+                }else{
+                    <a asp-controller="Auth" asp-action="Login"><button class="orange-button">Log In</button></a>
+                }
+                
+                <a asp-controller="User" asp-action="Profiles">
+                    <button class="orange-button">Profile</button>
+                </a>
+                @if(User.Identity.IsAuthenticated){
+                    <a asp-controller="User" asp-action="Friends_list">
+                            <button class="orange-button">Friends</button>
+                        </a>
+                }else{
+                        
+                    }
+                
+
+                <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
+                <button class="orange-button">Notics</button>
+                </a>
+                <a asp-controller="Lobby" asp-action="Create_lobby">
+                    <button class="orange-button">Create Lobby</button>
+                </a>
+            </div>
+            
+        </div> 
+
+    </header>
+   
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+       
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 
 
+    <input type="checkbox" id="global-user-mini-profile-toggle" class="mini-profile-checkbox">
 
-                            @* Notifications *@
-                            <a asp-controller="Noti" asp-action="Notification" style="text-decoration: none;">
-                                <div class="notification-container-link" style="position: relative; display: inline-block;">
-                                    <button id="notifBell" class="logout-nav-button" style="position: relative;">
-                                        <i class="fa-regular fa-bell"></i>
-                                        <span class="notif-dot" id="global-notif-dot" style="display: none;"></span>
-                                    </button>
-                                </div>
-                            </a>
-
-                            <a asp-controller="User" asp-action="Profiles">
-                                <i class="fa fa-user-circle fa-3x" style="color:white;" id="profile-icon"></i>
-                            </a>
+    <div class="mini-profile-overlay">
+                <div class="mini-profile-content">
+                    <div class="mini-profile-header">
+                        <div class="mini-profile-title-box">
+                            <span id="mini-profile-display-name" class="mini-profile-title">Loading...</span>
                         </div>
 
                         <div class="hamburger-icon" onclick="toggleMenu()" id='hamburger-icon'>

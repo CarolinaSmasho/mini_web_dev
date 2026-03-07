@@ -7,6 +7,7 @@ namespace GamerLFG.Services.Interface
     {
         Task<LobbyListResponse> GetAllLobbyAsync(string? userId);
         Task<List<ShowLobbyDTO>> GetNextLobbiesAsync(string? lastId,string? userId, int pageSize = 10);
+
         Task <(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby);
         Task<bool> DeleteLobbyAsync(string id);
         Task UpdateLobbyAsync (Lobby lobby);
@@ -23,5 +24,6 @@ namespace GamerLFG.Services.Interface
         Task<bool> KickMemberAsync(string lobbyId, string userId);
         Task<bool> CompleteLobbyAsync(string lobbyId);
         Task<bool> SubmitKarmaAsync(string fromUserId, string targetUserId, double score);
+        Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 10);
     }
 }
