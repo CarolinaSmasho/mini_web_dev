@@ -177,11 +177,13 @@
               
             </div>
 
+            @if(OtherLobby.Count > 0){
             <div class="add-lobby" onclick="giveMeMore()">
                 <i class="fa fa-plus-circle fa-2x"></i>
                 <p>More</p>
                 <input type="hidden" id="last-lob" value="@OtherLobby[OtherLobby.Count-1].Id">
             </div>
+            }
 
         </div>
         </main>
