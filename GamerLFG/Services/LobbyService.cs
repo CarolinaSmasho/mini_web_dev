@@ -217,7 +217,7 @@ namespace GamerLFG.Services
             );
             var update = Builders<Lobby>.Update.Set("Members.$.Status", "joined");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-
+             //noti ahh
             if (result.ModifiedCount > 0)
             {
                 var notification = new Notification
@@ -245,6 +245,7 @@ namespace GamerLFG.Services
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Pending");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+             //noti ahh
             if (result.ModifiedCount > 0)
             {
                 var notification = new Notification
