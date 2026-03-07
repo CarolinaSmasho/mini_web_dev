@@ -4,6 +4,7 @@
     var isHost  = Model.IsHost;
     var isMember = Model.IsMember;
     var hasPendingRequest = Model.HasPendingRequest;
+    var hasPendingInvite = Model.HasPendingInvite;
 }
 
 <link rel="stylesheet" href="~/css/lobby-details.css" asp-append-version="true">
@@ -149,11 +150,57 @@
                                     <small style="color:@(ap?.KarmaScore >= 3 ? "#2ecc71" : ap?.KarmaScore >= 0 ? "#f39c12" : "#e74c3c"); font-size:11px; margin-left:6px;">
                                         ★ @(ap?.KarmaScore.ToString("0.0") ?? "0.0")
                                     </small>
+                                    @if (app.InvitedBy != null)
+                                    {
+                                        var inviterName = Model.MemberMap.TryGetValue(app.InvitedBy, out var invU) ? invU.Username : "someone";
+                                        <br/><small style="color:#3498db; font-size:10px;">Invited by @inviterName</small>
+                                    }
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
                                 <button class="btn btn-sm btn-outline-danger" style="font-size:11px;" onclick="rejectApplicant('@lobby.Id', '@app.UserId')">Reject</button>
                                 <button class="btn btn-sm btn-success" style="font-size:11px;" onclick="recruitMember('@lobby.Id', '@app.UserId')">Accept</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @* Invite a Friend *@
+            @if (isMember && !lobby.IsComplete && lobby.GetStatus() == GamerLFG.Models.LobbyStatus.Recruiting && Model.InvitableFriends.Any())
+            {
+                <div class="card-dark" style="border-color:#3498db44;">
+                    <h5 class="text-white mb-3" style="font-size:15px;">
+                        Invite a Friend
+                    </h5>
+                    @foreach (var friend in Model.InvitableFriends)
+                    {
+                        <div class="d-flex justify-content-between align-items-center p-2 mb-2"
+                             style="background:#0a0a0a; border-radius:8px; border:1px solid #222;">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="@(friend.Avatar ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + friend.Username)"
+                                     width="36" class="rounded" style="border:2px solid #333;" />
+                                <div>
+                                    <p class="mb-0 fw-bold text-white" style="font-size:13px;">@friend.Username</p>
+                                    <small style="color:@(friend.KarmaScore >= 3 ? "#2ecc71" : friend.KarmaScore >= 0 ? "#f39c12" : "#e74c3c"); font-size:11px;">
+                                        ★ @friend.KarmaScore.ToString("0.0")
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <select id="invite-role-@friend.Id" style="background:#0a0a0a; border:1px solid #f2960d44; color:#f2960d; padding:2px 6px; border-radius:4px; font-size:11px; max-width:110px;">
+                                    @foreach (var r in lobby.Roles)
+                                    {
+                                        var taken = lobby.Members.Count(m => m.Role == r.Name);
+                                        var remaining = r.Quantity - taken;
+                                        if (remaining > 0)
+                                        {
+                                            <option value="@r.Name">@r.Name</option>
+                                        }
+                                    }
+                                    <option value="Other" selected>Other</option>
+                                </select>
+                                <button class="btn btn-sm" style="background:#3498db; color:#fff; font-size:11px; padding:3px 10px;" onclick="inviteFriend('@lobby.Id', '@friend.Id')">Invite</button>
                             </div>
                         </div>
                     }
@@ -344,6 +391,18 @@
                 else if (isMember && lobby.IsComplete)
                 {
                     <button class="btn-action btn-muted">MISSION COMPLETE</button>
+                }
+                else if (hasPendingInvite)
+                {
+                    <div class="comms-box mb-2" style="background:#0d1a2d; border-color:#3498db; padding:12px;">
+                        <p class="text-white mb-2" style="font-size:13px;">
+                            คุณถูกเชิญโดย <strong style="color:#f2960d;">@Model.InvitedByName</strong>
+                        </p>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-success flex-grow-1" onclick="acceptInvite('@lobby.Id')">ตอบรับ</button>
+                            <button class="btn btn-sm btn-outline-danger flex-grow-1" onclick="declineInvite('@lobby.Id')">ปฏิเสธ</button>
+                        </div>
+                    </div>
                 }
                 else if (hasPendingRequest)
                 {
