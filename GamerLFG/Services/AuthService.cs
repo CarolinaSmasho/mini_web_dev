@@ -48,10 +48,20 @@ namespace GamerLFG.Services
         public async Task<User?> VerifyLoginAsync(string username, string password)
         {
             var user = await GetByUsernameAsync(username);
-            if(user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash))
+                return null;
+
+            try
             {
+                if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                    return null;
+            }
+            catch (BCrypt.Net.SaltParseException)
+            {
+                // PasswordHash in DB is not a valid BCrypt hash
                 return null;
             }
+
             return user;
         }
     }

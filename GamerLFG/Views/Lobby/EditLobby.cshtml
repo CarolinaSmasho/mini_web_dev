@@ -1,100 +1,66 @@
 @{
     ViewData["Title"] = "Edit Lobby";
     string[] Moods = {"Chill","Hardcore","Not Toxic","Toxic","God"};
-    string[] Games = { 
-    "Elden Ring", 
-    "Monster Hunter: World", 
-    "Remnant 2", 
-    "Dark Souls III", 
-    "Helldivers 2", 
-    "Baldur's Gate 3", 
-    "It Takes Two", 
-    "Lords of the Fallen", 
-    "Valheim", 
-    "Palworld", 
-    "Deep Rock Galactic", 
-    "Left 4 Dead 2", 
-    "Stardew Valley", 
-    "Sea of Thieves", 
-    "Don't Starve Together", 
-    "Grand Theft Auto Online", 
-    "Apex Legends", 
-    "Warframe", 
-    "Destiny 2", 
-    "Minecraft" 
+    string[] Games = {
+    "Elden Ring",
+    "Monster Hunter: World",
+    "Remnant 2",
+    "Dark Souls III",
+    "Helldivers 2",
+    "Baldur's Gate 3",
+    "It Takes Two",
+    "Lords of the Fallen",
+    "Valheim",
+    "Palworld",
+    "Deep Rock Galactic",
+    "Left 4 Dead 2",
+    "Stardew Valley",
+    "Sea of Thieves",
+    "Don't Starve Together",
+    "Grand Theft Auto Online",
+    "Apex Legends",
+    "Warframe",
+    "Destiny 2",
+    "Minecraft"
     };
 }
 @using GamerLFG.Services.Interface.DTOs;
 @model EditLobbyDTO;
-<script src="~/js/create-lobby.js" asp-append-version="true" defer></script>
-<link rel="stylesheet" href="~/css/create_lobby.css" asp-append-version="true">
-<script>
-    // Roles occupied by active members — cannot be removed or renamed
-    const occupiedRoles = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OccupiedRoles));</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @{int idx = 0;}
-        @if (Model.Roles != null && Model.Roles.Any())
-        {
-            foreach (var role in Model.Roles)
-            {
-                <text>
-                itemsArray.push({ id: Date.now() + @(idx++), label: "@Html.Raw(role.Name.Replace("\"","\\\""))", quantity: @role.Quantity });
-                </text>
-            }
-        }
-        
-        @if (Model.Moods != null && Model.Moods.Any())
-        {
-            foreach (var mood in Model.Moods)
-            {
-                <text>
-                var cb = document.getElementById('mood-' + '@mood');
-                if (cb) cb.checked = true;
-                </text>
-            }
-        }
-        
-        // Mark locked based on occupiedRoles, then render
-        itemsArray = itemsArray.map(function(item) {
-            item.locked = occupiedRoles.includes(item.label);
-            return item;
-        });
 
-        itemsArray.forEach(function(item) {
-            var itemDiv = document.createElement("div");
-            itemDiv.className = "item-box";
-            itemDiv.id = "item-" + item.id;
-            itemDiv.innerHTML = buildRoleCard(item);
-            document.getElementById("roles-added").appendChild(itemDiv);
-        });
-        updateHiddenInput();
-    });
+<script>
+    // Data from server for JS constraints
+    const occupiedRoleCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OccupiedRoleCounts));
+    const currentMemberCount = @Model.CurrentMemberCount;
+    const initialRoles = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.Roles.Select(r => new { name = r.Name, quantity = r.Quantity })
+    ));
 </script>
+<script src="~/js/edit-lobby.js" asp-append-version="true" defer></script>
 <link rel="stylesheet" href="~/css/create_lobby.css" asp-append-version="true">
+
 <main>
     <form asp-controller="Lobby" asp-action="EditMission" class="create-form" method="post">
         <div asp-validation-summary="All" class="text-danger"></div>
         <input type="hidden" asp-for="Id">
         <div class="title">
             <label for="game">Choose Your Game</label>
-            <select asp-for="Game" 
-                            asp-items="@(new SelectList(Games))" 
+            <select asp-for="Game"
+                            asp-items="@(new SelectList(Games))"
                             class="form-control">
                         <option value="">-- เลือกเกม --</option>
                     </select>
-            
-                    
+
+
             <input asp-for="Title" type="text" placeholder="Lobby title">
             <input asp-for="Description" type="text"  placeholder="description">
         </div>
         <div>
-                    <input type="number" asp-for="MaxPlayers" id="min" oninput=" this.value = this.value.replace(/[^2-100]/g, '')">
+                    <input type="number" asp-for="MaxPlayers" id="min" min="@Model.CurrentMemberCount" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) < currentMemberCount) this.value = currentMemberCount;">
                     <div id="add-count-btn">
-                        <button type="button" onclick="countingTime(1,'min')"><i class="fa fa-arrow-up"></i></button>
-                        <button type="button" onclick="countingTime(-1,'min')"><i class="fa fa-arrow-down"></i></button>
+                        <button type="button" onclick="countingTimeEdit(1,'min')"><i class="fa fa-arrow-up"></i></button>
+                        <button type="button" onclick="countingTimeEdit(-1,'min')"><i class="fa fa-arrow-down"></i></button>
                     </div>
-                    <p>MIN</p>
+                    <p>MIN (current members: @Model.CurrentMemberCount)</p>
         </div>
 
         <div class="require">
@@ -105,10 +71,10 @@
                 <input type="text" placeholder="Role Assign" id="key-role">
                 <input type="text" id="count" value="1" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <div id="add-count-btn">
-                    <button type="button" onclick="counting(1,'count')"><i class="fa fa-arrow-up"></i></button>
-                    <button type="button" onclick="counting(-1,'count')"><i class="fa fa-arrow-down"></i></button>
+                    <button type="button" onclick="editCounting(1,'count')"><i class="fa fa-arrow-up"></i></button>
+                    <button type="button" onclick="editCounting(-1,'count')"><i class="fa fa-arrow-down"></i></button>
                 </div>
-                 <button onclick="addToDOM()" id="add-role-btn" type="button"><strong>ADD ROLE</strong></i></button>
+                 <button onclick="addEditRole()" id="add-role-btn" type="button"><strong>ADD ROLE</strong></button>
             </div>
         <div id="roles-added"></div>
 
@@ -120,9 +86,10 @@
             <p>TACTICAL PROTOCAL TAGS</p>
             <div class=moods>
                 @foreach(string mood in Moods){
-                <input type="checkbox" name="Moods" id="mood-@mood" value="@mood" class="check-box"> 
-                <label class="mood-label" for=@mood>@mood</label>
-            }   
+                <input type="checkbox" name="Moods" id="mood-@mood" value="@mood" class="check-box"
+                    @(Model.Moods != null && Model.Moods.Contains(mood) ? "checked" : "")>
+                <label class="mood-label" for="mood-@mood">@mood</label>
+            }
             </div>
 
         </div>
@@ -133,39 +100,39 @@
         <div class="discord">
             <p>Discord Link</p>
             <input type="text" placeholder="discord" asp-for="DiscordLink">
-            
+
         </div>
-        
+
         <div class="date">
             <label for="start" class="datetime-local">
                 <div class="calendar">
-                 Open Recruit Date <i class="fa fa-calendar"></i>   
+                 Open Recruit Date <i class="fa fa-calendar"></i>
                 </div>
-               
-               <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start" asp-for="StartRecruiting"> 
+
+               <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start" asp-for="StartRecruiting">
             </label>
              <label for="end" class="datetime-local">
                 <div class="calendar">
-                  Close Recruit Date <i class="fa fa-calendar"></i>  
+                  Close Recruit Date <i class="fa fa-calendar"></i>
                 </div>
-               
-              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end" asp-for="EndRecruiting">  
+
+              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end" asp-for="EndRecruiting">
 
              </label>
             <label for="start-e" class="datetime-local">
                 <div class="calendar">
-                  Start Event Date <i class="fa fa-calendar"></i>  
+                  Start Event Date <i class="fa fa-calendar"></i>
                 </div>
-               
-              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start-e" asp-for="StartEvent">  
+
+              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start-e" asp-for="StartEvent">
              </label>
 
              <label for="end-e" class="datetime-local">
                 <div class="calendar">
-                  End Event Date <i class="fa fa-calendar"></i>  
+                  End Event Date <i class="fa fa-calendar"></i>
                 </div>
-               
-              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end-e" asp-for="EndEvent">  
+
+              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end-e" asp-for="EndEvent">
              </label>
         </div>
 

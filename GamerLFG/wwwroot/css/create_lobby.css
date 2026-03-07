@@ -166,38 +166,91 @@ form >div{
 
 }
 
-.role-box{
-    display: flex;
-    gap:20px;
-    max-width: 300px;
-    flex-direction: column;
+/* ── Edit Role Cards ── */
+#roles-added {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    padding: 16px 0;
+    width: 100%;
 }
-.role-box div{
+.edit-role-card {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.edit-role-card.locked {
+    border-color: #e74c3c44;
+}
+.erc-header {
     display: flex;
     align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
-.role-box div *{
-    margin: 0;
-    margin-left: 10px;
+.erc-name {
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
 }
-.role-box div p{
-    color: #ffa431;
-    font-weight: bold;
+.erc-lock {
+    background: #e74c3c22;
+    color: #e74c3c;
+    border: 1px solid #e74c3c44;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
 }
-.del-role-btn{
-    color: rgb(0, 0, 0);
-    background-color: #ffa431;
-    font-weight: bolder;
-    border: #292929 solid 2px;
-    padding: 3px;
-    height: fit-content;
+.erc-name-input {
+    background: #111 !important;
+    border: 1px solid #444 !important;
+    color: #ddd !important;
+    padding: 4px 8px !important;
+    border-radius: 4px;
+    font-size: 13px;
+    width: 100% !important;
 }
-#roles-added{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    justify-content: start;
-    padding: 20px;
-    width: 100%;
+.erc-qty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+}
+.erc-qty-btn {
+    background: #333;
+    color: #fff;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.erc-qty-btn:hover {
+    background: #444;
+}
+.erc-remove {
+    background: transparent;
+    color: #e74c3c;
+    border: 1px solid #e74c3c44;
+    border-radius: 6px;
+    padding: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.erc-remove:hover {
+    background: #e74c3c22;
 }
 
 @media (max-width:768px){

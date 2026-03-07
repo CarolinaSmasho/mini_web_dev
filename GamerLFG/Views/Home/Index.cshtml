@@ -8,32 +8,42 @@
 
 @{
     List<ShowLobbyDTO>? MyLobby = Model.MyLobbies;
-    List<ShowLobbyDTO>? OtherLobby = Model.OtherLobbies;
+    List<ShowLobbyDTO>? OtherLobby = new List<ShowLobbyDTO>();
+    OtherLobby.AddRange(Model.OtherLobbies);
 }
-
 <link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <script src="~/js/home_page.js" asp-append-version="true" defer></script>
 
 
         <main>
         <div class="mobile-search" id="mobile-search">
-                <form action="" class="search-form">
-                    <input type="text" placeholder="Search.." name="search" class="search-space">
-                    <button type="submit"><i class="fa fa-search fa-3x"></i></button>
+                <form action="" class="search-form" id="search-form">
+                    <input type="text" placeholder="Search.." name="search" class="search-space" id="searchID">
+                    <button type="button" onclick="togleSearch()" ><i class="fa fa-search fa-3x" id="searchBtn"></i></button>
+                    
                 </form>
+                
         </div>
-
+        <div id="tag-search" class="lob_off" style="margin-top:1px;padding:0px;">
+            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+                <i class="fa fa-search" style="color: #ffa431;"></i>Search Result</h3>
+        </div>
+        <div id="resultsContainer" class="lobbies">
+        </div>
            
             
             
-            <div class="all-lob">
+        <div class="all-lob" id="all-lob">
                 <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-gamepad" style="color: #ffa431;"></i>My Lobby</h3>
                 <div style="display: flex;gap:20px;align-items:center">
                    <p class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">Hidden</p>
                     <button id="hidden" class="off" onclick="toggleLobShow()"
-                    style="background-color:black;color:white;margin:1rem"
-                    ><i class="fa fa-toggle-off fa-2x" aria-hidden="true"></i></button> 
+                    style="background-color:black;color:white;margin:1rem">
+                    <i class="fa fa-toggle-off fa-2x" aria-hidden="true" ></i>
+                    </button> 
                 </div>
                 
             <div class="lobbies" id="mylob">
@@ -62,17 +72,16 @@
                     <h3>@lob.Title</h3>
                     <div class="slots">
                         <div class="icon">
-                            @if(lob.MaxPlayers <=10){
-                                @for(int i=0;i< lob.MaxPlayers;i++){
+                                @for(int i=0;i< lob.MaxPlayers && i<=15;i++){
+                                     
                                     @if(i>=lob.CurrentPlayers){
-                                    <i class="fa fa-user-o"></i>    
+                                    <i class="fa fa-user-o aria-hidden="true""></i>    
                                     }
                                     else{
-                                        <i class="fa fa-user-o" style="color: #ffa431;"></i>  
+                                        <i class="fa fa-user-o aria-hidden="true"" style="color: #ffa431;"></i>  
                                     }
-                                    
-                                }
-                            }
+ 
+                            }   
                         </div>
                         <div>
                             <p>@lob.CurrentPlayers/@lob.MaxPlayers SLOTS</p>
@@ -108,7 +117,7 @@
 
             </div>
 
-                <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+        <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-globe" style="color: #ffa431;"></i>Public Feed</h3>
             <div class="lobbies" id="notmine">
                 
@@ -167,6 +176,14 @@
             }  
               
             </div>
+
+            @if(OtherLobby.Count > 0){
+            <div class="add-lobby" onclick="giveMeMore()">
+                <i class="fa fa-plus-circle fa-2x"></i>
+                <p>More</p>
+                <input type="hidden" id="last-lob" value="@OtherLobby[OtherLobby.Count-1].Id">
+            </div>
+            }
 
         </div>
         </main>
