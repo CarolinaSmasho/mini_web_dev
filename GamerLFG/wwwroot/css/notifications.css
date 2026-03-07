@@ -1,4 +1,4 @@
-.noti-page-container {
+/* .noti-page-container {
   max-width: 800px;
   margin: 40px auto;
   background-color: #1a1a1a;
@@ -24,20 +24,20 @@
 
 .noti-item:hover {
   background-color: #252525;
-}
+} */
 
 /* สไตล์ตอนยังไม่ได้อ่าน */
-.noti-item.unread {
+/* .noti-item.unread {
   background-color: rgba(255, 164, 49, 0.05);
 }
 
 .noti-item.unread .noti-message {
   font-weight: bold;
   color: #fff;
-}
+} */
 
 /* จุดสีแดง */
-.red-dot {
+/* .red-dot {
   width: 10px;
   height: 10px;
   background-color: #ff4b2b;
@@ -49,4 +49,108 @@
 .noti-time {
   font-size: 12px;
   color: #777;
+} */
+
+/* notifications.css - GamerHub Dark Theme */
+body {
+  background-color: #000000 !important;
+}
+.noti-page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #000000; /* พื้นหลังสีดำตามธีมเว็บ */
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.noti-page-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #333333; /* เส้นคั่นสีเทาเข้ม */
+  padding-bottom: 10px;
+}
+
+.noti-page-header h2 {
+  color: #ffffff;
+  font-size: 24px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.noti-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* สไตล์การ์ดแจ้งเตือนแต่ละอัน (คล้ายๆ กล่อง Social Links / Bio ในรูป) */
+.noti-item {
+  background-color: #121212; /* สีเทาเข้มเกือบดำ */
+  border: 1px solid #555; /* ขอบสีเทาอ่อนลงมานิดนึง */
+  border-radius: 8px; /* ขอบมนๆ ให้เข้ากับกล่อง Profile */
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.noti-item:hover {
+  background-color: #1a1a1a;
+  border-color: #ffa31a; /* เวลาเอาเมาส์ชี้ ขอบจะเรืองแสงเป็นสีส้มของ GamerHub */
+}
+
+/* สไตล์สำหรับแจ้งเตือนที่ยังไม่ได้อ่าน */
+.noti-item.unread {
+  background-color: #181818;
+  border-left: 4px solid #ffa31a; /* แถบสีส้มด้านซ้ายบอกว่ายังไม่ได้อ่าน */
+}
+
+.noti-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.noti-message {
+  color: #ffffff;
+  font-size: 16px;
+  margin: 0;
+}
+
+.noti-time {
+  color: #888888; /* เวลาแจ้งเตือนใช้สีเทาจะได้ไม่แย่งซีนข้อความหลัก */
+  font-size: 12px;
+}
+
+/* จุดแจ้งเตือน (เปลี่ยนจากแดงเป็นสีส้มให้เข้าธีม) */
+.red-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #ffa31a;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.6); /* เรืองแสงนิดๆ */
+}
+
+/* กรณีไม่มีแจ้งเตือน */
+.noti-empty {
+  text-align: center;
+  color: #888888;
+  padding: 40px;
+  background-color: #121212;
+  border-radius: 8px;
+  border: 1px dashed #333333;
+}
+/* in _layout page nav bar */
+.notif-dot {
+  position: absolute;
+  top: 8px;
+  right: 6px;
+  width: 9px;
+  height: 9px;
+  background-color: #ffa31a;
+  border-radius: 50%;
+  /* border: 2px solid #000000; */
 }

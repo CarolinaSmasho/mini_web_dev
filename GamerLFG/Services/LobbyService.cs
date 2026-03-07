@@ -150,7 +150,7 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> ApplyToLobbyAsync(string lobbyId, string userId, string role)
-        {
+        {   
             // Fetch the lobby first to check capacity
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
             if (lobby == null) return false;
@@ -175,6 +175,23 @@ namespace GamerLFG.Services
                 Role = role
             });
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            //noti ahh
+            if (result.ModifiedCount > 0)
+            {
+                var applicant = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+                var applicantName = applicant != null ? applicant.Username : "have people";
+                var notification = new Notification
+                {
+                    Type = "lobby_request_apply",
+                    RelateObjectId = lobbyId,
+                    UserId = lobby.HostId, 
+                    Text = $"{applicantName} ได้ส่งคำขอเข้าร่วมห้อง {lobby.Title} ของคุณในตำแหน่ง {role}",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                };
+                await _database.Notifications.InsertOneAsync(notification);
+            }
+            
             return result.ModifiedCount > 0;
         }
 
@@ -190,21 +207,59 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> RecruitMemberAsync(string lobbyId, string userId)
-        {
+        {   //lobby title
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
             var filter = Builders<Lobby>.Filter.And(
                 Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
                 Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status == "Pending")
             );
             var update = Builders<Lobby>.Update.Set("Members.$.Status", "joined");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+
+            if (result.ModifiedCount > 0)
+            {
+                var notification = new Notification
+                {
+                    Type = "lobby_accepted", 
+                    RelateObjectId = lobbyId, 
+                    UserId = userId, 
+                    Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณได้รับการอนุมัติแล้ว",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                };
+
+                // บันทึกลงตาราง Notifications
+                await _database.Notifications.InsertOneAsync(notification);
+            }
             return result.ModifiedCount > 0;
+            
         }
 
         public async Task<bool> RejectApplicantAsync(string lobbyId, string userId)
-        {
+        {   
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+                
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Pending");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            if (result.ModifiedCount > 0)
+            {
+                var notification = new Notification
+                {
+                    Type = "lobby_rejected",
+                    RelateObjectId = lobbyId,
+                    UserId = userId, 
+                    Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณถูกปฏิเสธ",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                };
+
+                
+                await _database.Notifications.InsertOneAsync(notification);
+            }
             return result.ModifiedCount > 0;
         }
 

@@ -210,26 +210,18 @@
                 });
         }
     </script>
-    @* Noti
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const bell = document.getElementById('notifBell');
-        const dropdown = document.getElementById('notifDropdown');
-
-        if (bell && dropdown) {
-            bell.addEventListener('click', function (e) {
-                e.stopPropagation();
-                dropdown.classList.toggle('show-notif');
-            });
-            //if click not in dropdown or bell
-            document.addEventListener('click', function (e) {
-                if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
-                    dropdown.classList.remove('show-notif');
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/Noti/GetUnreadCount')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    document.getElementById('global-notif-dot').style.display = 'block';
                 }
-            });
-        }
+            })
+            .catch(err => console.error("Error fetching unread count:", err));
     });
-    </script> *@
+    </script>
 </body>
 
 
