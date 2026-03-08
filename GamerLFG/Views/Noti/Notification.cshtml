@@ -82,5 +82,8 @@
             || type === "lobby_invite_rejected" || type === "lobby_invite_declined"){
             window.location.href = '/Lobby/Details/' + relateObjectId;
         }
+        else if (type === "karma_received") {
+            window.location.href = '/User/Profiles';
+        }
     }
 </script>
