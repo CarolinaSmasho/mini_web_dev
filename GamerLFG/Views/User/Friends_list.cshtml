@@ -5,12 +5,13 @@
 
 <link rel="stylesheet" href="~/css/friends_list.css" asp-append-version="true" />
 
+<div class="container">
 <h1>Friends List</h1>
 
 
 <ul class="nav-tabs">
     <li id="friends" class="rbx-tab active"><a asp-controller="User" asp-action="Friends_list">
-        <span class="text-lead">Friends</span></a>
+        <span class="text-lead" style="color : black;">Friends</span></a>
     </li>
     <li id="requests" class="rbx-tab"><a asp-controller="FriendRequest" asp-action="FriendRequestList"><span
         class="text-lead">Requests</span></a>
@@ -78,7 +79,7 @@
 
     </ul>
 </div>
-
+</div>
 <script>
     document.getElementById('searchInput').addEventListener('input', function (e) {
         let keyword = e.target.value;

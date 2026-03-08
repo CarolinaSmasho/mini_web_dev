@@ -57,6 +57,21 @@ body {
   border: 2px solid #f2960d;
   object-fit: cover;
 }
+.kebab-btn {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.kebab-btn:hover {
+  color: #f2960d;
+  background: #ffffff0a;
+}
 .btn-action {
   border: none;
   padding: 10px;

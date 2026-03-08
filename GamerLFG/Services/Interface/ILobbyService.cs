@@ -27,5 +27,9 @@ namespace GamerLFG.Services.Interface
         Task<bool> ChangeMemberRoleAsync(string lobbyId, string userId, string newRole);
         Task<bool> ToggleRecruitmentAsync(string lobbyId);
         Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 10);
+        Task ProcessAutoRecruitAsync(string lobbyId);
+        Task<(bool success, string message)> InviteFriendAsync(string lobbyId, string inviterId, string friendId, string role);
+        Task<(bool success, string message)> AcceptInviteAsync(string lobbyId, string userId);
+        Task<(bool success, string message)> DeclineInviteAsync(string lobbyId, string userId);
     }
 }

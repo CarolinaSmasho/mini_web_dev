@@ -31,6 +31,7 @@ builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<ILobbyService, LobbyService>();
+builder.Services.AddHostedService<RecruitmentBackgroundService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
