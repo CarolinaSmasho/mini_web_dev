@@ -230,12 +230,9 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> RecruitMemberAsync(string lobbyId, string userId)
-        {
+        {   //lobby title
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
             if (lobby == null) return false;
-
-            var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status == "Pending");
-            if (member == null) return false;
 
             var filter = Builders<Lobby>.Filter.And(
                 Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
@@ -243,79 +240,46 @@ namespace GamerLFG.Services
             );
             var update = Builders<Lobby>.Update.Set("Members.$.Status", "joined");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-
+             //noti ahh
             if (result.ModifiedCount > 0)
             {
-                // Notify the accepted user
-                await _database.Notifications.InsertOneAsync(new Notification
+                var notification = new Notification
                 {
-                    Type = "lobby_accepted",
-                    RelateObjectId = lobbyId,
-                    UserId = userId,
+                    Type = "lobby_accepted", 
+                    RelateObjectId = lobbyId, 
+                    UserId = userId, 
                     Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณได้รับการอนุมัติแล้ว",
                     IsRead = false,
                     Date = DateTime.UtcNow
-                });
+                };
 
-                // If this was an invite, also notify the inviter
-                if (member.InvitedBy != null)
-                {
-                    var friendUser = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
-                    var friendName = friendUser?.Username ?? "Someone";
-                    await _database.Notifications.InsertOneAsync(new Notification
-                    {
-                        Type = "lobby_invite_approved",
-                        RelateObjectId = lobbyId,
-                        UserId = member.InvitedBy,
-                        Text = $"{friendName} ที่คุณเชิญได้รับการอนุมัติเข้าร่วมห้อง {lobby.Title} แล้ว",
-                        IsRead = false,
-                        Date = DateTime.UtcNow
-                    });
-                }
+                // บันทึกลงตาราง Notifications
+                await _database.Notifications.InsertOneAsync(notification);
             }
             return result.ModifiedCount > 0;
         }
 
         public async Task<bool> RejectApplicantAsync(string lobbyId, string userId)
-        {
+        {   
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
             if (lobby == null) return false;
-
-            var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status == "Pending");
-            if (member == null) return false;
-
+                
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Pending");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-
+             //noti ahh
             if (result.ModifiedCount > 0)
             {
-                // Notify the rejected user
-                await _database.Notifications.InsertOneAsync(new Notification
+                var notification = new Notification
                 {
                     Type = "lobby_rejected",
                     RelateObjectId = lobbyId,
-                    UserId = userId,
+                    UserId = userId, 
                     Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณถูกปฏิเสธ",
                     IsRead = false,
                     Date = DateTime.UtcNow
-                });
-
-                // If this was an invite, also notify the inviter
-                if (member.InvitedBy != null)
-                {
-                    var friendUser = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
-                    var friendName = friendUser?.Username ?? "Someone";
-                    await _database.Notifications.InsertOneAsync(new Notification
-                    {
-                        Type = "lobby_invite_rejected",
-                        RelateObjectId = lobbyId,
-                        UserId = member.InvitedBy,
-                        Text = $"{friendName} ที่คุณเชิญถูกปฏิเสธจากห้อง {lobby.Title}",
-                        IsRead = false,
-                        Date = DateTime.UtcNow
-                    });
-                }
+                };
+                await _database.Notifications.InsertOneAsync(notification);
             }
             return result.ModifiedCount > 0;
         }
