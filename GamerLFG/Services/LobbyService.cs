@@ -240,7 +240,7 @@ namespace GamerLFG.Services
                     UserId = lobby.HostId, 
                     Text = $"{applicantName} ได้ส่งคำขอเข้าร่วมห้อง {lobby.Title} ของคุณในตำแหน่ง {role}",
                     IsRead = false,
-                    Date = DateTime.UtcNow
+                    Date = DateTime.Now
                 };
                 await _database.Notifications.InsertOneAsync(notification);
             }
@@ -284,7 +284,7 @@ namespace GamerLFG.Services
                     UserId = userId, 
                     Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณได้รับการอนุมัติแล้ว",
                     IsRead = false,
-                    Date = DateTime.UtcNow
+                    Date = DateTime.Now
                 };
 
                 // บันทึกลงตาราง Notifications
@@ -311,7 +311,7 @@ namespace GamerLFG.Services
                     UserId = userId, 
                     Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณถูกปฏิเสธ",
                     IsRead = false,
-                    Date = DateTime.UtcNow
+                    Date = DateTime.Now
                 };
                 await _database.Notifications.InsertOneAsync(notification);
             }
@@ -337,7 +337,7 @@ namespace GamerLFG.Services
                     UserId = userId, 
                     Text = $"คุณถูกเตะออกจากห้อง {lobby.Title}",
                     IsRead = false,
-                    Date = DateTime.UtcNow
+                    Date = DateTime.Now
                 };
                 await _database.Notifications.InsertOneAsync(notification);
             }
@@ -381,7 +381,7 @@ namespace GamerLFG.Services
                         UserId = memberId, 
                         Text = $"ห้อง {lobby.Title} จบลงแล้ว อย่าลืมเข้าไปโหวตให้คะแนน Karma ให้เพื่อนร่วมทีมด้วยจ๊ะนะ",
                         IsRead = false,
-                        Date = DateTime.UtcNow
+                        Date = DateTime.Now
                     });
                 }
 
@@ -427,7 +427,7 @@ namespace GamerLFG.Services
                 UserId = targetUserId, 
                 Text = $"{senderName} ได้โหวตคะแนน Karma ให้คุณ {score} คะแนน",
                 IsRead = false,
-                Date = DateTime.UtcNow
+                Date = DateTime.Now
             };
             await _database.Notifications.InsertOneAsync(notification);
             return true;

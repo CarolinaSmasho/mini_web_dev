@@ -21,7 +21,7 @@
                     
                     <div class="noti-text-wrapper">
                         <p class="noti-message">@item.Text</p>
-                        <span class="noti-time">@item.Date.ToString("g")</span>
+                        <span class="noti-time">@item.Date.ToUniversalTime().AddHours(7).ToString("g")</span>
                     </div>
 
                     @if (!item.IsRead)
