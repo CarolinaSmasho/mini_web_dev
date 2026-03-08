@@ -73,7 +73,9 @@ public class Lobby
     public List<LobbyMember> Members { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-}
+    
+    }
+
 
 /// <summary>A role slot with a name and maximum number of players allowed.</summary>
 public class LobbyRole
@@ -93,5 +95,6 @@ public class LobbyMember
     [BsonRepresentation(BsonType.ObjectId)]
     public string? InvitedBy { get; set; }
 }
+
 
 }

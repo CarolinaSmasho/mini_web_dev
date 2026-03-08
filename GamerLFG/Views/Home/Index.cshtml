@@ -51,7 +51,7 @@
                 
                 
                 <div class=my-lobby>
-                <div class="lobby">
+                <div class="lobby" onclick="toLobby(@lob.Id)">
                     <div class="game-pic" style="background-image: url('@lob.Picture');">
                         <div class="gname">
                             <p>@lob.Game</p>
@@ -124,7 +124,7 @@
         
         @foreach(ShowLobbyDTO lob in OtherLobby){
                 <div class="public-lobby">
-                <div class="lobby">
+                <div class="lobby" onclick="toLobby(@lob.Id)">
                     <div class="game-pic" style="background-image: url('@lob.Picture');">
                         <div class="gname">
                             <p>@lob.Game</p>

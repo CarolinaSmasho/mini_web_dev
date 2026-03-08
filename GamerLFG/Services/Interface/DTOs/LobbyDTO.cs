@@ -74,13 +74,16 @@ namespace GamerLFG.Services.Interface.DTOs
 
         public (bool valid, string erMessage) TimeValidation()
         {   
-            DateTime minAllowedTime = DateTime.UtcNow.AddMinutes(10);
+            DateTime minAllowedTime = DateTime.UtcNow.AddMinutes(-10);
+            
             if(this.StartRecruiting > this.EndRecruiting )
             {
                 return (false, "เวลาเริ่มรับสมัครต้องก่อนเวลาปิดรับสมัคร");
             }
             if(this.StartRecruiting < minAllowedTime)
             {
+                Console.WriteLine(this.StartRecruiting.ToString("dd/MM/yy HH:mm"));
+                Console.WriteLine(minAllowedTime.ToString("dd/MM/yy HH:mm"));
                 return (false,"เวลาเริ่ม Recuiting ต้องไม่เป็นอดีต");
             
             }
