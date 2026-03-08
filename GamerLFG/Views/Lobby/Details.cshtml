@@ -152,6 +152,15 @@
                             <small style="color:@KarmaColor(ap?.KarmaScore ?? 0); font-size:11px; margin-left:6px;">
                                 ★ @(ap?.KarmaScore.ToString("0.0") ?? "0.0")
                             </small>
+                            @if (ap?.VibeTags != null && ap.VibeTags.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                    @foreach (var tag in ap.VibeTags)
+                                    {
+                                        <span class="badge bg-secondary" style="font-size:9px; padding:2px 5px;">@tag</span>
+                                    }
+                                </div>
+                            }
                             @if (app.InvitedBy != null)
                             {
                                 var inviterName = Model.MemberMap.TryGetValue(app.InvitedBy, out var invU) ? invU.Username : "someone";
