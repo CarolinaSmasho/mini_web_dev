@@ -189,3 +189,76 @@ document.addEventListener('DOMContentLoaded', function() {
     updateEditHiddenInputs();
     setupMaxPlayersConstraint();
 });
+
+
+
+let startBefore, endBefore, startEventBefore, endEventBefore;
+
+window.onload = () => {
+    startBefore = document.getElementById("start").value;
+    endBefore = document.getElementById("end").value;
+    startEventBefore = document.getElementById("start-e").value;
+    endEventBefore = document.getElementById("end-e").value;
+};
+
+const checkTimeInput = () => {
+    // ดึง Element ทั้งหมดมาเตรียมไว้
+    const elStart = document.getElementById("start");
+    const elEnd = document.getElementById("end");
+    const elStartEv = document.getElementById("start-e");
+    const elEndEv = document.getElementById("end-e");
+
+    // แปลงค่าปัจจุบันเป็น Timestamp เพื่อเปรียบเทียบ
+    const startNow = new Date(elStart.value).getTime();
+    const endNow = new Date(elEnd.value).getTime();
+    const startEvNow = new Date(elStartEv.value).getTime();
+    const endEvNow = new Date(elEndEv.value).getTime();
+    const nowTs = Date.now();
+
+    // --- [CONDITION 1: เริ่มรับสมัคร ห้ามเก่ากว่าปัจจุบัน และห้ามเก่ากว่าค่าเดิม] ---
+    if (startNow < new Date(startBefore).getTime() && startNow < nowTs) {
+        alert("อะ อ่า Bro เวลาเริ่มมันเป็นอดีตที่นานกว่าเวลาเดิมนะ แถมเก่ากว่าปัจจุบันด้วย");
+        rollbackAll();
+        return;
+    }
+
+    // --- [CONDITION 2: เริ่มรับสมัคร >= ปิดรับสมัคร] ---
+    if (startNow >= endNow) {
+        alert("อะ อ่า โบร๋ เวลาเริ่มห้ามมากกว่าหรือเท่ากับเวลาปิดนะ");
+        rollbackAll();
+        return;
+    }
+
+    // --- [CONDITION 3: ปิดรับสมัคร > เริ่มงาน] ---
+    if (endNow > startEvNow) {
+        alert("อะ อ่า เริ่มงานก่อนปิดรับสมัครไม่ได้นะ");
+        rollbackAll();
+        return;
+    }
+
+    // --- [CONDITION 4: เริ่มงาน >= จบงาน] ---
+    if (startEvNow >= endEvNow) {
+        alert("อะ อ่า เวลาเริ่ม Event ห้ามมากกว่าหรือเท่ากับเวลาจบนะ");
+        rollbackAll();
+        return;
+    }
+
+    // --- [SUCCESS: ถ้าไม่ติดเงื่อนไขใดๆ เลย ให้บันทึกค่าปัจจุบันเป็นค่า Before ใหม่] ---
+    updateBeforeValues();
+    console.log("บันทึกค่าใหม่สำเร็จ!");
+
+    // --- ฟังก์ชันช่วยภายใน ---
+    function rollbackAll() {
+        elStart.value = startBefore;
+        elEnd.value = endBefore;
+        elStartEv.value = startEventBefore;
+        elEndEv.value = endEventBefore;
+    }
+
+    function updateBeforeValues() {
+        startBefore = elStart.value;
+        endBefore = elEnd.value;
+        startEventBefore = elStartEv.value;
+        endEventBefore = elEndEv.value;
+    }
+};

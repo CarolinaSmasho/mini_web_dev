@@ -123,7 +123,7 @@ namespace GamerLFG.Services
                 newLobby.EndRecruiting = DateTime.SpecifyKind(newLobby.EndRecruiting, DateTimeKind.Local).ToUniversalTime();
                 newLobby.StartEvent = DateTime.SpecifyKind(newLobby.StartEvent, DateTimeKind.Local).ToUniversalTime();
                 newLobby.EndEvent = DateTime.SpecifyKind(newLobby.EndEvent, DateTimeKind.Local).ToUniversalTime();
-
+                
                 var timeValid = newLobby.TimeValidation();
                 if (!timeValid.valid)
                 {
