@@ -21,7 +21,7 @@
                     
                     <div class="noti-text-wrapper">
                         <p class="noti-message">@item.Text</p>
-                        <span class="noti-time">@item.Date.ToString("g")</span>
+                        <span class="noti-time">@item.Date.ToUniversalTime().AddHours(7).ToString("g")</span>
                     </div>
 
                     @if (!item.IsRead)
@@ -81,6 +81,9 @@
             || type === "lobby_invite" || type === "lobby_invite_request" || type === "lobby_invite_approved"
             || type === "lobby_invite_rejected" || type === "lobby_invite_declined"){
             window.location.href = '/Lobby/Details/' + relateObjectId;
+        }
+        else if (type === "karma_received") {
+            window.location.href = '/User/Profiles';
         }
     }
 </script>

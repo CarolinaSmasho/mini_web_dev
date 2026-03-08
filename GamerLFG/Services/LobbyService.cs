@@ -243,7 +243,7 @@ namespace GamerLFG.Services
                     UserId = lobby.HostId, 
                     Text = $"{applicantName} ได้ส่งคำขอเข้าร่วมห้อง {lobby.Title} ของคุณในตำแหน่ง {role}",
                     IsRead = false,
-                    Date = DateTime.UtcNow
+                    Date = DateTime.Now
                 };
                 await _database.Notifications.InsertOneAsync(notification);
             }
@@ -254,7 +254,8 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> CancelApplicationAsync(string lobbyId, string userId)
-        {
+        {   
+            
             var filter = Builders<Lobby>.Filter.And(
                 Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
                 Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status == "Pending")
@@ -286,7 +287,7 @@ namespace GamerLFG.Services
                     UserId = userId, 
                     Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณได้รับการอนุมัติแล้ว",
                     IsRead = false,
-                    Date = DateTime.UtcNow
+                    Date = DateTime.Now
                 };
 
                 // บันทึกลงตาราง Notifications
@@ -313,7 +314,7 @@ namespace GamerLFG.Services
                     UserId = userId, 
                     Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณถูกปฏิเสธ",
                     IsRead = false,
-                    Date = DateTime.UtcNow
+                    Date = DateTime.Now
                 };
                 await _database.Notifications.InsertOneAsync(notification);
             }
@@ -321,19 +322,78 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> KickMemberAsync(string lobbyId, string userId)
-        {
+        {   
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId);
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+
+            //noti ahh
+            if (result.ModifiedCount > 0)
+            {
+                var notification = new Notification
+                {
+                    Type = "lobby_kicked",
+                    RelateObjectId = lobbyId,
+                    UserId = userId, 
+                    Text = $"คุณถูกเตะออกจากห้อง {lobby.Title}",
+                    IsRead = false,
+                    Date = DateTime.Now
+                };
+                await _database.Notifications.InsertOneAsync(notification);
+            }
             return result.ModifiedCount > 0;
+
+
         }
 
         public async Task<bool> CompleteLobbyAsync(string lobbyId)
-        {
+        {   
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.Set(l => l.IsComplete, true)
                                                .Set(l => l.IsRecruiting, false);
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            //noti ahh
+            if (result.ModifiedCount > 0)
+            {
+                var notifications = new List<Notification>();
+
+                
+                var activeMembers = lobby.Members
+                                        .Where(m => m.Status == "joined")
+                                        .Select(m => m.UserId)
+                                        .ToList();
+
+                
+                if (!activeMembers.Contains(lobby.HostId))
+                {
+                    activeMembers.Add(lobby.HostId);
+                }
+
+                foreach (var memberId in activeMembers)
+                {
+                    notifications.Add(new Notification
+                    {
+                        Type = "lobby_end", 
+                        RelateObjectId = lobbyId,
+                        UserId = memberId, 
+                        Text = $"ห้อง {lobby.Title} จบลงแล้ว อย่าลืมเข้าไปโหวตให้คะแนน Karma ให้เพื่อนร่วมทีมด้วยจ๊ะนะ",
+                        IsRead = false,
+                        Date = DateTime.Now
+                    });
+                }
+
+                
+                if (notifications.Any())
+                {
+                    await _database.Notifications.InsertManyAsync(notifications);
+                }
+            }
             return result.ModifiedCount > 0;
         }
 
@@ -360,6 +420,19 @@ namespace GamerLFG.Services
                 await _database.Users.UpdateOneAsync(userFilter, userUpdate);
             }
 
+            //noti ahh
+            var sender = await _database.Users.Find(u => u.Id == fromUserId).FirstOrDefaultAsync();
+            var senderName = sender != null ? sender.Username : "เพื่อนร่วมทีม";
+            var notification = new Notification
+            {
+                Type = "karma_received", 
+                RelateObjectId = fromUserId, 
+                UserId = targetUserId, 
+                Text = $"{senderName} ได้โหวตคะแนน Karma ให้คุณ {score} คะแนน",
+                IsRead = false,
+                Date = DateTime.Now
+            };
+            await _database.Notifications.InsertOneAsync(notification);
             return true;
         }
 

@@ -167,6 +167,62 @@
         const bell = document.getElementById('notifBell');
         const dropdown = document.getElementById('notifDropdown');
 
+                        actionBtn.onclick = function () {
+                            if (confirm(`ลบ ${data.username} ออกจากเพื่อน?`)) {
+                                fetch(`/User/DeleteFriend?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                    .then(r => r.json())
+                                    .then(() => {
+                                        openUserMiniProfile(data.id)
+                                        let friendCard = document.getElementById(data.id);
+
+                                        if (friendCard) {
+
+                                            friendCard.remove();
+
+                                        }
+
+
+
+                                    }
+                                    );
+
+                            }
+                        };
+
+                    } else if (data.isPending) {
+                        actionBtn.innerText = "Cancel Request";
+                        actionBtn.style.backgroundColor = "#6c757d";
+                        actionBtn.style.color = "white";
+
+                        actionBtn.onclick = function () {
+                            fetch(`/FriendRequest/Cancel?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                .then(r => r.json())
+                                .then(() => openUserMiniProfile(data.id));
+                        };
+
+                    } else {
+                        actionBtn.innerText = "Add Friend";
+                        actionBtn.style.backgroundColor = "#28a745";
+                        actionBtn.style.color = "white";
+
+                        actionBtn.onclick = function () {
+                            fetch(`/FriendRequest/Send?targetUserId=${encodeURIComponent(data.id)}`, { method: 'POST' })
+                                .then(r => r.json())
+                                .then(() => openUserMiniProfile(data.id));
+                        };
+                    }
+                    document.getElementById('mini-profile-link').href = `/User/Profiles?id=${encodeURIComponent(data.id)}`;
+
+                    document.getElementById('global-user-mini-profile-toggle').checked = true;
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("ไม่พบข้อมูลผู้ใช้นี้ (Mock Data อาจจะไม่ครบ)");
+                });
+        }
+    </script>
+   
+</body>
         if (bell && dropdown) {
             bell.addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -272,5 +328,31 @@
             });
             }
         </script>
+
+
+        @* noti bell *@
+        <script>
+        function checkUnreadNotifications() {
+            fetch('/Noti/GetUnreadCount')
+                .then(response => response.json())
+                .then(data => {
+                    const notifDot = document.getElementById('global-notif-dot');
+                    if (data.count > 0) {
+                        notifDot.style.display = 'block'; 
+                    } else {
+                        notifDot.style.display = 'none';  
+                    }
+                })
+                .catch(err => console.error("Error fetching unread count:", err));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            checkUnreadNotifications();
+
+            
+            setInterval(checkUnreadNotifications, 10000);
+        });
+    </script>
 
     </html>
