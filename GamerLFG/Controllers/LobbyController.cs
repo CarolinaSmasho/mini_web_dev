@@ -9,16 +9,17 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-{
+
 using GamerLFG.service;
 using MongoDB.Driver;
-namespace GamerLFG.Controllers
+namespace GamerLFG.Controllers 
+
 {   
-    
 
     public class LobbyController : Controller
     {
         private readonly ILobbyService _lobbyService;
+        private readonly MongoDBservice _mongoDBservice;
         public LobbyController(ILobbyService lobbyService,MongoDBservice mongoDBservice)
         {
             _lobbyService = lobbyService;
@@ -69,44 +70,7 @@ namespace GamerLFG.Controllers
             return Redirect($"/Lobby/Details/{lobbyId}");
         }
 
-        // ── DEV ONLY: แสดงหน้า test panel ────────────────────────────────────
-        // Usage: /Lobby/TestPanel
-        [HttpGet]
-        public IActionResult TestPanel()
-        {
-            var lobbyId = LobbySeeder.IdLobby;
-            var users = new[]
-            {
-                new { Label = "SC1 — HOST", UserId = LobbySeeder.IdHost    },
-                new { Label = "SC2 — NOT LOGGED IN", UserId = (string?)null          },
-                new { Label = "SC3/SC4 — VISITOR", UserId = LobbySeeder.IdVisitor },
-                new { Label = "SC5 — PENDING (Visitor)", UserId = LobbySeeder.IdVisitor },
-                new { Label = "SC6/SC7 — MEMBER", UserId = LobbySeeder.IdMember1 },
-            };
-
-            var html = $@"
-                            <!DOCTYPE html><html>
-                            <head><meta charset=""utf-8""><title>Lobby Test Panel</title>
-                            <style>body{{background:#111;color:#ddd;font-family:monospace;padding:40px}}
-                            a{{display:block;margin:8px 0;padding:12px 20px;background:#1a1a1a;border:1px solid #333;
-                            border-radius:8px;color:#f2960d;text-decoration:none;font-size:14px}}
-                            a:hover{{background:#222}} h2{{color:#fff}} code{{color:#2ecc71}}</style>
-                            </head><body>
-                            <h2>🎮 Lobby Test Panel</h2>
-                            <p style='color:#888'>Lobby ID: <code>{lobbyId}</code></p>
-                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdHost}'>SC1 — HOST (active, recruiting open + pending request)</a>
-                            <a href='/Lobby/SwitchUser'>SC2 — NOT LOGGED IN</a>
-                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdVisitor}'>SC3/SC4 — VISITOR (login แล้ว ยังไม่ได้ขอเข้า)</a>
-                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdPending}'>SC5 — PENDING (ส่ง request ไปแล้ว รอ)</a>
-                            <a href='/Lobby/SwitchUser?userId={LobbySeeder.IdMember1}'>SC6 — MEMBER (ถูกรับเข้าแล้ว)</a>
-                            <hr style='border-color:#333;margin:20px 0'>
-                            <p style='color:#555;font-size:12px'>
-                            หมายเหตุ: SC7/SC8 (Completed) ต้องเปลี่ยน IsComplete=true ใน DB ก่อน<br>
-                            หรือใช้ MongoDB Compass: set <code>IsComplete: true, IsRecruiting: false</code>
-                            </p>
-                            </body></html>";
-            return Content(html, "text/html; charset=utf-8");
-        }
+        
 
         // --- ส่วนของ API ที่เรียกใช้จาก JavaScript (fetch) ในหน้า View ---
 
@@ -239,7 +203,6 @@ namespace GamerLFG.Controllers
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(currentUserId))
                 return RedirectToAction("Login", "Auth");
-            };
             // var currentUserId = HttpContext.Session.GetString("UserId");
             // if (string.IsNullOrEmpty(currentUserId))
             //     return RedirectToAction("Login", "Auth");

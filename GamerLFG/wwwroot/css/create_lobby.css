@@ -272,7 +272,9 @@ form >div{
 .moods{ 
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px; 
+    gap: 20px;
+    justify-items: center;
+    align-items: center;
 
 }
 .check-box{

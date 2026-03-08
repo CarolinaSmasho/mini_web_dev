@@ -16,8 +16,8 @@
             @foreach (var item in Model)
             {
                 <div class="noti-item @(item.IsRead ? "" : "unread")" 
-                     onclick="readNotification(this, '@item.Id')" 
-                     id="noti-@item.Id">
+                    onclick="readNotification(this, '@item.Id', '@item.Type','@item.RelateObjectId')" 
+                    id="noti-@item.Id">
                     
                     <div class="noti-text-wrapper">
                         <p class="noti-message">@item.Text</p>
@@ -41,11 +41,14 @@
 </div>
 
 <script>
-    function readNotification(element, id) {
-        // ถ้าไม่มี class unread แปลว่าอ่านแล้ว ไม่ต้องทำอะไรซ้ำ
-        if (!element.classList.contains('unread')) return;
+    function readNotification(element, id, type, relateObjectId) {
+        // ถ้าอ่านแล้ว ให้กดแล้วพาไปหน้าเป้าหมาย
+        if (!element.classList.contains('unread')) {
+            redirectBasedOnType(type, relateObjectId);
+            return;
+        }
 
-        // ยิง AJAX ไปบอก Backend
+        // AJAX อ่านแล้ว
         fetch('/Noti/MarkAsRead', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -54,11 +57,13 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // เอา class unread ออกเพื่อเปลี่ยนสีพื้นหลัง
+                
                 element.classList.remove('unread');
-                // ลบจุดแดงด้านหลังข้อความทิ้ง
                 const dot = element.querySelector('.red-dot');
                 if (dot) dot.remove();
+
+                
+                redirectBasedOnType(type,relateObjectId);
             }
         })
         .catch(err => console.error("Error marking as read:", err));

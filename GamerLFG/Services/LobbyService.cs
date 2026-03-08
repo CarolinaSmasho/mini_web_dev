@@ -196,6 +196,23 @@ namespace GamerLFG.Services
                 AppliedAt = DateTime.UtcNow
             });
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            //noti ahh
+            if (result.ModifiedCount > 0)
+            {
+                var applicant = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+                var applicantName = applicant != null ? applicant.Username : "have people";
+                var notification = new Notification
+                {
+                    Type = "lobby_request_apply",
+                    RelateObjectId = lobbyId,
+                    UserId = lobby.HostId, 
+                    Text = $"{applicantName} ได้ส่งคำขอเข้าร่วมห้อง {lobby.Title} ของคุณในตำแหน่ง {role}",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                };
+                await _database.Notifications.InsertOneAsync(notification);
+            }
+            
             return result.ModifiedCount > 0
                 ? (true, "OK")
                 : (false, "Failed to submit request.");
@@ -482,6 +499,220 @@ namespace GamerLFG.Services
                 ApplicantMap        = applicantMap,
                 EndorsedUserIds     = endorsedUserIds,
             };
+        }
+
+        public async Task ProcessAutoRecruitAsync(string lobbyId)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null || lobby.IsComplete || lobby.AutoRecruitProcessed) return;
+
+            var pendingMembers = lobby.Members.Where(m => m.Status == "Pending").ToList();
+            if (!pendingMembers.Any())
+            {
+                // No pending members, just mark as processed
+                var markFilter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+                var markUpdate = Builders<Lobby>.Update
+                    .Set(l => l.AutoRecruitProcessed, true)
+                    .Set(l => l.IsRecruiting, false);
+                await _database.Lobbies.UpdateOneAsync(markFilter, markUpdate);
+                return;
+            }
+
+            // Fetch user objects to get KarmaScore
+            var pendingUserIds = pendingMembers.Select(m => m.UserId).ToList();
+            var pendingUsers = await _database.Users.Find(u => pendingUserIds.Contains(u.Id)).ToListAsync();
+            var userKarmaMap = pendingUsers.ToDictionary(u => u.Id, u => u.KarmaScore);
+
+            // Sort: KarmaScore DESC, then AppliedAt ASC (earliest first for ties)
+            var sorted = pendingMembers
+                .OrderByDescending(m => userKarmaMap.GetValueOrDefault(m.UserId, 0))
+                .ThenBy(m => m.AppliedAt)
+                .ToList();
+
+            // Calculate available slots
+            var currentJoined = lobby.Members.Count(m => m.Status != "Pending" && m.Status != "Invited");
+            var availableSlots = Math.Max(0, lobby.MaxPlayers - currentJoined);
+
+            var accepted = sorted.Take(availableSlots).ToList();
+            var rejected = sorted.Skip(availableSlots).ToList();
+
+            // Update lobby in memory
+            foreach (var member in accepted)
+            {
+                member.Status = "joined";
+                member.Role = "Other";
+            }
+
+            // Remove rejected members
+            foreach (var member in rejected)
+            {
+                lobby.Members.Remove(member);
+            }
+
+            lobby.AutoRecruitProcessed = true;
+            lobby.IsRecruiting = false;
+
+            // Save all changes at once
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            await _database.Lobbies.ReplaceOneAsync(filter, lobby);
+
+            // Send notifications
+            foreach (var member in accepted)
+            {
+                await _database.Notifications.InsertOneAsync(new Notification
+                {
+                    Type = "lobby_accepted",
+                    RelateObjectId = lobbyId,
+                    UserId = member.UserId,
+                    Text = $"คุณได้รับการอนุมัติเข้าร่วมห้อง {lobby.Title} โดยอัตโนมัติ (ตำแหน่ง Other)",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                });
+            }
+
+            foreach (var member in rejected)
+            {
+                await _database.Notifications.InsertOneAsync(new Notification
+                {
+                    Type = "lobby_rejected",
+                    RelateObjectId = lobbyId,
+                    UserId = member.UserId,
+                    Text = $"คำขอเข้าร่วมห้อง {lobby.Title} ของคุณถูกปฏิเสธ (ห้องเต็มแล้ว)",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                });
+            }
+        }
+
+        public async Task<(bool success, string message)> InviteFriendAsync(string lobbyId, string inviterId, string friendId, string role)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return (false, "Lobby not found.");
+
+            var status = lobby.GetStatus();
+            if (status != LobbyStatus.Recruiting)
+                return (false, "Recruitment is currently closed.");
+
+            // Verify inviter is a member
+            var inviterMember = lobby.Members.FirstOrDefault(m => m.UserId == inviterId && (m.Status == "joined" || m.Status == "Host"));
+            if (inviterMember == null)
+                return (false, "You must be a member to invite friends.");
+
+            // Verify friend is not already in the lobby
+            if (lobby.Members.Any(m => m.UserId == friendId))
+                return (false, "This user is already in the lobby.");
+
+            // Verify friend is in inviter's FriendIds
+            var inviterUser = await _database.Users.Find(u => u.Id == inviterId).FirstOrDefaultAsync();
+            if (inviterUser == null || !inviterUser.FriendIds.Contains(friendId))
+                return (false, "You can only invite your friends.");
+
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.Push(l => l.Members, new LobbyMember
+            {
+                UserId = friendId,
+                Status = "Invited",
+                Role = role,
+                InvitedBy = inviterId,
+                AppliedAt = DateTime.UtcNow
+            });
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+
+            if (result.ModifiedCount > 0)
+            {
+                var friendUser = await _database.Users.Find(u => u.Id == friendId).FirstOrDefaultAsync();
+                var friendName = friendUser?.Username ?? "Someone";
+
+                // Send notification to friend
+                await _database.Notifications.InsertOneAsync(new Notification
+                {
+                    Type = "lobby_invite",
+                    RelateObjectId = lobbyId,
+                    UserId = friendId,
+                    Text = $"{inviterUser.Username} ชวนคุณเข้าร่วมห้อง {lobby.Title}",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                });
+            }
+
+            return result.ModifiedCount > 0
+                ? (true, "OK")
+                : (false, "Failed to send invite.");
+        }
+
+        public async Task<(bool success, string message)> AcceptInviteAsync(string lobbyId, string userId)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return (false, "Lobby not found.");
+
+            var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status == "Invited");
+            if (member == null) return (false, "No pending invite found.");
+
+            // Change status from "Invited" to "Pending" (waiting for host approval)
+            var filter = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
+                Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status == "Invited")
+            );
+            var update = Builders<Lobby>.Update.Set("Members.$.Status", "Pending");
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+
+            if (result.ModifiedCount > 0)
+            {
+                var friendUser = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+                var inviterUser = await _database.Users.Find(u => u.Id == member.InvitedBy).FirstOrDefaultAsync();
+                var friendName = friendUser?.Username ?? "Someone";
+                var inviterName = inviterUser?.Username ?? "someone";
+
+                // Send notification to host
+                await _database.Notifications.InsertOneAsync(new Notification
+                {
+                    Type = "lobby_invite_request",
+                    RelateObjectId = lobbyId,
+                    UserId = lobby.HostId,
+                    Text = $"{friendName} ตอบรับคำเชิญของ {inviterName} และรอการอนุมัติเข้าร่วมห้อง {lobby.Title}",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                });
+            }
+
+            return result.ModifiedCount > 0
+                ? (true, "OK")
+                : (false, "Failed to accept invite.");
+        }
+
+        public async Task<(bool success, string message)> DeclineInviteAsync(string lobbyId, string userId)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return (false, "Lobby not found.");
+
+            var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status == "Invited");
+            if (member == null) return (false, "No pending invite found.");
+
+            // Remove the invited member
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Invited");
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+
+            if (result.ModifiedCount > 0 && member.InvitedBy != null)
+            {
+                var friendUser = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+                var friendName = friendUser?.Username ?? "Someone";
+
+                // Notify inviter that friend declined
+                await _database.Notifications.InsertOneAsync(new Notification
+                {
+                    Type = "lobby_invite_declined",
+                    RelateObjectId = lobbyId,
+                    UserId = member.InvitedBy,
+                    Text = $"{friendName} ปฏิเสธคำเชิญเข้าร่วมห้อง {lobby.Title}",
+                    IsRead = false,
+                    Date = DateTime.UtcNow
+                });
+            }
+
+            return result.ModifiedCount > 0
+                ? (true, "OK")
+                : (false, "Failed to decline invite.");
         }
 
         public async Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 20)
