@@ -20,8 +20,18 @@ namespace GamerLFG.Services
         // _database.Users;
         public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){ // ใช้function แบบ async
             
-            var myLobbyList = await _database.Lobbies.Find(mylobby => mylobby.HostId == userId).ToListAsync(); // ดึง lobby ของเรามาแบบ async
-            var otherLobbyList = await _database.Lobbies.Find(otherLobby => otherLobby.HostId != userId).SortBy(l => l.Id).Limit(10).ToListAsync();
+            var now = DateTime.UtcNow;
+            var isRecruiting = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Gte(l => l.EndRecruiting, now),
+                Builders<Lobby>.Filter.Lte(l => l.StartRecruiting, now),
+                Builders<Lobby>.Filter.Eq(l => l.IsRecruiting, true),
+                Builders<Lobby>.Filter.Eq(l => l.IsComplete, false)
+            );
+            // var isRecruiting =  Builders<Lobby>.Filter.Eq(l =>l.GetStatus(), LobbyStatus.Recruiting);
+            var isMine = Builders<Lobby>.Filter.Eq(l => l.HostId,userId);
+            var notMine = Builders<Lobby>.Filter.Ne(l => l.HostId,userId);
+            var myLobbyList = await _database.Lobbies.Find(isMine).ToListAsync(); // ดึง lobby ของเรามาแบบ async
+            var otherLobbyList = await _database.Lobbies.Find(notMine & isRecruiting).SortBy(l => l.Id).Limit(10).ToListAsync();
             var myLobby = myLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
@@ -35,12 +45,19 @@ namespace GamerLFG.Services
                 Status = lob.GetStatus()
                 
             }).ToList();
+            var otherHostIds = otherLobbyList.Select(l => l.HostId).Where(id => id != null).Distinct().ToList();
+                var nextHostUsers = otherHostIds.Any()
+                    ? await _database.Users.Find(u => otherHostIds.Contains(u.Id)).ToListAsync()
+                    : new List<User>();
+                var otherHostMap = nextHostUsers.ToDictionary(u => u.Id);
+
+
             var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
                 Title  = lob.Title,
                 Game = lob.Game,
                 Description = lob.Description,
-                HostName  = lob.HostName,
+                HostName  = otherHostMap.TryGetValue(lob.HostId ?? "", out var hu) ? hu.Username : lob.HostId,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
@@ -62,11 +79,17 @@ namespace GamerLFG.Services
             {
                 // ใช้ .Ne() แทน .Eq()
                 var notYours = Builders<Lobby>.Filter.Ne(l => l.HostId, userId);
-
+                var now = DateTime.UtcNow;
+                var isRecruiting = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Gte(l => l.EndRecruiting, now),
+                Builders<Lobby>.Filter.Lte(l => l.StartRecruiting, now),
+                Builders<Lobby>.Filter.Eq(l => l.IsRecruiting, true),
+                Builders<Lobby>.Filter.Eq(l => l.IsComplete, false)
+                 );
                 
                 // กรองเอาเฉพาะตัวที่ ID "หลังจาก" ตัวสุดท้ายที่หน้าจอแสดงอยู่
                 var filter = Builders<Lobby>.Filter.Gt(l => l.Id, lastId);
-                var nextLobby = await _database.Lobbies.Find(filter & notYours)
+                var nextLobby = await _database.Lobbies.Find(filter & notYours & isRecruiting)
                                 .SortBy(l => l.Id)
                                 .Limit(pageSize)
                                 .ToListAsync();
@@ -96,6 +119,11 @@ namespace GamerLFG.Services
         public async Task<(bool success, string message)> CreateLobbyAsync(CreateLobbyDTO newLobby) 
         {
             try {
+                newLobby.StartRecruiting = DateTime.SpecifyKind(newLobby.StartRecruiting, DateTimeKind.Local).ToUniversalTime();
+                newLobby.EndRecruiting = DateTime.SpecifyKind(newLobby.EndRecruiting, DateTimeKind.Local).ToUniversalTime();
+                newLobby.StartEvent = DateTime.SpecifyKind(newLobby.StartEvent, DateTimeKind.Local).ToUniversalTime();
+                newLobby.EndEvent = DateTime.SpecifyKind(newLobby.EndEvent, DateTimeKind.Local).ToUniversalTime();
+
                 var timeValid = newLobby.TimeValidation();
                 if (!timeValid.valid)
                 {
@@ -144,6 +172,10 @@ namespace GamerLFG.Services
 
         public async Task UpdateLobbyAsync(Lobby lobby)
         {
+            lobby.StartRecruiting = DateTime.SpecifyKind(lobby.StartRecruiting, DateTimeKind.Local).ToUniversalTime();
+            lobby.EndRecruiting = DateTime.SpecifyKind(lobby.EndRecruiting, DateTimeKind.Local).ToUniversalTime();
+            lobby.StartEvent = DateTime.SpecifyKind(lobby.StartEvent, DateTimeKind.Local).ToUniversalTime();
+            lobby.EndEvent = DateTime.SpecifyKind(lobby.EndEvent, DateTimeKind.Local).ToUniversalTime();
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobby.Id);
             await _database.Lobbies.ReplaceOneAsync(filter, lobby);
         }
@@ -230,6 +262,7 @@ namespace GamerLFG.Services
 
         public async Task<bool> RecruitMemberAsync(string lobbyId, string userId)
         {   //lobby title
+
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
             if (lobby == null) return false;
 
@@ -458,13 +491,20 @@ namespace GamerLFG.Services
             };
         }
 
-        public async Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 20)
+        public async Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 9000)
         {
             
                 var builder = Builders<Lobby>.Filter;
-                var notYours = Builders<Lobby>.Filter.Ne(l => l.HostId, userId);
+                var notYours = builder.Ne(l => l.HostId, userId);
                 var filter = builder.Regex(x => x.Title, new BsonRegularExpression(lobName, "i"));
-                var findByUserName = Builders<Lobby>.Filter.Eq(l => l.HostName,userName);
+                var findByUserName = builder.Eq(l => l.HostName,userName);
+                var now = DateTime.UtcNow;
+                var isRecruiting = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Gte(l => l.EndRecruiting, now),
+                Builders<Lobby>.Filter.Lte(l => l.StartRecruiting, now),
+                Builders<Lobby>.Filter.Eq(l => l.IsRecruiting, true),
+                Builders<Lobby>.Filter.Eq(l => l.IsComplete, false)
+                );
                 List<Lobby> nextLobby = new();
                 if (userName == "")
                 {
@@ -475,7 +515,7 @@ namespace GamerLFG.Services
                 }
                 else
                 {
-                    nextLobby = await _database.Lobbies.Find(findByUserName)
+                    nextLobby = await _database.Lobbies.Find(findByUserName & isRecruiting)
                                     .SortBy(l => l.Id)
                                     .Limit(pageSize)
                                     .ToListAsync();

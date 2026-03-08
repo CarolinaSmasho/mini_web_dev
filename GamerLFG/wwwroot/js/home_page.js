@@ -140,6 +140,10 @@ searchForm.addEventListener('submit', (e) => {
     // เรียกใช้ฟังก์ชันที่คุณต้องการ (เหมือน onclick)
     togleSearch(); 
 });
+
+const toLobby = (Id) =>{
+    window.location.href = '/Lobby/Details/'+Id;
+}
 // const searchInput = document.getElementById("searchId");
 // const displayOutput = document.getElementById("resultsContainer");
 // searchInput.addEventListener('input',async (e) =>{

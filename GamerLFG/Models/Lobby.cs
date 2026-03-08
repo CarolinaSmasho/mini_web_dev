@@ -72,7 +72,9 @@ public class Lobby
     public List<LobbyMember> Members { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-}
+    
+    }
+
 
 /// <summary>A role slot with a name and maximum number of players allowed.</summary>
 public class LobbyRole
@@ -88,5 +90,6 @@ public class LobbyMember
     public string Status { get; set; } // e.g., 'joined', 'pending'
     public string Role { get; set; }
 }
+
 
 }
