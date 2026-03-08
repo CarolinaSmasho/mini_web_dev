@@ -211,16 +211,27 @@
         }
     </script>
    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch('/Noti/GetUnreadCount')
-            .then(response => response.json())
-            .then(data => {
-                if (data.count > 0) {
-                    document.getElementById('global-notif-dot').style.display = 'block';
-                }
-            })
-            .catch(err => console.error("Error fetching unread count:", err));
-    });
+        function checkUnreadNotifications() {
+            fetch('/Noti/GetUnreadCount')
+                .then(response => response.json())
+                .then(data => {
+                    const notifDot = document.getElementById('global-notif-dot');
+                    if (data.count > 0) {
+                        notifDot.style.display = 'block'; 
+                    } else {
+                        notifDot.style.display = 'none';  
+                    }
+                })
+                .catch(err => console.error("Error fetching unread count:", err));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            checkUnreadNotifications();
+
+            
+            setInterval(checkUnreadNotifications, 10000);
+        });
     </script>
 </body>
 
