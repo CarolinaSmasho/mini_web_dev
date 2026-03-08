@@ -1,87 +1,14 @@
 @model GamerLFG.Models.ViewModels.LobbyDetailsViewModel
 @{
-    // ── Shorthand aliases ────────────────────────────────────────────────────
     var lobby   = Model.Lobby;
     var isHost  = Model.IsHost;
     var isMember = Model.IsMember;
     var hasPendingRequest = Model.HasPendingRequest;
-
-    // ── Countdown seconds (จาก EndRecruiting จริง) ──────────────────────────
-    var remainingSecs = (int)Math.Max(0, (lobby.EndRecruiting - DateTime.Now).TotalSeconds);
-
-    // ── Debug bar label (แสดง state จริง ไม่ใช่ scenario number) ─────────────
-    string stateBadge, stateColor, stateDesc;
-    if (isHost && !lobby.IsComplete)
-        (stateBadge, stateColor, stateDesc) = ("HOST",             "#2ecc71", "เจ้าของ Lobby — เห็น Personnel Management + Pending Requests");
-    else if (isHost && lobby.IsComplete)
-        (stateBadge, stateColor, stateDesc) = ("HOST+COMPLETED",   "#1abc9c", "Host + Lobby จบแล้ว");
-    else if (string.IsNullOrEmpty(Model.CurrentUserId))
-        (stateBadge, stateColor, stateDesc) = ("NOT LOGGED IN",    "#e74c3c", "ยังไม่ได้ login");
-    else if (isMember && lobby.IsComplete)
-        (stateBadge, stateColor, stateDesc) = ("MEMBER+COMPLETED", "#9b59b6", "Lobby จบแล้ว — โชว์ Karma Evaluation");
-    else if (isMember)
-        (stateBadge, stateColor, stateDesc) = ("MEMBER",           "#3498db", "ถูกรับเข้าแล้ว — Lobby ยังเล่นอยู่");
-    else if (hasPendingRequest)
-        (stateBadge, stateColor, stateDesc) = ("PENDING",          "#f39c12", "ส่ง Request ไปแล้ว กำลังรออนุมัติ");
-    else if (!lobby.IsRecruiting)
-        (stateBadge, stateColor, stateDesc) = ("VISITOR (CLOSED)", "#7f8c8d", "Login แล้ว ยังไม่ขอ — Recruiting ปิดแล้ว");
-    else
-        (stateBadge, stateColor, stateDesc) = ("VISITOR (OPEN)",   "#95a5a6", "Login แล้ว ยังไม่ขอ — Recruiting เปิดอยู่");
 }
 
-@* ── STYLES ── *@
-<style>
-    body        { background-color: #0d0d0d; }
-    .debug-bar  { font-size: 13px; padding: 10px 16px; border-radius: 8px; margin-bottom: 20px;
-                  display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .card-dark  { background: #1a1a1a; border: 1px solid #2a2a2a; padding: 20px; border-radius: 12px;
-                  margin-bottom: 20px; color: #d0d0d0; }
-    .hero-img   { width: 100%; height: 320px; object-fit: cover; border-radius: 12px; opacity: 0.75; }
-    .badge-role { background: #f2960d; color: #000; padding: 3px 10px; border-radius: 4px;
-                  font-size: 11px; font-weight: 800; text-transform: uppercase; }
-    .slot-empty { background: #111; border: 1px dashed #333; height: 64px; border-radius: 8px;
-                  display: flex; align-items: center; justify-content: center; color: #555; font-size: 13px; }
-    .member-card { background: #111; border: 1px solid #222; border-radius: 8px;
-                   padding: 12px; display: flex; align-items: center; gap: 12px; color: #d0d0d0; }
-    .member-card.you { border-color: #2ecc71; background: #0d1f0d; }
-    .avatar     { width: 44px; height: 44px; border-radius: 8px; border: 2px solid #f2960d; object-fit: cover; }
-    .btn-primary-cta { background:#f2960d; color:#000; border:none; padding:12px; border-radius:8px;
-                       font-weight:800; font-size:15px; width:100%; cursor:pointer; letter-spacing:.05em; }
-    .btn-primary-cta:hover { background:#e08800; }
-    .btn-danger-outline { background:transparent; color:#e74c3c; border:1px solid #e74c3c; padding:10px;
-                          border-radius:8px; font-weight:700; font-size:13px; width:100%; cursor:pointer; }
-    .btn-muted   { background:#222; color:#888; border:1px solid #333; padding:10px; border-radius:8px;
-                   font-weight:700; font-size:13px; width:100%; cursor:not-allowed; }
-    .btn-warning { background:transparent; color:#f39c12; border:1px solid #f39c12; padding:10px;
-                   border-radius:8px; font-weight:700; font-size:13px; width:100%; cursor:pointer; }
-    .btn-cancel  { background:transparent; color:#777; border:1px solid #333; padding:8px;
-                   border-radius:8px; font-weight:600; font-size:12px; width:100%; cursor:pointer; margin-top:6px; }
-    .comms-box   { border-radius:10px; padding:20px; margin-bottom:16px; border-left:4px solid; color: #d0d0d0; }
-    .karma-card  { background:#111; border:1px solid #222; border-radius:10px; padding:16px;
-                   text-align:center; color: #d0d0d0; }
-    .karma-avatar { width:60px; height:60px; border-radius:10px; margin: 0 auto 10px; border:2px solid #333; }
-    .karma-select { background:#0a0a0a; border:1px solid #333; color:#ddd; padding:6px 10px;
-                    border-radius:6px; font-size:12px; width:100%; margin-bottom:8px; }
-    .karma-btn   { background:#f2960d22; color:#f2960d; border:1px solid #f2960d44;
-                   padding:8px; border-radius:6px; font-size:12px; font-weight:700; width:100%; cursor:pointer; }
-    .evaluated-tag { background:#2ecc7122; border:1px solid #2ecc7144; color:#2ecc71;
-                     padding:8px; border-radius:6px; font-size:11px; font-weight:700; }
-</style>
+<link rel="stylesheet" href="~/css/lobby-details.css" asp-append-version="true">
 
-@* ── DEBUG BAR (แสดง state จริง) ── *@
-<div class="container mt-3">
-    <div class="debug-bar" style="background:#0d0d1a; border:1px solid @stateColor; border-radius:8px;">
-        <span style="background:@stateColor; color:#000; padding:4px 12px; border-radius:4px; font-weight:900; font-size:12px; white-space:nowrap;">
-            @stateBadge
-        </span>
-        <span style="color:#aaa; font-size:12px;">@stateDesc</span>
-        <span style="margin-left:auto; color:#555; font-size:11px; white-space:nowrap;">
-            logged in as: <code style="color:#f2960d;">@Model.CurrentUsername</code>
-        </span>
-    </div>
-</div>
-
-<main class="container pb-5">
+<main class="container py-4">
     <div class="row g-4">
 
         @* ════════ LEFT COLUMN ════════ *@
@@ -93,152 +20,154 @@
                 <div class="p-4">
                     <div class="d-flex flex-wrap gap-2 mb-2">
                         <span class="badge-role">@lobby.Game</span>
-                        @if (isHost)                 { <span class="badge-role" style="background:#2ecc71;">HOST MODE</span> }
-                        @if (isMember && !isHost)    { <span class="badge-role" style="background:#3498db;">MEMBER</span> }
-                        @if (hasPendingRequest)      { <span class="badge-role" style="background:#f39c12;">PENDING</span> }
                         @if (lobby.IsComplete)
                         {
                             <span class="badge-role" style="background:#9b59b6;">COMPLETED</span>
                         }
                         else if (!lobby.IsRecruiting)
                         {
-                            <span class="badge-role" style="background:#e74c3c;">RECRUITING CLOSED</span>
+                            <span class="badge-role" style="background:#e74c3c;">CLOSED</span>
+                        }
+                        else
+                        {
+                            <span class="badge-role" style="background:#2ecc71;">OPEN</span>
                         }
                     </div>
-                    <h1 class="fw-bold text-white">@lobby.Title</h1>
-                    <p class="text-secondary">@lobby.Description</p>
+                    <h2 class="fw-bold text-white mb-1">@lobby.Title</h2>
+                    <p class="text-secondary mb-0" style="font-size:14px;">@lobby.Description</p>
                 </div>
             </div>
 
             @* Lobby Members *@
             <div class="card-dark">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="mb-0 text-white">Lobby Members</h4>
-                    <span class="text-secondary">@Model.PlayerIds.Count / @lobby.MaxPlayers</span>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 text-white">Members</h5>
+                    <span class="text-secondary" style="font-size:13px;">@Model.PlayerIds.Count / @lobby.MaxPlayers</span>
                 </div>
                 <div class="row g-2">
                     @foreach (var pid in Model.PlayerIds)
                     {
                         var u = Model.MemberMap.GetValueOrDefault(pid);
-                        bool isMe      = pid == Model.CurrentUserId;
-                        bool pidIsHost = pid == lobby.HostId;
+                        bool isMe = pid == Model.CurrentUserId;
                         var mem = lobby.Members.FirstOrDefault(m => m.UserId == pid);
+                        bool canChangeRole = !lobby.IsComplete && (isHost || isMe);
                         <div class="col-md-6">
                             <div class="member-card @(isMe ? "you" : "")">
                                 <img src="@(u?.Avatar ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (u?.Username ?? pid))"
                                      class="avatar" />
                                 <div class="flex-grow-1">
-                                    <div class="text-white fw-bold" style="font-size:14px;">
+                                    <div class="text-white fw-bold" style="font-size:13px;">
                                         @(u?.Username ?? "Unknown Player")
                                         @if (isMe) { <small class="text-success">(You)</small> }
+                                        @if (pid == lobby.HostId) { <small style="color:#f2960d;">HOST</small> }
                                     </div>
-                                    <small style="color:#f2960d;">@(mem?.Role ?? "Member")</small>
+                                    @if (canChangeRole && lobby.Roles.Any())
+                                    {
+                                        <select onchange="changeRole('@lobby.Id', '@pid', this.value)"
+                                                style="background:#0a0a0a; border:1px solid #f2960d44; color:#f2960d; padding:2px 6px; border-radius:4px; font-size:11px; cursor:pointer; max-width:140px;">
+                                            @foreach (var r in lobby.Roles)
+                                            {
+                                                var takenByOthers = lobby.Members.Count(m => m.Role == r.Name && m.UserId != pid && m.Status != "Pending");
+                                                var slotsLeft = r.Quantity - takenByOthers;
+                                                var isCurrentRole = mem?.Role == r.Name;
+                                                if (isCurrentRole)
+                                                {
+                                                    <option value="@r.Name" selected>@r.Name</option>
+                                                }
+                                                else if (slotsLeft > 0)
+                                                {
+                                                    <option value="@r.Name">@r.Name (@slotsLeft left)</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@r.Name" disabled>@r.Name (FULL)</option>
+                                                }
+                                            }
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <small style="color:#f2960d;">@(mem?.Role ?? "Member")</small>
+                                    }
                                 </div>
-                                @if (isHost && !isMe)
+                                @if (isHost && !isMe && !lobby.IsComplete)
                                 {
-                                    <button class="btn btn-sm btn-outline-danger" onclick="kickMember('@lobby.Id', '@pid')">Kick</button>
+                                    <button class="btn btn-sm btn-outline-danger" style="font-size:11px; padding:3px 8px;" onclick="kickMember('@lobby.Id', '@pid')">Kick</button>
                                 }
                             </div>
                         </div>
                     }
-                    @* Empty slots *@
                     @for (int i = Model.PlayerIds.Count; i < lobby.MaxPlayers; i++)
                     {
-                        <div class="col-md-6"><div class="slot-empty">— Empty Slot —</div></div>
+                        <div class="col-md-6"><div class="slot-empty">Empty Slot</div></div>
                     }
                 </div>
             </div>
 
-            @* Pending Requests — HOST เท่านั้น *@
+            @* Pending Requests *@
             @if (isHost && Model.PendingApplications.Any())
             {
-                <div class="card-dark" style="border-color:#3498db;">
-                    <h5 class="text-white mb-3">
-                        <span style="color:#3498db;">&#9654;</span>
-                        Pending Requests (@Model.PendingApplications.Count)
+                <div class="card-dark" style="border-color:#3498db44;">
+                    <h5 class="text-white mb-3" style="font-size:15px;">
+                        Pending Requests <span class="text-secondary">(@Model.PendingApplications.Count)</span>
                     </h5>
                     @foreach (var app in Model.PendingApplications)
                     {
                         var ap = Model.ApplicantMap.GetValueOrDefault(app.UserId ?? "");
-                        <div class="d-flex justify-content-between align-items-center p-3 mb-2"
+                        <div class="d-flex justify-content-between align-items-center p-2 mb-2"
                              style="background:#0a0a0a; border-radius:8px; border:1px solid #222;">
-                            <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex align-items-center gap-2">
                                 <img src="@(ap?.Avatar ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (ap?.Username ?? "unknown"))"
-                                     width="40" class="rounded" />
+                                     width="36" class="rounded" style="border:2px solid #333;" />
                                 <div>
-                                    <p class="mb-0 fw-bold text-white">@(ap?.Username ?? "Unknown Player")</p>
-                                    <small style="color:#f2960d;">@app.Role</small>
+                                    <p class="mb-0 fw-bold text-white" style="font-size:13px;">@(ap?.Username ?? "Unknown")</p>
+                                    <small style="color:#f2960d; font-size:11px;">@app.Role</small>
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-danger" onclick="rejectApplicant('@lobby.Id', '@app.UserId')">Reject</button>
-                                <button class="btn btn-sm btn-success" onclick="recruitMember('@lobby.Id', '@app.UserId')">Recruit</button>
+                                <button class="btn btn-sm btn-outline-danger" style="font-size:11px;" onclick="rejectApplicant('@lobby.Id', '@app.UserId')">Reject</button>
+                                <button class="btn btn-sm btn-success" style="font-size:11px;" onclick="recruitMember('@lobby.Id', '@app.UserId')">Accept</button>
                             </div>
                         </div>
                     }
                 </div>
             }
 
-            @* Secure Comms / Status Box *@
+            @* Comms Box *@
             @if (isMember && !isHost)
             {
                 <div class="comms-box" style="background:#0d1f0d; border-color:#2ecc71;">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <span style="color:#2ecc71; font-size:18px;">&#128275;</span>
-                        <strong class="text-white">Tactical Comms Established</strong>
-                        <span class="badge-role" style="background:#2ecc71; margin-left:4px;">Authorized</span>
-                    </div>
-                    <p class="text-secondary mb-3" style="font-size:13px;">
-                        Welcome to the squad. All secure channels are now unlocked.
-                    </p>
+                    <strong class="text-white" style="font-size:14px;">Discord Channel</strong>
                     @if (!string.IsNullOrEmpty(lobby.DiscordLink))
                     {
-                        <a href="@lobby.DiscordLink" class="btn btn-sm" style="background:#5865F2; color:#fff;">Discord Channel</a>
+                        <a href="@lobby.DiscordLink" class="btn btn-sm mt-2 d-block" style="background:#5865F2; color:#fff; text-align:center;">Join Discord</a>
                     }
                     else
                     {
-                        <span style="color:#555; font-size:12px;">No Discord link set by host</span>
+                        <p class="text-secondary mb-0 mt-1" style="font-size:12px;">No Discord link set by host.</p>
                     }
                 </div>
             }
             else if (hasPendingRequest)
             {
                 <div class="comms-box" style="background:#1a1200; border-color:#f39c12;">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span style="color:#f39c12; font-size:18px;">&#9203;</span>
-                        <strong class="text-white">Verification In Progress</strong>
-                        <span class="badge-role" style="background:#f39c12;">Waitlist</span>
-                    </div>
-                    <p class="text-secondary mb-0" style="font-size:13px;">
-                        Request logged. Squad leader is reviewing your credentials. Comms offline until confirmed.
-                    </p>
+                    <strong class="text-white" style="font-size:14px;">Request Pending</strong>
+                    <p class="text-secondary mb-0 mt-1" style="font-size:12px;">Waiting for host approval. Comms locked.</p>
                 </div>
             }
             else if (!isHost && !string.IsNullOrEmpty(Model.CurrentUserId) && !lobby.IsComplete)
             {
                 <div class="comms-box" style="background:#1a0d00; border-color:#f2960d;">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span style="color:#f2960d; font-size:18px;">&#128274;</span>
-                        <strong class="text-white">Secure Communications Channel</strong>
-                        <span class="badge-role">Encrypted</span>
-                    </div>
-                    <p class="text-secondary mb-0" style="font-size:13px;">
-                        Discord and voice links are hidden until you are officially recruited.
-                    </p>
+                    <strong class="text-white" style="font-size:14px;">Comms Locked</strong>
+                    <p class="text-secondary mb-0 mt-1" style="font-size:12px;">Discord link is hidden until you are recruited.</p>
                 </div>
             }
 
-            @* Karma Evaluation — member หรือ host เมื่อ lobby completed *@
+            @* Karma Evaluation *@
             @if (lobby.IsComplete && (isMember || isHost))
             {
-                <div class="card-dark" style="border-color:#9b59b666;">
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <span style="color:#9b59b6; font-size:20px;">&#127942;</span>
-                        <h5 class="text-white mb-0">Debriefing &amp; Karma Evaluation</h5>
-                    </div>
-                    <p class="text-secondary mb-4" style="font-size:13px;">
-                        Rate your teammates based on their performance and attitude.
-                    </p>
+                <div class="card-dark" style="border-color:#9b59b644;">
+                    <h5 class="text-white mb-3" style="font-size:15px;">Karma Evaluation</h5>
                     <div class="row g-3">
                         @foreach (var pid in Model.PlayerIds)
                         {
@@ -247,28 +176,24 @@
                             bool alreadyRated = Model.EndorsedUserIds.Contains(pid);
                             <div class="col-md-4">
                                 <div class="karma-card">
-                                    <img src="@(u2?.Avatar ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + pid)"
-                                         class="karma-avatar" />
-                                    <p class="text-white fw-bold mb-1" style="font-size:13px;">
-                                        @(u2?.Username ?? pid)
-                                    </p>
-                                    <small class="text-secondary d-block mb-3">Teammate</small>
+                                    <img src="@(u2?.Avatar ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + pid)" class="karma-avatar" />
+                                    <p class="text-white fw-bold mb-1" style="font-size:12px;">@(u2?.Username ?? pid)</p>
                                     @if (alreadyRated)
                                     {
-                                        <div class="evaluated-tag w-100">&#10003; Evaluation Logged</div>
+                                        <div class="evaluated-tag w-100">Rated</div>
                                     }
                                     else
                                     {
                                         <select id="karma-@pid" class="karma-select">
                                             <option value="5">MVP (+5)</option>
                                             <option value="4">Leader (+4)</option>
-                                            <option value="3" selected>Good Teammate (+3)</option>
+                                            <option value="3" selected>Good (+3)</option>
                                             <option value="2">Chill (+2)</option>
                                             <option value="-3">Leaver (-3)</option>
                                             <option value="-5">Toxic (-5)</option>
                                             <option value="-3">AFK (-3)</option>
                                         </select>
-                                        <button class="karma-btn" onclick="submitKarma('@lobby.Id', '@pid')">Submit Rating</button>
+                                        <button class="karma-btn" onclick="submitKarma('@lobby.Id', '@pid')">Submit</button>
                                     }
                                 </div>
                             </div>
@@ -277,78 +202,136 @@
                 </div>
             }
 
-        </div>@* end LEFT *@
+        </div>
 
         @* ════════ RIGHT COLUMN ════════ *@
         <div class="col-lg-4">
 
-            @* Mission Intel Card *@
+            @* Mission Info *@
             <div class="card-dark">
-                <h5 class="text-white mb-3">Mission Intel</h5>
-                <hr style="border-color:#2a2a2a;">
+                <h5 class="text-white mb-3" style="font-size:15px;">Mission Info</h5>
+                <hr class="divider">
 
-                @if (lobby.IsComplete)
-                {
-                    <div class="p-3 mb-3 text-center" style="background:#0d1a0d; border:1px solid #2ecc7144; border-radius:8px;">
-                        <span style="color:#2ecc71; font-size:24px;">&#10003;</span>
-                        <p class="text-success fw-bold mb-0 mt-1">MISSION COMPLETED</p>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-secondary mb-1" style="font-size:12px;">Recruitment Ends:</p>
-                    <p class="text-warning fw-bold">@lobby.EndRecruiting.ToString("f")</p>
-                    <div class="p-3 mb-3 text-center" style="background:#0a0a0a; border:1px solid #f2960d33; border-radius:8px;">
-                        <span class="h5 font-monospace" style="color:#f2960d;" id="timer">--:--:--</span>
-                    </div>
-                    <p class="text-secondary mb-1" style="font-size:12px;">Session:</p>
-                    <p class="text-white fw-bold mb-3">
-                        @lobby.StartEvent.ToString("HH:mm") – @lobby.EndEvent.ToString("HH:mm")
-                    </p>
+                @{
+                    // MongoDB returns UTC — convert lobby dates to local time for comparison & display
+                    var startRecruit = lobby.StartRecruiting.ToLocalTime();
+                    var endRecruit   = lobby.EndRecruiting.ToLocalTime();
+                    var startEvent   = lobby.StartEvent.ToLocalTime();
+                    var endEvent     = lobby.EndEvent.ToLocalTime();
+
+                    var now = DateTime.Now;
+                    // Determine current phase: 0=pre-recruit, 1=recruiting, 2=intermission, 3=mission, 4=completed
+                    int phase;
+                    if (now < startRecruit)    phase = 0;
+                    else if (now < endRecruit) phase = 1;
+                    else if (now < startEvent) phase = 2;
+                    else if (now < endEvent)   phase = 3;
+                    else                       phase = 4;
+
+                    // countdown: seconds until next phase
+                    DateTime? phaseEnd = phase switch {
+                        0 => startRecruit,
+                        1 => endRecruit,
+                        2 => startEvent,
+                        3 => endEvent,
+                        _ => null
+                    };
+                    var countdownSecs = phaseEnd.HasValue ? (int)Math.Max(0, (phaseEnd.Value - now).TotalSeconds) : 0;
+
+                    string[] nextLabels = { "เปิดรับสมัครใน", "ปิดรับสมัครใน", "เริ่ม Mission ใน", "จบ Mission ใน", "" };
+
+                    string Cls(int p) => p < phase ? "past" : p == phase ? "active" : "";
+                    string Fmt(DateTime dt) => dt.ToString("MMM dd, HH:mm");
                 }
 
-                <p class="text-secondary mb-2" style="font-size:12px;">Moods:</p>
-                <div class="d-flex flex-wrap gap-2 mb-4">
+                <ul class="timeline">
+                    <li class="tl-item @Cls(0)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Pre-Recruit</div>
+                        <div class="tl-time">สร้างห้อง — รอเปิดรับสมัคร</div>
+                        @if (phase == 0) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[0]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(1)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Recruiting</div>
+                        <div class="tl-time">@Fmt(startRecruit) — @Fmt(endRecruit)</div>
+                        @if (phase == 1) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[1]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(2)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Intermission</div>
+                        <div class="tl-time">@Fmt(endRecruit) — @Fmt(startEvent)</div>
+                        @if (phase == 2) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[2]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(3)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Mission</div>
+                        <div class="tl-time">@Fmt(startEvent) — @Fmt(endEvent)</div>
+                        @if (phase == 3) { <div class="tl-countdown" id="timer" data-seconds="@countdownSecs" data-label="@nextLabels[3]"></div> }
+                    </li>
+                    <li class="tl-item @Cls(4)">
+                        <span class="tl-dot"></span>
+                        <div class="tl-title">Completed</div>
+                        <div class="tl-time">หลัง @Fmt(endEvent)</div>
+                    </li>
+                </ul>
+
+                <hr class="divider">
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
                     @foreach (var mood in lobby.Moods)
                     {
-                        <span class="badge bg-secondary">@mood</span>
+                        <span class="badge bg-secondary" style="font-size:11px;">@mood</span>
                     }
                 </div>
 
-                @* ── ACTION BUTTON ── *@
+                @* ── HOST Controls ── *@
                 @if (isHost && !lobby.IsComplete)
                 {
-                    <button class="btn-primary-cta mb-2" onclick="editMission('@lobby.Id')">EDIT MISSION</button>
-                    <button class="btn-primary-cta mb-2" style="background:#2ecc71;" onclick="completeMission('@lobby.Id')">COMPLETE MISSION</button>
-                    <button class="btn-danger-outline" onclick="terminateLobby('@lobby.Id')">TERMINATE LOBBY</button>
+                    <div class="toggle-wrap">
+                        <span class="toggle-label" style="color:@(lobby.IsRecruiting ? "#2ecc71" : "#e74c3c");" id="recruit-label">
+                            Recruiting @(lobby.IsRecruiting ? "Open" : "Closed")
+                        </span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="recruit-toggle" @(lobby.IsRecruiting ? "checked" : "") onchange="toggleRecruitment('@lobby.Id')">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button class="btn-action btn-orange" onclick="editMission('@lobby.Id')">EDIT MISSION</button>
+                    <button class="btn-action btn-green" onclick="completeMission('@lobby.Id')">COMPLETE MISSION</button>
+                    <button class="btn-action btn-red" onclick="terminateLobby('@lobby.Id')">TERMINATE</button>
                 }
                 else if (isHost && lobby.IsComplete)
                 {
-                    <button class="btn-danger-outline" onclick="terminateLobby('@lobby.Id')">TERMINATE LOBBY</button>
+                    <button class="btn-action btn-red" onclick="terminateLobby('@lobby.Id')">TERMINATE</button>
                 }
                 else if (string.IsNullOrEmpty(Model.CurrentUserId))
                 {
-                    <a href="/Auth/Login"><button class="btn-primary-cta">LOGIN TO JOIN</button></a>
+                    <a href="/Auth/Login"><button class="btn-action btn-orange">LOGIN TO JOIN</button></a>
                 }
                 else if (isMember && !lobby.IsComplete)
                 {
-                    <button class="btn-muted mb-2">&#10003; RECRUITED</button>
-                    <button class="btn-danger-outline" onclick="abandonMission('@lobby.Id')">ABANDON MISSION</button>
+                    <button class="btn-action btn-muted">RECRUITED</button>
+                    <button class="btn-action btn-red" onclick="abandonMission('@lobby.Id')">ABANDON MISSION</button>
                 }
                 else if (isMember && lobby.IsComplete)
                 {
-                    <button class="btn-muted">&#10003; MISSION COMPLETE</button>
+                    <button class="btn-action btn-muted">MISSION COMPLETE</button>
                 }
                 else if (hasPendingRequest)
                 {
-                    <button class="btn-muted mb-2" style="color:#f39c12; border-color:#f39c12;">
-                        &#9203; REQUEST PENDING...
-                    </button>
+                    <button class="btn-action btn-muted" style="color:#f39c12; border-color:#f39c12;">REQUEST PENDING...</button>
                     <button class="btn-cancel" onclick="cancelRequest('@lobby.Id')">Cancel Request</button>
                 }
-                else if (!lobby.IsRecruiting)
+                else if (!lobby.IsRecruiting || phase != 1)
                 {
-                    <button class="btn-muted">&#128274; RECRUITMENT CLOSED</button>
+                    <button class="btn-action btn-muted">
+                        @(phase == 0 ? "RECRUITMENT NOT STARTED"
+                        : phase == 2 ? "RECRUITMENT CLOSED"
+                        : phase == 3 ? "MISSION IN PROGRESS"
+                        : phase == 4 ? "MISSION COMPLETED"
+                        : "RECRUITMENT CLOSED")
+                    </button>
                 }
                 else
                 {
@@ -357,145 +340,37 @@
                         <select id="apply-role" class="karma-select mb-2">
                             @foreach (var r in lobby.Roles)
                             {
-                                var taken = lobby.Members.Count(m => m.Role == r.Name && (m.Status == "Pending" || m.Status == "joined"));
+                                var taken = lobby.Members.Count(m => m.Role == r.Name);
                                 var remaining = r.Quantity - taken;
                                 var isFull = remaining <= 0;
-                                var label = $"{r.Name} ({(isFull ? "FULL" : $"{remaining} slot{(remaining == 1 ? "" : "s")} left")})";
                                 if (isFull)
                                 {
-                                    <option value="@r.Name" disabled>@label</option>
+                                    <option value="@r.Name" disabled>@r.Name (FULL)</option>
                                 }
                                 else
                                 {
-                                    <option value="@r.Name">@label</option>
+                                    <option value="@r.Name">@r.Name (@remaining left)</option>
                                 }
                             }
                         </select>
                     }
-                    <button class="btn-primary-cta" onclick="requestDeployment('@lobby.Id')">REQUEST DEPLOYMENT</button>
+                    <button class="btn-action btn-orange" onclick="requestDeployment('@lobby.Id')">REQUEST DEPLOYMENT</button>
                 }
             </div>
 
             @* Host Card *@
             @{ var hostUser = Model.MemberMap.GetValueOrDefault(lobby.HostId ?? ""); }
-            <div class="card-dark d-flex align-items-center gap-3">
+            <div class="card-dark d-flex align-items-center gap-3" style="padding:14px 16px;">
                 <img src="@(hostUser?.Avatar ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=" + Model.HostName)"
-                     width="50" class="rounded-circle border border-warning" />
+                     width="44" class="rounded-circle" style="border:2px solid #f2960d;" />
                 <div>
-                    <p class="text-white fw-bold mb-0">@Model.HostName</p>
-                    <small style="color:#f2960d;">Mission Commander</small>
+                    <p class="text-white fw-bold mb-0" style="font-size:14px;">@Model.HostName</p>
+                    <small style="color:#f2960d; font-size:11px;">Host</small>
                 </div>
             </div>
 
-        </div>@* end RIGHT *@
+        </div>
     </div>
 </main>
 
-@section Scripts {
-    <script>
-        async function postAction(url, body) {
-            try {
-                const params = new URLSearchParams(body);
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    alert('Error: ' + (response.statusText || errorText));
-                    return { success: false, message: response.statusText };
-                }
-                return await response.json();
-            } catch (e) {
-                console.error(e);
-                return { success: false, message: e.message };
-            }
-        }
-
-        function editMission(id) {
-            window.location = '/Lobby/EditMission?id=' + id;
-        }
-
-        async function completeMission(id) {
-            if (!confirm('Complete this mission?')) return;
-            const result = await postAction('/Lobby/CompleteMission', { id: id });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to complete mission.');
-        }
-
-        async function terminateLobby(id) {
-            if (!confirm('Terminate this lobby? This cannot be undone.')) return;
-            const result = await postAction('/Lobby/TerminateLobby', { id: id });
-            if (result.success) window.location.href = result.redirectUrl || '/Lobby/Index';
-            else alert(result.message || 'Failed to terminate lobby.');
-        }
-
-        async function recruitMember(lobbyId, userId) {
-            const result = await postAction('/Lobby/Recruit', { id: lobbyId, userId: userId });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to recruit member.');
-        }
-
-        async function rejectApplicant(lobbyId, userId) {
-            const result = await postAction('/Lobby/Reject', { id: lobbyId, userId: userId });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to reject applicant.');
-        }
-
-        async function kickMember(lobbyId, userId) {
-            if (!confirm('Kick this member?')) return;
-            const result = await postAction('/Lobby/Kick', { id: lobbyId, userId: userId });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to kick member.');
-        }
-
-        async function requestDeployment(lobbyId) {
-            const roleSelect = document.getElementById('apply-role');
-            const role = roleSelect ? roleSelect.value : 'Member';
-            const result = await postAction('/Lobby/Apply', { id: lobbyId, role: role });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to send deployment request.');
-        }
-
-        async function cancelRequest(lobbyId) {
-            const result = await postAction('/Lobby/CancelRequest', { id: lobbyId });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to cancel request.');
-        }
-
-        async function abandonMission(lobbyId) {
-            if (!confirm('Abandon this mission?')) return;
-            const result = await postAction('/Lobby/AbandonMission', { id: lobbyId });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to abandon mission.');
-        }
-
-        async function submitKarma(lobbyId, targetUserId) {
-            const select = document.getElementById('karma-' + targetUserId);
-            const score = parseFloat(select.value);
-            const result = await postAction('/Lobby/SubmitKarma', { id: lobbyId, targetUserId: targetUserId, score: score });
-            if (result.success) window.location.reload();
-            else alert(result.message || 'Failed to submit karma rating.');
-        }
-
-        (function () {
-            var el = document.getElementById('timer');
-            if (!el) return;
-            var secs = @remainingSecs;
-            function tick() {
-                if (secs <= 0) { el.textContent = "EXPIRED"; return; }
-                var h = Math.floor(secs / 3600);
-                var m = Math.floor((secs % 3600) / 60);
-                var s = secs % 60;
-                el.textContent =
-                    String(h).padStart(2, '0') + ':' +
-                    String(m).padStart(2, '0') + ':' +
-                    String(s).padStart(2, '0');
-                secs--;
-                setTimeout(tick, 1000);
-            }
-            tick();
-        })();
-    </script>
-}
+<script src="~/js/lobby-details.js" asp-append-version="true"></script>

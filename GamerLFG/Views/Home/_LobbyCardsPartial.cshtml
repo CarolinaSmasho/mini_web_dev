@@ -1,0 +1,57 @@
+
+@using GamerLFG.Services.Interface.DTOs;
+@model List<ShowLobbyDTO>
+
+
+@foreach(ShowLobbyDTO lob in Model){
+                <div class="public-lobby lobby-item" data-id="@lob.Id">
+                <div class="lobby">
+                    <div class="game-pic" style="background-image: url('@lob.Picture');">
+                        <div class="gname">
+                            <p>@lob.Game</p>
+                        </div>
+                    </div>
+                    <div class="host-bar">
+                        <div>
+                            <i class="fa fa-user-o"></i>
+                            <p>Host: @lob.HostName</p>
+                        </div>
+                        @if(lob.isRecuiting){
+                        <i class="fa fa-circle" style="color: green;"></i> 
+                        }
+                        else{
+                        <i class="fa fa-circle" style="color: red;"></i>    
+                        }
+                    </div>
+                    <h3>@lob.Title</h3>
+                    <div class="slots">
+                        <div class="icon">
+                            @if(lob.MaxPlayers <=10){
+                                @for(int i=0;i< lob.MaxPlayers;i++){
+                                    @if(i>=lob.CurrentPlayers){
+                                    <i class="fa fa-user-o"></i>    
+                                    }
+                                    else{
+                                        <i class="fa fa-user-o" style="color: #ffa431;"></i>  
+                                    }
+                                    
+                                }
+                            }
+                        </div>
+                        <div>
+                            <p>@lob.CurrentPlayers/@lob.MaxPlayers SLOTS</p>
+                        </div>
+                    </div>
+                   <div class="tag-game">
+                            @foreach (string mood in lob.Moods){
+                              <p class="tag-ele">@mood</p>  
+                            }
+                    </div>
+                   <a href="/Lobby/Details/@lob.Id">
+                     <button class="orange-button">JOIN LOBBY</button>   
+                    </a>
+                    
+
+                </div>                 
+                </div>
+            }  

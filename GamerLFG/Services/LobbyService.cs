@@ -4,6 +4,7 @@ using GamerLFG.service;
 using GamerLFG.Services.Interface;
 using GamerLFG.Services.Interface.DTOs;
 using MongoDB.Driver;
+using MongoDB.Bson;
 namespace GamerLFG.Services
 {
     public class LobbyService : ILobbyService
@@ -30,7 +31,8 @@ namespace GamerLFG.Services
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
-                MaxPlayers = lob.MaxPlayers
+                MaxPlayers = lob.MaxPlayers,
+                Status = lob.GetStatus()
                 
             }).ToList();
             var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
@@ -42,7 +44,8 @@ namespace GamerLFG.Services
                 Picture = lob.Picture,
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
-                MaxPlayers = lob.MaxPlayers
+                MaxPlayers = lob.MaxPlayers,
+                Status = lob.GetStatus()
                 
             }).ToList();
 
@@ -83,9 +86,12 @@ namespace GamerLFG.Services
                     Picture = lob.Picture,
                     Moods = lob.Moods,
                     CurrentPlayers = lob.Members.Count,
-                    MaxPlayers = lob.MaxPlayers
+                    MaxPlayers = lob.MaxPlayers,
+                    Status = lob.GetStatus()
                     }).ToList();
                 }
+
+        //
 
         public async Task<(bool success, string message)> CreateLobbyAsync(CreateLobbyDTO newLobby) 
         {
@@ -149,22 +155,36 @@ namespace GamerLFG.Services
             return await _database.Lobbies.Find(l => l.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> ApplyToLobbyAsync(string lobbyId, string userId, string role)
-        {   
+        public async Task<(bool success, string message)> ApplyToLobbyAsync(string lobbyId, string userId, string role)
+        {
             // Fetch the lobby first to check capacity
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
-            if (lobby == null) return false;
+            if (lobby == null) return (false, "Lobby not found.");
+
+            // ตรวจสอบสถานะรวมเวลา: ต้องอยู่ในช่วง Recruiting เท่านั้น
+            var status = lobby.GetStatus();
+            if (status != LobbyStatus.Recruiting)
+            {
+                var reason = status switch
+                {
+                    LobbyStatus.ComingSoon   => "Recruitment has not started yet.",
+                    LobbyStatus.EventOngoing => "Recruitment is closed — the event has already started.",
+                    LobbyStatus.Completed    => "This lobby has been completed.",
+                    LobbyStatus.Cancelled    => "Recruitment is closed.",
+                    _                        => "Recruitment is currently closed."
+                };
+                return (false, reason);
+            }
 
             // Find the role slot definition
             var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == role);
             if (roleDef != null)
             {
-                // Count how many members (pending + joined) already hold this role
-                var takenCount = lobby.Members.Count(m =>
-                    m.Role == role && (m.Status == "Pending" || m.Status == "joined"));
+                // Count ALL members holding this role (Host + joined + Pending)
+                var takenCount = lobby.Members.Count(m => m.Role == role);
 
                 if (takenCount >= roleDef.Quantity)
-                    return false; // role is full
+                    return (false, "This role is already full.");
             }
 
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
@@ -192,7 +212,9 @@ namespace GamerLFG.Services
                 await _database.Notifications.InsertOneAsync(notification);
             }
             
-            return result.ModifiedCount > 0;
+            return result.ModifiedCount > 0
+                ? (true, "OK")
+                : (false, "Failed to submit request.");
         }
 
         public async Task<bool> CancelApplicationAsync(string lobbyId, string userId)
@@ -378,6 +400,46 @@ namespace GamerLFG.Services
             return true;
         }
 
+        public async Task<bool> ChangeMemberRoleAsync(string lobbyId, string userId, string newRole)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
+            var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status != "Pending");
+            if (member == null) return false;
+
+            // Validate that the new role exists in lobby roles
+            var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == newRole);
+            if (roleDef == null) return false;
+
+            // Count how many active members already hold this role (excluding the current user)
+            var takenCount = lobby.Members.Count(m =>
+                m.Role == newRole && m.UserId != userId && m.Status != "Pending");
+
+            if (takenCount >= roleDef.Quantity)
+                return false; // role is full
+
+            // Update the member's role
+            var filter = Builders<Lobby>.Filter.And(
+                Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
+                Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status != "Pending")
+            );
+            var update = Builders<Lobby>.Update.Set("Members.$.Role", newRole);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> ToggleRecruitmentAsync(string lobbyId)
+        {
+            var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
+            if (lobby == null) return false;
+
+            var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
+            var update = Builders<Lobby>.Update.Set(l => l.IsRecruiting, !lobby.IsRecruiting);
+            var result = await _database.Lobbies.UpdateOneAsync(filter, update);
+            return result.ModifiedCount > 0;
+        }
+
         public async Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId)
         {
             // 1. ดึง lobby จาก DB
@@ -392,7 +454,7 @@ namespace GamerLFG.Services
                 .Where(m => m.Status != "Pending")
                 .Select(m => m.UserId)
                 .ToList();
-
+            
             var memberUsers = memberIds.Any()
                 ? await _database.Users.Find(u => memberIds.Contains(u.Id)).ToListAsync()
                 : new List<User>();
@@ -468,6 +530,51 @@ namespace GamerLFG.Services
                 EndorsedUserIds     = endorsedUserIds,
             };
         }
-    }
-}
 
+        public async Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 20)
+        {
+            
+                var builder = Builders<Lobby>.Filter;
+                var notYours = Builders<Lobby>.Filter.Ne(l => l.HostId, userId);
+                var filter = builder.Regex(x => x.Title, new BsonRegularExpression(lobName, "i"));
+                var findByUserName = Builders<Lobby>.Filter.Eq(l => l.HostName,userName);
+                List<Lobby> nextLobby = new();
+                if (userName == "")
+                {
+                    nextLobby = await _database.Lobbies.Find(filter & notYours)
+                                    .SortBy(l => l.Id)
+                                    .Limit(pageSize)
+                                    .ToListAsync();
+                }
+                else
+                {
+                    nextLobby = await _database.Lobbies.Find(findByUserName)
+                                    .SortBy(l => l.Id)
+                                    .Limit(pageSize)
+                                    .ToListAsync();
+                }    
+
+                var nextHostIds = nextLobby.Select(l => l.HostId).Where(id => id != null).Distinct().ToList();
+                var nextHostUsers = nextHostIds.Any()
+                    ? await _database.Users.Find(u => nextHostIds.Contains(u.Id)).ToListAsync()
+                    : new List<User>();
+                var nextHostMap = nextHostUsers.ToDictionary(u => u.Id);
+
+                return nextLobby.Select(lob => new ShowLobbyDTO{
+                    Id = lob.Id,
+                    Title  = lob.Title,
+                    Game = lob.Game,
+                    Description = lob.Description,
+                    HostName  = nextHostMap.TryGetValue(lob.HostId ?? "", out var hu) ? hu.Username : lob.HostId,
+                    Picture = lob.Picture,
+                    Moods = lob.Moods,
+                    CurrentPlayers = lob.Members.Count,
+                    MaxPlayers = lob.MaxPlayers
+                    }).ToList();
+        }
+    }
+
+    
+       
+
+}
