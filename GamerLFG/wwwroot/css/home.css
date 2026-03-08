@@ -237,6 +237,8 @@ body {
   align-items: center;
   position: relative;
   gap: 1rem;
+  max-width: 100%;
+  width: 100%;
 }
 .search-space {
   border-radius: 1rem;
@@ -251,6 +253,7 @@ body {
 .mobile-search-hidden {
   display: none;
 }
+
 input[type="text"] {
   padding: 15px 25px; /* บน-ล่าง 15px, ซ้าย-ขวา 25px */
   font-size: 18px; /* เพิ่มขนาดตัวอักษรข้างในให้สมดุลกัน */
@@ -297,3 +300,4 @@ input[type="text"] {
 .mobile-menu a .orange-button {
   width: 100%;
 }
+

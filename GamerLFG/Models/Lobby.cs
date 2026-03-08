@@ -41,6 +41,7 @@ public class Lobby
     public int MaxPlayers { get; set; }
     public bool IsRecruiting { get; set; } = true;
     public bool IsComplete { get; set; } = false;
+    public bool AutoRecruitProcessed { get; set; } = false;
 
     /// <summary>คำนวณสถานะปัจจุบันของ lobby จากวันที่และ flags</summary>
     public LobbyStatus GetStatus()
@@ -72,7 +73,9 @@ public class Lobby
     public List<LobbyMember> Members { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-}
+    
+    }
+
 
 /// <summary>A role slot with a name and maximum number of players allowed.</summary>
 public class LobbyRole
@@ -85,8 +88,13 @@ public class LobbyMember
 {
     [BsonRepresentation(BsonType.ObjectId)]
     public string UserId { get; set; }
-    public string Status { get; set; } // e.g., 'joined', 'pending'
+    public string Status { get; set; } // e.g., 'Host', 'joined', 'Pending', 'Invited'
     public string Role { get; set; }
+    public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
+
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? InvitedBy { get; set; }
 }
+
 
 }

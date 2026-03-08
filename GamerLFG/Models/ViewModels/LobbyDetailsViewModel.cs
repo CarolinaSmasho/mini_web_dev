@@ -40,6 +40,14 @@ namespace GamerLFG.Models.ViewModels
         /// <summary>UserId ที่ currentUser ได้ rate ไปแล้ว (เพื่อ render "Evaluated")</summary>
         public HashSet<string> EndorsedUserIds { get; set; } = new();
 
+        // ── Friend Invite ───────────────────────────────────────
+        /// <summary>เพื่อนของ currentUser ที่ยังไม่อยู่ใน lobby (สำหรับ invite UI)</summary>
+        public List<User> InvitableFriends { get; set; } = new();
+        /// <summary>true = currentUser ถูกเชิญแต่ยังไม่ตอบรับ (Status == "Invited")</summary>
+        public bool HasPendingInvite { get; set; }
+        /// <summary>ชื่อคนที่เชิญ currentUser (สำหรับแสดงในปุ่มตอบรับ)</summary>
+        public string? InvitedByName { get; set; }
+
         // ── Computed helpers ──────────────────────────────────
         /// <summary>รายการ UserId ของสมาชิกที่เข้าร่วมจริง (ไม่รวม Pending)</summary>
         public List<string> PlayerIds =>

@@ -272,7 +272,9 @@ form >div{
 .moods{ 
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px; 
+    gap: 20px;
+    justify-items: center;
+    align-items: center;
 
 }
 .check-box{
@@ -307,14 +309,15 @@ form >div{
     display: none;
 }
 
-.wallpaper{
 
-}
+
 .wallpaper input{
     color: white;
+    width: 100%;
 }
 .discord input{
     color: white;
+    width: 100%;
 }
 
 .date{
@@ -327,9 +330,22 @@ form >div{
     display: flex;
     gap: 20px;
 }
-.calendar{
-
+.date > .datetime-local input{
+    width: 100%;
 }
+@media screen and (max-width:390px){
+    .date > .datetime-local input{
+    width:80%;
+}
+}
+
+.datetime-local{
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+}
+
 .input-date{
     color: white;
     padding-left: 1rem;

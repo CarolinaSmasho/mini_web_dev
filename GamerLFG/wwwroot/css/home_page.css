@@ -1,3 +1,6 @@
+* {
+    box-sizing: border-box;
+}
 
 main{
     position: relative;
@@ -8,7 +11,6 @@ main{
     /* min-height: 10000vh; */
     box-sizing: border-box;
     /* overflow: hidden; */
-
 }
 p{
     margin: 0;
@@ -25,6 +27,7 @@ a:hover, a:active, a:focus {
 .lobbies{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+    justify-content: center;
     gap: 30px;
     padding: 20px;
     margin-top: 2rem;
@@ -36,7 +39,7 @@ a:hover, a:active, a:focus {
 }
 .lobby{
     background-color: aliceblue;
-    width: clamp(275px, 100%, 310px);
+    width: clamp(275px, 100%, 320px);
     padding: 1rem;
     color: aliceblue;
     background-color: #1b1b1b;
@@ -46,16 +49,16 @@ a:hover, a:active, a:focus {
     word-wrap: break-word;
 }
 
-.mobile-search{
+.mobile-search
+{
     display: flex;
-    flex-direction: column;
     width: 100%;
+    max-width: 100%;
     position: sticky;
     padding: 1rem;
     gap: 1rem;
-    
-    
 }
+
 main .mobile-search{
         flex-grow: 1;
         /* margin:2px; */
@@ -63,6 +66,7 @@ main .mobile-search{
         top: 70px;
         background-color: #292929;
         z-index: 1000;
+        border-radius: 2rem;
         
     }
 
@@ -74,6 +78,7 @@ main .mobile-search{
     .search-space{
         flex-grow: 1;
         max-width: 900px;
+        
     }
    
 
@@ -249,4 +254,23 @@ main .orange-button{
     width: fit-content;
     height: fit-content;
     padding: 0ch;
+}
+@media screen and (max-width:380px) {
+  .search-space{
+    max-width: 70%;
+  }
+  .lobbies
+    {
+        padding: 0px;
+    }
+}
+
+@media screen and (max-width:450px) and(min-width:380px){
+  .search-space{
+    max-width:  80%;
+  }
+  .lobbies
+    {
+        padding: 0px;
+    }
 }

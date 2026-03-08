@@ -267,6 +267,39 @@ namespace GamerLFG.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> InviteFriend(string id, string friendId, string role)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var (success, message) = await _lobbyService.InviteFriendAsync(id, currentUserId, friendId, role);
+            return Json(new { success, message });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AcceptInvite(string id)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var (success, message) = await _lobbyService.AcceptInviteAsync(id, currentUserId);
+            return Json(new { success, message });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeclineInvite(string id)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized(new { success = false, message = "Not logged in" });
+
+            var (success, message) = await _lobbyService.DeclineInviteAsync(id, currentUserId);
+            return Json(new { success, message });
+        }
+
+        [HttpPost]
         public async Task<IActionResult> ToggleRecruitment(string id)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

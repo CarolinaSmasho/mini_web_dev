@@ -105,6 +105,31 @@ async function abandonMission(lobbyId) {
   else alert(result.message || "Failed to abandon mission.");
 }
 
+async function inviteFriend(lobbyId, friendId) {
+  const roleSelect = document.getElementById("invite-role-" + friendId);
+  const role = roleSelect ? roleSelect.value : "Other";
+  const result = await postAction("/Lobby/InviteFriend", {
+    id: lobbyId,
+    friendId: friendId,
+    role: role,
+  });
+  if (result.success) window.location.reload();
+  else alert(result.message || "Failed to send invite.");
+}
+
+async function acceptInvite(lobbyId) {
+  const result = await postAction("/Lobby/AcceptInvite", { id: lobbyId });
+  if (result.success) window.location.reload();
+  else alert(result.message || "Failed to accept invite.");
+}
+
+async function declineInvite(lobbyId) {
+  if (!confirm("Decline this invite?")) return;
+  const result = await postAction("/Lobby/DeclineInvite", { id: lobbyId });
+  if (result.success) window.location.reload();
+  else alert(result.message || "Failed to decline invite.");
+}
+
 async function submitKarma(lobbyId, targetUserId) {
   const select = document.getElementById("karma-" + targetUserId);
   const score = parseFloat(select.value);

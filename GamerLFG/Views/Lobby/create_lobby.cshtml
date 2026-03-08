@@ -44,8 +44,8 @@
                     </select>
             
                     
-            <input asp-for="Title" type="text" placeholder="Lobby title" style="min-height: 5rem; font-size:x-large">
-            <input asp-for="Description" type="text"  placeholder="description">
+            <input asp-for="Title" type="text" placeholder="Lobby title" style="min-height: 5rem; font-size:x-large" required>
+            <input asp-for="Description" type="text"  placeholder="description" required>
         </div>
         <div id="playerAmount">
                     <p style="padding: 0%;margin:0;">Player Amount</p>
@@ -115,14 +115,14 @@
                  Open Recruit Date <i class="fa fa-calendar"></i>   
                 </div>
                 
-               <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start" asp-for="StartRecruiting"> 
+               <input type="datetime-local" onclick="this.showPicker()" onchange="checkTimeInput()" class="input-date" id="start" asp-for="StartRecruiting"> 
             </label>
              <label for="end" class="datetime-local">
                 <div class="calendar">
                   Close Recruit Date <i class="fa fa-calendar"></i>  
                 </div>
                 
-              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end" asp-for="EndRecruiting">  
+              <input type="datetime-local" onclick="this.showPicker()" onchange="checkTimeInput()" class="input-date" id="end" asp-for="EndRecruiting">  
 
              </label>
             <label for="start-e" class="datetime-local">
@@ -130,7 +130,7 @@
                   Start Event Date <i class="fa fa-calendar"></i>  
                 </div>
                 
-              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="start-e" asp-for="StartEvent">  
+              <input type="datetime-local" onclick="this.showPicker()" onchange="checkTimeInput()" class="input-date" id="start-e" asp-for="StartEvent">  
              </label>
 
              <label for="end-e" class="datetime-local">
@@ -138,7 +138,7 @@
                   End Event Date <i class="fa fa-calendar"></i>  
                 </div>
                 
-              <input type="datetime-local" onclick="this.showPicker()" class="input-date" id="end-e" asp-for="EndEvent">  
+              <input type="datetime-local" onclick="this.showPicker()" onchange="checkTimeInput()" class="input-date" id="end-e" asp-for="EndEvent">  
              </label>
 
              @* <div class="time-range">
