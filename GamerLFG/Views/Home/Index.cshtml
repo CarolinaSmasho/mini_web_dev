@@ -51,7 +51,7 @@
                 
                 
                 <div class=my-lobby>
-                <div class="lobby" onclick="toLobby(@lob.Id)">
+                <div class="lobby" onclick="toLobby('@lob.Id')">
                     <div class="game-pic" style="background-image: url('@lob.Picture');">
                         <div class="gname">
                             <p>@lob.Game</p>
@@ -64,8 +64,7 @@
                         </div>
                         @if(lob.isRecuiting){
                         <i class="fa fa-circle" style="color: green;"></i> 
-                        }
-                        else{
+                        } else{
                         <i class="fa fa-circle" style="color: rgb(81, 147, 205);"></i>    
                         }
                     </div>
@@ -124,7 +123,7 @@
         
         @foreach(ShowLobbyDTO lob in OtherLobby){
                 <div class="public-lobby">
-                <div class="lobby" onclick="toLobby(@lob.Id)">
+                <div class="lobby" onclick="toLobby('@lob.Id')">
                     <div class="game-pic" style="background-image: url('@lob.Picture');">
                         <div class="gname">
                             <p>@lob.Game</p>
@@ -135,11 +134,13 @@
                             <i class="fa fa-user-o"></i>
                             <p>Host: @lob.HostName</p>
                         </div>
-                        @if(lob.isRecuiting){
-                        <i class="fa fa-circle" style="color: green;"></i> 
-                        }
-                        else{
-                        <i class="fa fa-circle" style="color: red;"></i>    
+                    @if (lob.isRecuiting == true) 
+                        {
+                            <i class="fa fa-circle" style="color: green;"></i>
+                        } 
+                        else 
+                        {
+                            <i class="fa fa-circle" style="color: red;"></i>
                         }
                     </div>
                     <h3>@lob.Title</h3>
@@ -149,8 +150,7 @@
                                 @for(int i=0;i< lob.MaxPlayers;i++){
                                     @if(i>=lob.CurrentPlayers){
                                     <i class="fa fa-user-o"></i>    
-                                    }
-                                    else{
+                                    } else{
                                         <i class="fa fa-user-o" style="color: #ffa431;"></i>  
                                     }
                                     

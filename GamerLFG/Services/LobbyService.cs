@@ -42,7 +42,8 @@ namespace GamerLFG.Services
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
                 MaxPlayers = lob.MaxPlayers,
-                Status = lob.GetStatus()
+                Status = lob.GetStatus(),
+                isRecuiting = lob.IsRecruiting
                 
             }).ToList();
             var otherHostIds = otherLobbyList.Select(l => l.HostId).Where(id => id != null).Distinct().ToList();
@@ -62,7 +63,8 @@ namespace GamerLFG.Services
                 Moods = lob.Moods,
                 CurrentPlayers = lob.Members.Count,
                 MaxPlayers = lob.MaxPlayers,
-                Status = lob.GetStatus()
+                Status = lob.GetStatus(),
+                isRecuiting = lob.IsRecruiting
                 
             }).ToList();
 
@@ -110,7 +112,8 @@ namespace GamerLFG.Services
                     Moods = lob.Moods,
                     CurrentPlayers = lob.Members.Count,
                     MaxPlayers = lob.MaxPlayers,
-                    Status = lob.GetStatus()
+                    Status = lob.GetStatus(),
+                    isRecuiting = lob.IsRecruiting
                     }).ToList();
                 }
 
@@ -794,7 +797,10 @@ namespace GamerLFG.Services
                     Picture = lob.Picture,
                     Moods = lob.Moods,
                     CurrentPlayers = lob.Members.Count,
-                    MaxPlayers = lob.MaxPlayers
+                    MaxPlayers = lob.MaxPlayers,
+                    isRecuiting = lob.IsRecruiting,
+                    Status = lob.GetStatus()
+
                     }).ToList();
         }
     }

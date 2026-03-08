@@ -5,7 +5,7 @@
 
 @foreach(ShowLobbyDTO lob in Model){
                 <div class="public-lobby lobby-item" data-id="@lob.Id">
-                <div class="lobby" onclick="toLobby(@lob.Id)">
+                <div class="lobby" onclick="toLobby('@lob.Id')">
                     <div class="game-pic" style="background-image: url('@lob.Picture');">
                         <div class="gname">
                             <p>@lob.Game</p>
@@ -18,8 +18,7 @@
                         </div>
                         @if(lob.isRecuiting){
                         <i class="fa fa-circle" style="color: green;"></i> 
-                        }
-                        else{
+                        } else{
                         <i class="fa fa-circle" style="color: red;"></i>    
                         }
                     </div>
