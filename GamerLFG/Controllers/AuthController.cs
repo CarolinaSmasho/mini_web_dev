@@ -49,7 +49,8 @@ public async Task<IActionResult> Register(string name, string email, string user
     {
         Name = name,
         Email = email,
-        Username = username
+        Username = username,
+        Avatar = "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
     };
 
     //เรียกใช้ Service เพื่อ Hash password และบันทึก
