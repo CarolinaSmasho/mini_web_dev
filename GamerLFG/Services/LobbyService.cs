@@ -404,8 +404,15 @@ namespace GamerLFG.Services
                 FromUserId = fromUserId,
                 TargetUserId = targetUserId,
                 Score = score,
+                Comment = score == 5 ? "MVP" : 
+                        score == 4 ? "Leader" : 
+                        score == 3 ? "Good" : 
+                        score == 2 ? "Chill" : 
+                        score == -3 ? "AFK" : 
+                        score == -5 ? "Toxic" : "Unknown",
                 Date = DateTime.UtcNow
             };
+
             await _database.KarmaHistories.InsertOneAsync(karmaHistory);
 
             var allHistories = await _database.KarmaHistories
