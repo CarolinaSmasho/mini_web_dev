@@ -42,7 +42,7 @@
                         <div class="friend-card-content">
                             <div class="friend-card-fullbody">
                                 <span class="friend-card-image">
-                                    <img src="@friend.Avatar" alt="@friend.Name" title="@friend.Name">
+                                    <img src="@friend.Avatar" alt="@friend.Username" title="@friend.Username">
                                 </span>
                                 <div class="avatar-status"></div>
                             </div>
@@ -51,7 +51,7 @@
                                 <span>
                                     <div class="avatar-name-container">
                                         <p class="text-overflow avatar-name">
-                                            @friend.Name
+                                            @friend.Username
                                         </p>
                                     </div>
                                     @* <div class="friend-card-label">
@@ -108,13 +108,13 @@
                                 <div class="friend-card-content">
                                     <div class="friend-card-fullbody">
                                         <span class="friend-card-image">
-                                            <img src="${user.avatar || 'https://via.placeholder.com/150'}" alt="${user.name}">
+                                            <img src="${user.avatar || 'https://via.placeholder.com/150'}" alt="${user.username}">
                                         </span>
                                     </div>
                                     <div class="friend-card-caption">
                                         <span>
                                             <div class="avatar-name-container">
-                                                <p class="text-overflow avatar-name">${user.name}</p>
+                                                <p class="text-overflow avatar-name">${user.username}</p>
                                             </div>
                                             @* <div class="friend-card-label">${user.bio || 'ไม่มีข้อมูลแนะนำตัว'}</div> *@
                                         </span>

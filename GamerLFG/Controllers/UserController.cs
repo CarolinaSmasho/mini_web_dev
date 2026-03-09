@@ -87,7 +87,7 @@ public class UserController : Controller
         var result = new 
         {
             id = user.Id,
-            Name = user.Name,
+            username = user.Username,
             bio = user.Bio,
             avatar = user.Avatar,
             status = user.VibeTags.FirstOrDefault() ?? "Online",
