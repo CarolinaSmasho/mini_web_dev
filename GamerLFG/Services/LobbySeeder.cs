@@ -266,6 +266,218 @@ namespace GamerLFG.Services
             }
 
             Console.WriteLine("[LobbySeeder] Seed สำเร็จ! upsert 5 lobbies ทุกสถานการณ์");
+
+            // ── Applications — ครอบคลุม 3 สถานะ: Pending, Accepted, Rejected ─────
+            Console.WriteLine("[LobbySeeder] กำลัง upsert Applications...");
+
+
+            // ── KarmaHistory — ประวัติให้คะแนนหลังจบ Lobby5 ────────────────────
+            Console.WriteLine("[LobbySeeder] กำลัง upsert KarmaHistory...");
+
+            var karmaHistories = new List<KarmaHistory>
+            {
+                // Host ให้คะแนน Member1 — คะแนนสูง
+                new() {
+                    Id           = "cccccccccccccccccccccc01",
+                    TargetUserId = IdMember1,
+                    FromUserId   = IdHost,
+                    Score        = 5,
+                    Comment      = "DPS เทพมาก carry ทั้งทีม",
+                    Date         = now.AddDays(-5).AddHours(4),
+                },
+                // Host ให้คะแนน Member2 — คะแนนปานกลาง
+                new() {
+                    Id           = "cccccccccccccccccccccc02",
+                    TargetUserId = IdMember2,
+                    FromUserId   = IdHost,
+                    Score        = 4,
+                    Comment      = "Tank ได้ดี แต่บางทีหลุดตำแหน่ง",
+                    Date         = now.AddDays(-5).AddHours(4),
+                },
+                // Member1 ให้คะแนน Host — คะแนนสูง
+                new() {
+                    Id           = "cccccccccccccccccccccc03",
+                    TargetUserId = IdHost,
+                    FromUserId   = IdMember1,
+                    Score        = 5,
+                    Comment      = "ลีดเก่งมาก สั่งงานชัดเจน",
+                    Date         = now.AddDays(-5).AddHours(5),
+                },
+                // Member2 ให้คะแนน Host — คะแนนปานกลาง
+                new() {
+                    Id           = "cccccccccccccccccccccc04",
+                    TargetUserId = IdHost,
+                    FromUserId   = IdMember2,
+                    Score        = 4,
+                    Comment      = "ลีดโอเค แต่ตึงไปนิดนึง",
+                    Date         = now.AddDays(-5).AddHours(5),
+                },
+                // Member1 ให้คะแนน Member2
+                new() {
+                    Id           = "cccccccccccccccccccccc05",
+                    TargetUserId = IdMember2,
+                    FromUserId   = IdMember1,
+                    Score        = 3,
+                    Comment      = "เล่นได้พอใช้ ยังต้องฝึกอีก",
+                    Date         = now.AddDays(-5).AddHours(5),
+                },
+            };
+
+            foreach (var karma in karmaHistories)
+            {
+                await db.KarmaHistories.ReplaceOneAsync(
+                    k => k.Id == karma.Id,
+                    karma,
+                    new ReplaceOptions { IsUpsert = true });
+            }
+            Console.WriteLine($"[LobbySeeder] upserted {karmaHistories.Count} karma histories");
+
+            // ── Notifications — ครอบคลุมหลาย type + ทั้ง read/unread ────────────
+            Console.WriteLine("[LobbySeeder] กำลัง upsert Notifications...");
+
+            var notifications = new List<Notification>
+            {
+                // friend_request — Newbie ส่ง friend request ให้ Host (ยังไม่อ่าน)
+                new() {
+                    Id             = "dddddddddddddddddddddd01",
+                    Type           = "friend_request",
+                    RelateObjectId = "eeeeeeeeeeeeeeeeeeeeee01", // FriendRequest Id
+                    UserId         = IdHost,
+                    Text           = "Newbie_Player ส่งคำขอเป็นเพื่อน",
+                    IsRead         = false,
+                    Date           = now.AddHours(-2),
+                },
+                // lobby_invite — Host เชิญ Looker เข้า Lobby2 (ยังไม่อ่าน)
+                new() {
+                    Id             = "dddddddddddddddddddddd02",
+                    Type           = "lobby_invite",
+                    RelateObjectId = IdLobby2_Recruiting,
+                    UserId         = IdVisitor,
+                    Text           = "Notatord_Commander เชิญคุณเข้า Lobby: หาทีม Elden Ring Co-op",
+                    IsRead         = false,
+                    Date           = now.AddHours(-1),
+                },
+                // lobby_invite — Host เชิญ Newbie เข้า Lobby2 (อ่านแล้ว)
+                new() {
+                    Id             = "dddddddddddddddddddddd03",
+                    Type           = "lobby_invite",
+                    RelateObjectId = IdLobby2_Recruiting,
+                    UserId         = IdPending,
+                    Text           = "Notatord_Commander เชิญคุณเข้า Lobby: หาทีม Elden Ring Co-op",
+                    IsRead         = true,
+                    Date           = now.AddHours(-3),
+                },
+                // friend_request — Host accept friend ของ Dew (อ่านแล้ว)
+                new() {
+                    Id             = "dddddddddddddddddddddd04",
+                    Type           = "friend_request",
+                    RelateObjectId = "eeeeeeeeeeeeeeeeeeeeee02",
+                    UserId         = IdMember1,
+                    Text           = "Notatord_Commander ตอบรับคำขอเป็นเพื่อนแล้ว",
+                    IsRead         = true,
+                    Date           = now.AddDays(-3),
+                },
+                // application_accepted — Dew ได้รับการอนุมัติเข้า Lobby3 (อ่านแล้ว)
+                new() {
+                    Id             = "dddddddddddddddddddddd05",
+                    Type           = "application_accepted",
+                    RelateObjectId = IdLobby3_Intermission,
+                    UserId         = IdMember1,
+                    Text           = "คุณได้รับการอนุมัติเข้า Lobby: รอเริ่ม League of Legends",
+                    IsRead         = true,
+                    Date           = now.AddDays(-2).AddHours(3),
+                },
+                // application_rejected — Looker ถูกปฏิเสธจาก Lobby3 (ยังไม่อ่าน)
+                new() {
+                    Id             = "dddddddddddddddddddddd06",
+                    Type           = "application_rejected",
+                    RelateObjectId = IdLobby3_Intermission,
+                    UserId         = IdVisitor,
+                    Text           = "คำขอเข้า Lobby: รอเริ่ม League of Legends ถูกปฏิเสธ",
+                    IsRead         = false,
+                    Date           = now.AddDays(-2).AddHours(4),
+                },
+                // new_application — Host ได้รับแจ้ง Newbie สมัครเข้า Lobby2 (ยังไม่อ่าน)
+                new() {
+                    Id             = "dddddddddddddddddddddd07",
+                    Type           = "new_application",
+                    RelateObjectId = IdLobby2_Recruiting,
+                    UserId         = IdHost,
+                    Text           = "Newbie_Player สมัครเข้า Lobby: หาทีม Elden Ring Co-op",
+                    IsRead         = false,
+                    Date           = now.AddHours(-1),
+                },
+            };
+
+            foreach (var noti in notifications)
+            {
+                await db.Notifications.ReplaceOneAsync(
+                    n => n.Id == noti.Id,
+                    noti,
+                    new ReplaceOptions { IsUpsert = true });
+            }
+            Console.WriteLine($"[LobbySeeder] upserted {notifications.Count} notifications");
+
+            // ── FriendRequests — ครอบคลุม pending + accepted ────────────────────
+            Console.WriteLine("[LobbySeeder] กำลัง upsert FriendRequests...");
+
+            var friendRequestCollection = db.Users.Database
+                .GetCollection<FriendRequest>("FriendRequests");
+
+            var friendRequests = new List<FriendRequest>
+            {
+                // pending — Newbie ส่งให้ Host (รอตอบรับ)
+                new() {
+                    Id           = "eeeeeeeeeeeeeeeeeeeeee01",
+                    UserSender   = IdPending,
+                    UserReceiver = IdHost,
+                    Status       = "pending",
+                    CreatedAt    = now.AddHours(-2),
+                },
+                // accepted — Dew กับ Host (เป็นเพื่อนกันแล้ว)
+                new() {
+                    Id           = "eeeeeeeeeeeeeeeeeeeeee02",
+                    UserSender   = IdMember1,
+                    UserReceiver = IdHost,
+                    Status       = "accepted",
+                    CreatedAt    = now.AddMonths(-4),
+                },
+                // accepted — Tank กับ Host
+                new() {
+                    Id           = "eeeeeeeeeeeeeeeeeeeeee03",
+                    UserSender   = IdHost,
+                    UserReceiver = IdMember2,
+                    Status       = "accepted",
+                    CreatedAt    = now.AddMonths(-3),
+                },
+                // accepted — Dew กับ Tank
+                new() {
+                    Id           = "eeeeeeeeeeeeeeeeeeeeee04",
+                    UserSender   = IdMember2,
+                    UserReceiver = IdMember1,
+                    Status       = "accepted",
+                    CreatedAt    = now.AddMonths(-2),
+                },
+                // pending — Looker ส่งให้ Dew (รอตอบรับ)
+                new() {
+                    Id           = "eeeeeeeeeeeeeeeeeeeeee05",
+                    UserSender   = IdVisitor,
+                    UserReceiver = IdMember1,
+                    Status       = "pending",
+                    CreatedAt    = now.AddDays(-1),
+                },
+            };
+
+            foreach (var fr in friendRequests)
+            {
+                await friendRequestCollection.ReplaceOneAsync(
+                    f => f.Id == fr.Id,
+                    fr,
+                    new ReplaceOptions { IsUpsert = true });
+            }
+            Console.WriteLine($"[LobbySeeder] upserted {friendRequests.Count} friend requests");
+
+            Console.WriteLine("[LobbySeeder] ✅ Seed ทั้งหมดเสร็จสมบูรณ์!");
         }
     }
 }
