@@ -318,6 +318,24 @@ namespace GamerLFG.Services
             }
             Console.WriteLine($"[LobbySeeder] upserted {karmaHistories.Count} karma histories");
 
+            var allSeededUserIds = users.Select(u => u.Id).ToList();
+            foreach (var uid in allSeededUserIds)
+            {
+                var histories = await db.KarmaHistories
+                    .Find(k => k.TargetUserId == uid)
+                    .ToListAsync();
+
+                if (histories.Any())
+                {
+                    var avg = Math.Round(histories.Average(k => k.Score), 2);
+                    var uf  = Builders<User>.Filter.Eq(u => u.Id, uid);
+                    var uu  = Builders<User>.Update.Set(u => u.KarmaScore, avg);
+                    await db.Users.UpdateOneAsync(uf, uu);
+                    Console.WriteLine($"[LobbySeeder] KarmaScore for {uid} → {avg:0.00}");
+                }
+            }
+
+
             Console.WriteLine("[LobbySeeder] กำลัง upsert Notifications...");
 
             var notifications = new List<Notification>

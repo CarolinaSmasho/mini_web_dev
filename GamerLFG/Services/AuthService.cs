@@ -29,7 +29,7 @@ namespace GamerLFG.Services
             
 
             user.CreatedAt = DateTime.UtcNow;
-            user.KarmaScore = 0;
+            user.KarmaScore = 3.0; // Bayesian neutral default (globalAvg) — ยังไม่ถูกโหวต
             
             await _users.InsertOneAsync(user);
         }

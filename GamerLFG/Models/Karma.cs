@@ -16,6 +16,10 @@ namespace GamerLFG.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string FromUserId { get; set; }
 
+    
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? LobbyId { get; set; }
+
         public double Score { get; set; }
         public string Comment { get; set; }
         public DateTime Date { get; set; } = DateTime.UtcNow;

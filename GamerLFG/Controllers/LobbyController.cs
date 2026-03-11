@@ -181,7 +181,7 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(currentUserId))
                 return Unauthorized(new { success = false, message = "Not logged in" });
 
-            var result = await _lobbyService.SubmitKarmaAsync(currentUserId, targetUserId, score);
+            var result = await _lobbyService.SubmitKarmaAsync(id, currentUserId, targetUserId, score);
             return Json(new { success = result });
         }
 

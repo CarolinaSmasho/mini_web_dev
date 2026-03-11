@@ -23,22 +23,23 @@
 
     double karmaScore = Model.KarmaScore;
 
-    int karmaPercent = Math.Clamp((int)((karmaScore + 100) / 2), 0, 100);
+ 
+    int karmaPercent = Math.Clamp((int)((karmaScore + 5.0) / 10.0 * 100), 0, 100);
 
     string tierName = "";
     string tierColor = "";
 
-    if (karmaScore >= 50)
+    if (karmaScore >= 4.0)
     {
         tierName = "Excellent";
         tierColor = "#00d2ff";
     }
-    else if (karmaScore >= 0)
+    else if (karmaScore >= 2.0)
     {
         tierName = "Good";
         tierColor = "#28a745";
     }
-    else if (karmaScore > -50)
+    else if (karmaScore >= 0.0)
     {
         tierName = "Warning";
         tierColor = "#ff9800";
@@ -85,126 +86,127 @@
 
             <div class="box">
                 <h2>Karma Score</h2>
-                <div style="font-size: 36px; font-weight: bold;">@karmaScore</div>
-                <div style="color: @tierColor; font-weight: bold;">Status: @tierName</div>
+                <div style="font-size: 36px; font-weight: bold;">@karmaScore.ToString("0.00") <span
+                    style="font-size:14px; color:#aaa;">/ 5.00</span></div>
+                    <div style="color: @tierColor; font-weight: bold;">Status: @tierName</div>
 
-                <div class="bar-bg">
-                    <div class="bar-fill" style="width: @(karmaPercent)%;"></div>
+                    <div class="bar-bg">
+                        <div class="bar-fill" style="width: @(karmaPercent)%;"></div>
+                    </div>
+
+                    <br>
+                    <a asp-controller="Karma" asp-action="KarmaHistory" asp-route-userId="@Model.Id"
+                       style="color: orange; text-decoration: none;">[ View History ]</a>
                 </div>
+            </div>
 
-                <br>
-                <a asp-controller="Karma" asp-action="KarmaHistory" asp-route-userId="@Model.Id"
-                   style="color: orange; text-decoration: none;">[ View History ]</a>
+            <div class="col-right">
+                <form asp-controller="User" asp-action="UpdateProfile" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="Avatar" id="avatarInput" value="@pic" />
+                    <div class="box">
+                        <h2>Profile</h2>
+
+                        <label>Display Name</label>
+                        <input type="text" name="Name" value="@Name" @(isOwnProfile ? "" : "readonly") />
+
+                        <label>Bio</label>
+                        <textarea name="Bio" rows="3" @(isOwnProfile ? "" : "readonly")>@bio</textarea>
+
+                        <label>Games</label>
+                        <textarea name="GameLibraryString" rows="2" @(isOwnProfile ? "" :
+                                                                                                                "readonly")>@gameLibraryDisplay</textarea>
+
+                        <label>Vibe</label>
+                        <div id="vibeContainer" style="@(isOwnProfile ? "" : "pointer-events: none;")">
+                            <input type="hidden" name="VibeTagsString" id="VibeTagsString"    value="@VibeTagsDisplay" />
+
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Chill") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Chill')">Chill</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Teacher") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Teacher')">Teacher</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Party") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Party')">Party</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Femboy") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Femboy')">Femboy</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("NicePlayer") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'NicePlayer')">NicePlayer</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Troll") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Troll')">Troll</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Carry") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Carry')">Carry</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Otaku") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Otaku')">Otaku</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Yapper") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Yapper')">Yapper</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("No Life") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'No Life')">No Life</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Flex") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Flex')">Flex</button>
+                            <button type="button" class="btn @(Model.VibeTags.Contains("Vocalist") ? "active" : "")"
+                                    onclick="toggleVibe(this, 'Vocalist')">Vocalist</button>
+                        </div>
+                    </div>
+
+                    <div class="box">
+                        <h2>Social Links</h2>
+
+                        <label>Discord</label>
+                        <div class="input-group">
+                            <span class="material-symbols-outlined">chat_bubble</span>
+                            <input type="text" name="discord" value="@discord" @(isOwnProfile ? "" : "readonly") />
+                        </div>
+
+                        <label>Steam</label>
+                        <div class="input-group">
+                            <span class="material-symbols-outlined">sports_esports</span>
+                            <input type="text" name="steam" value="@steam" @(isOwnProfile ? "" : "readonly") />
+                        </div>
+
+                        <label>Twitch</label>
+                        <div class="input-group">
+                            <span class="material-symbols-outlined">live_tv</span>
+                            <input type="text" name="twitch" value="@twitch" @(isOwnProfile ? "" : "readonly") />
+                        </div>
+                    </div>
+
+                    @if (isOwnProfile)
+                    {
+                        <div style="text-align: right;">
+                            <button type="submit" class="btn-save">SAVE DATA</button>
+                        </div>
+                    }
+                </form>
             </div>
         </div>
-
-        <div class="col-right">
-            <form asp-controller="User" asp-action="UpdateProfile" method="post">
-                <input type="hidden" name="id" value="@Model.Id" />
-                <input type="hidden" name="Avatar" id="avatarInput" value="@pic" />
-                <div class="box">
-                    <h2>Profile</h2>
-
-                    <label>Display Name</label>
-                    <input type="text" name="Name" value="@Name" @(isOwnProfile ? "" : "readonly") />
-
-                    <label>Bio</label>
-                    <textarea name="Bio" rows="3" @(isOwnProfile ? "" : "readonly")>@bio</textarea>
-
-                    <label>Games</label>
-                    <textarea name="GameLibraryString" rows="2" @(isOwnProfile ? "" : "readonly")>@gameLibraryDisplay</textarea>
-
-                    <label>Vibe</label>
-                    <div id="vibeContainer" style="@(isOwnProfile ? "" : "pointer-events: none;")">
-                        <input type="hidden" name="VibeTagsString" id="VibeTagsString"
-                               value="@VibeTagsDisplay" />
-
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Chill") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Chill')">Chill</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Teacher") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Teacher')">Teacher</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Party") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Party')">Party</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Femboy") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Femboy')">Femboy</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("NicePlayer") ? "active" : "")"
-                                onclick="toggleVibe(this, 'NicePlayer')">NicePlayer</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Troll") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Troll')">Troll</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Carry") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Carry')">Carry</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Otaku") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Otaku')">Otaku</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Yapper") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Yapper')">Yapper</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("No Life") ? "active" : "")"
-                                onclick="toggleVibe(this, 'No Life')">No Life</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Flex") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Flex')">Flex</button>
-                        <button type="button" class="btn @(Model.VibeTags.Contains("Vocalist") ? "active" : "")"
-                                onclick="toggleVibe(this, 'Vocalist')">Vocalist</button>
-                    </div>
-                </div>
-
-                <div class="box">
-                    <h2>Social Links</h2>
-
-                    <label>Discord</label>
-                    <div class="input-group">
-                        <span class="material-symbols-outlined">chat_bubble</span>
-                        <input type="text" name="discord" value="@discord" @(isOwnProfile ? "" : "readonly") />
-                    </div>
-
-                    <label>Steam</label>
-                    <div class="input-group">
-                        <span class="material-symbols-outlined">sports_esports</span>
-                        <input type="text" name="steam" value="@steam" @(isOwnProfile ? "" : "readonly") />
-                    </div>
-
-                    <label>Twitch</label>
-                    <div class="input-group">
-                        <span class="material-symbols-outlined">live_tv</span>
-                        <input type="text" name="twitch" value="@twitch" @(isOwnProfile ? "" : "readonly") />
-                    </div>
-                </div>
-
-                @if (isOwnProfile)
-                {
-                    <div style="text-align: right;">
-                        <button type="submit" class="btn-save">SAVE DATA</button>
-                    </div>
-                }
-            </form>
-        </div>
     </div>
-</div>
 
-@section Scripts {
-    <script>
-                function toggleVibe(btn, vibeName) {
-                    btn.classList.toggle('active');
+    @section Scripts {
+        <script>
+                        function toggleVibe(btn, vibeName) {
+                            btn.classList.toggle('active');
 
-                    const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
+                            const activeButtons = document.querySelectorAll('#vibeContainer .btn.active');
 
-                    const selectedVibes = Array.from(activeButtons).map(b => b.innerText.trim());
+                            const selectedVibes = Array.from(activeButtons).map(b => b.innerText.trim());
 
-                    document.getElementById('VibeTagsString').value = selectedVibes.join(',');
-                }
-
-                function changeAvatar() {
-                    var img = document.getElementById('profileImage');
-
-                    var currentPic = img.src;
-                    var newUrl = prompt("ใส่ URL รูปภาพใหม่ของคุณที่นี่:");
-
-                    if (newUrl !== null && newUrl.trim() !== "") {
-                        img.src = newUrl.trim();
-
-                        var avatarInput = document.getElementById('avatarInput');
-                        if (avatarInput) {
-                            avatarInput.value = newUrl.trim();
+                            document.getElementById('VibeTagsString').value = selectedVibes.join(',');
                         }
-                    }
-                }
-    </script>
-}
+
+                        function changeAvatar() {
+                            var img = document.getElementById('profileImage');
+
+                            var currentPic = img.src;
+                            var newUrl = prompt("ใส่ URL รูปภาพใหม่ของคุณที่นี่:");
+
+                            if (newUrl !== null && newUrl.trim() !== "") {
+                                img.src = newUrl.trim();
+
+                                var avatarInput = document.getElementById('avatarInput');
+                                if (avatarInput) {
+                                    avatarInput.value = newUrl.trim();
+                                }
+                            }
+                        }
+        </script>
+    }
