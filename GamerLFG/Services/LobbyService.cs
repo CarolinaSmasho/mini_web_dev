@@ -837,6 +837,7 @@ namespace GamerLFG.Services
             
                 var builder = Builders<Lobby>.Filter;
                 var notYours = builder.Ne(l => l.HostId, userId);
+                var yours = builder.Eq(l => l.HostId, userId);
                 var filter = builder.Regex(x => x.Title, new BsonRegularExpression(lobName, "i"));
                 var findByUserName = builder.Eq(l => l.HostName,userName);
                 var now = DateTime.UtcNow;
@@ -849,7 +850,7 @@ namespace GamerLFG.Services
                 List<Lobby> nextLobby = new();
                 if (userName == "")
                 {
-                    nextLobby = await _database.Lobbies.Find(filter & notYours)
+                    nextLobby = await _database.Lobbies.Find(filter & ((notYours & isRecruiting) | yours))
                                     .SortBy(l => l.Id)
                                     .Limit(pageSize)
                                     .ToListAsync();
@@ -879,7 +880,8 @@ namespace GamerLFG.Services
                     CurrentPlayers = lob.Members.Count,
                     MaxPlayers = lob.MaxPlayers,
                     isRecuiting = lob.IsRecruiting,
-                    Status = lob.GetStatus()
+                    Status = lob.GetStatus(),
+                    HostId = lob.HostId
 
                     }).ToList();
         }

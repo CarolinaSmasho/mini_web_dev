@@ -41,6 +41,7 @@ public class HomeController : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (target == null) return BadRequest("ไม่มีห้องที่ถามหา");
         List<ShowLobbyDTO> lobbies = await _lobbyService.GetLobbiesAsyncByName(target.Title,userId,target.HostName); // เรียกใช้ Service จริงๆ ตรงนี้
+        ViewBag.HostId = userId;
         return PartialView("_LobbyCardsPartial", lobbies);
     }
  

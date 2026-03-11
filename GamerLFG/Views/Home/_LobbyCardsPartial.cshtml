@@ -47,7 +47,16 @@
                             }
                     </div>
                    <a href="/Lobby/Details/@lob.Id">
-                     <button class="orange-button">JOIN LOBBY</button>   
+                    @if(lob.HostId == ViewBag.HostId){
+                        <div class="bnt-mylob">
+                            <button class="orange-button">Manage Lobby</button>
+                        </div>
+                       
+                    }else{
+                            <button class="orange-button">JOIN LOBBY</button>
+                            
+                    }
+                        
                     </a>
                     
 
