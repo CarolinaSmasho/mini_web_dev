@@ -301,10 +301,10 @@ body {
   content: "";
   position: absolute;
   left: 9px;
-  top: 10px;
-  bottom: 10px;
+  top: 8px;
+  bottom: 8px;
   width: 2px;
-  background: #1a2030;
+  background: #2a3345;
 }
 .tl-item {
   position: relative;
@@ -322,7 +322,7 @@ body {
   height: 12px;
   border-radius: 50%;
   background: #1a2030;
-  border: 2px solid #262f40;
+  border: 2px solid #3a4560;
   z-index: 1;
   transition:
     background 0.3s,
@@ -330,27 +330,43 @@ body {
     box-shadow 0.3s;
 }
 .tl-item.past .tl-dot {
-  background: #3a5040;
-  border-color: #4a7055;
+  background: #2ecc71;
+  border-color: #27ae60;
+  box-shadow: 0 0 4px #2ecc7144;
 }
 .tl-item.active .tl-dot {
   background: #f2960d;
   border-color: #f2960d;
-  box-shadow: 0 0 10px #f2960d88;
+  box-shadow: 0 0 12px #f2960d99;
+  animation: tl-pulse 2s ease-in-out infinite;
 }
-.timeline .tl-item.past::before,
-.timeline .tl-item.active::before {
+@keyframes tl-pulse {
+  0%, 100% { box-shadow: 0 0 6px #f2960d66; }
+  50% { box-shadow: 0 0 14px #f2960dcc; }
+}
+.timeline .tl-item.past::after {
   content: "";
   position: absolute;
   left: 9px;
-  top: -20px;
+  top: 8px;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(to bottom, #f2960d, #f2960d88);
+  background: #27ae60;
   z-index: 0;
 }
-.timeline .tl-item:first-child::before {
-  display: none;
+.timeline .tl-item.past + .tl-item.past::before,
+.timeline .tl-item.past + .tl-item.active::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 0;
+  height: 8px;
+  width: 2px;
+  background: #27ae60;
+  z-index: 0;
+}
+.timeline .tl-item.past + .tl-item.active::before {
+  background: linear-gradient(to bottom, #27ae60, #f2960d);
 }
 .timeline .tl-item.past + .tl-item:not(.past):not(.active)::before {
   display: none;
@@ -360,24 +376,24 @@ body {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #2e3a50;
+  color: #4a5568;
   margin-bottom: 2px;
 }
 .tl-item.past .tl-title {
-  color: #4a6050;
+  color: #8a9ab5;
 }
 .tl-item.active .tl-title {
   color: #f2960d;
 }
 .tl-time {
   font-size: 11px;
-  color: #2e3a50;
+  color: #3a4560;
 }
 .tl-item.past .tl-time {
-  color: #3a5040;
+  color: #6a7a90;
 }
 .tl-item.active .tl-time {
-  color: #8a9ab5;
+  color: #c0c8d8;
 }
 .tl-countdown {
   margin-top: 8px;
