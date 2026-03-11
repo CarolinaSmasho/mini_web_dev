@@ -44,15 +44,15 @@
         <input type="hidden" asp-for="Id">
         <div class="title">
             <label for="game">Choose Your Game</label>
-            <select asp-for="Game"
+            <select asp-for="Game" required
                             asp-items="@(new SelectList(Games))"
                             class="form-control">
                         <option value="">-- เลือกเกม --</option>
                     </select>
 
 
-            <input asp-for="Title" type="text" placeholder="Lobby title">
-            <input asp-for="Description" type="text"  placeholder="description">
+            <input asp-for="Title" type="text" placeholder="Lobby title" required>
+            <input asp-for="Description" type="text"  placeholder="description" required>
         </div>
         <div>
                     <div id="btn-player-amount">
