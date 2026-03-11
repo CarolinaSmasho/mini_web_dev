@@ -37,7 +37,7 @@
        <input type="hidden" asp-for="HostName"/>
         <div class="title">
             <label for="game" style="font-size: x-large;">Choose Your Game</label>
-            <select asp-for="Game" 
+            <select asp-for="Game" required
                             asp-items="@(new SelectList(Games))" 
                             class="form-control">
                         <option value="">-- GAME --</option>
@@ -95,7 +95,7 @@
         </div>
         <div class="discord">
             <p>Discord Link</p>
-            <input type="text" placeholder="discord" asp-for="DiscordLink">
+            <input type="text" placeholder="discord" asp-for="DiscordLink" required>
             
         </div>
         <div class="assign-role">
