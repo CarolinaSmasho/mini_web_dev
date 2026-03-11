@@ -26,7 +26,7 @@ a:hover, a:active, a:focus {
 
 .lobbies{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+    grid-template-columns: repeat(4, minmax(275px, 1fr));
     justify-content: center;
     gap: 30px;
     padding: 20px;
@@ -34,6 +34,12 @@ a:hover, a:active, a:focus {
     margin-bottom: 2rem;
     width: 100%;
 }
+/* @media screen and (min-width:200) and (max-width:390){
+    .lobbies{
+        grid-template-columns: repeat(1, minmax(275px, 1fr));
+    }
+    
+} */
 .all-lob{
     padding: 0%;
 }
@@ -45,6 +51,8 @@ a:hover, a:active, a:focus {
     padding: 1rem;
     color: aliceblue;
     background-color: #1b1b1b;
+    display: flex;
+    flex-direction: column;
 }
 
 .details{
@@ -264,15 +272,25 @@ main .orange-button{
   .lobbies
     {
         padding: 0px;
+        grid-template-columns: repeat(1, minmax(275px, 1fr));
     }
 }
 
-@media screen and (max-width:450px) and(min-width:380px){
+@media screen and (max-width:599px) and(min-width:380px){
   .search-space{
     max-width:  80%;
   }
   .lobbies
     {
         padding: 0px;
+        grid-template-columns: repeat(1, minmax(275px, 1fr));
+    }
+}
+
+@media screen and (max-width:741px) and (min-width:600px){
+       .lobbies
+    {
+        padding: 0px;
+        grid-template-columns: repeat(2, minmax(275px, 1fr));
     }
 }
