@@ -196,13 +196,13 @@ namespace GamerLFG.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitKarma(string id, string targetUserId, double score)
+        public async Task<IActionResult> SubmitKarma(string id, string targetUserId, double score, string comment = "")
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(currentUserId))
                 return Unauthorized(new { success = false, message = "Not logged in" });
 
-            var result = await _lobbyService.SubmitKarmaAsync(id, currentUserId, targetUserId, score);
+            var result = await _lobbyService.SubmitKarmaAsync(id, currentUserId, targetUserId, score, comment);
             return Json(new { success = result });
         }
 

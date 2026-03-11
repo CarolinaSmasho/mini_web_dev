@@ -524,6 +524,126 @@ body {
   letter-spacing: 0.04em;
 }
 
+/* ── Karma Range Slider ── */
+.karma-slider-wrap {
+  margin-bottom: 12px;
+}
+.karma-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.karma-label-neg { color: #e74c3c; }
+.karma-label-zero { color: #f39c12; }
+.karma-label-pos { color: #2ecc71; }
+
+.karma-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #2ecc71 100%);
+  outline: none;
+  cursor: pointer;
+}
+.karma-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #f2960d;
+  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  cursor: grab;
+  transition: border-color 0.2s, transform 0.1s;
+}
+.karma-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  border-color: #f2c060;
+}
+.karma-range::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+.karma-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #f2960d;
+  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  cursor: grab;
+}
+
+.karma-value-display {
+  text-align: center;
+  margin-top: 8px;
+}
+.karma-value-badge {
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+.karma-value-badge.positive { background: #2ecc7120; color: #2ecc71; border: 1px solid #2ecc7133; }
+.karma-value-badge.negative { background: #e74c3c20; color: #e74c3c; border: 1px solid #e74c3c33; }
+.karma-value-badge.neutral  { background: #f39c1220; color: #f39c12; border: 1px solid #f39c1233; }
+
+/* ── Quick Comment Chips ── */
+.karma-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.karma-chip {
+  background: #0a0e14;
+  border: 1px solid #1e2535;
+  color: #8090a8;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.karma-chip:hover {
+  border-color: #f2960d55;
+  color: #c0c8d8;
+}
+.karma-chip.active {
+  background: #f2960d20;
+  border-color: #f2960d;
+  color: #f2960d;
+}
+
+/* ── Karma Comment Textarea ── */
+.karma-comment {
+  background: #080c10;
+  border: 1px solid #1e2535;
+  color: #c0c8d8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  width: 100%;
+  resize: vertical;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+.karma-comment::placeholder {
+  color: #3a4a62;
+}
+.karma-comment:focus {
+  outline: none;
+  border-color: #f2960d55;
+}
+
 /* ── Divider ── */
 .divider {
   border: none;

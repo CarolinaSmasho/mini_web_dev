@@ -378,7 +378,7 @@ namespace GamerLFG.Services
             return result.ModifiedCount > 0;
         }
 
-        public async Task<bool> SubmitKarmaAsync(string lobbyId, string fromUserId, string targetUserId, double score)
+        public async Task<bool> SubmitKarmaAsync(string lobbyId, string fromUserId, string targetUserId, double score, string comment = "")
         {
             // เช็คว่าเคย rate targetUser ใน lobby นี้แล้วหรือยัง
             var alreadyRated = await _database.KarmaHistories
@@ -389,16 +389,20 @@ namespace GamerLFG.Services
 
             if (alreadyRated) return false; // ห้าม rate ซ้ำใน lobby เดิม
 
-            string label = score switch
+            // ถ้าไม่มี comment ให้ใช้ label ตาม score
+            if (string.IsNullOrWhiteSpace(comment))
             {
-                 5  => "MVP",
-                 4  => "Leader",
-                 3  => "Good",
-                 2  => "Chill",
-                -3  => "AFK",
-                -5  => "Toxic",
-                _   => "Unknown"
-            };
+                comment = score switch
+                {
+                     5  => "MVP",
+                     4  => "Leader",
+                     3  => "Good",
+                     2  => "Chill",
+                    -3  => "AFK",
+                    -5  => "Toxic",
+                    _   => score >= 0 ? "Good" : "Bad"
+                };
+            }
 
             var karmaHistory = new KarmaHistory
             {
@@ -406,7 +410,7 @@ namespace GamerLFG.Services
                 FromUserId   = fromUserId,
                 TargetUserId = targetUserId,
                 Score        = score,
-                Comment      = label,
+                Comment      = comment,
                 Date         = DateTime.UtcNow
             };
 
@@ -432,7 +436,7 @@ namespace GamerLFG.Services
                 Type           = "karma_received",
                 RelateObjectId = fromUserId,
                 UserId         = targetUserId,
-                Text           = $"{senderName} ให้ Karma คุณ: {label} ({(score > 0 ? "+" : "")}{score})",
+                Text           = $"{senderName} ให้ Karma คุณ: {comment} ({(score > 0 ? "+" : "")}{score})",
                 IsRead         = false,
                 Date           = DateTime.Now
             };

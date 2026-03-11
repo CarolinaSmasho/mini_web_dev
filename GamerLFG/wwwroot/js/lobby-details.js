@@ -300,10 +300,39 @@ async function declineInvite(lobbyId) {
 // Karma submission — AJAX, update card in place
 // ─────────────────────────────────────────────────────────────────────────
 
+// ── Karma slider helpers ──
+
+function updateKarmaValue(slider) {
+  const val = parseInt(slider.value);
+  const badge = document.getElementById("karma-val-" + slider.id.replace("karma-", ""));
+  if (!badge) return;
+  badge.textContent = (val > 0 ? "+" : "") + val;
+  badge.className = "karma-value-badge " + (val > 0 ? "positive" : val < 0 ? "negative" : "neutral");
+
+  // Update slider track gradient
+  const pct = ((val + 5) / 10) * 100;
+  const color = val > 0 ? "#2ecc71" : val < 0 ? "#e74c3c" : "#f39c12";
+  slider.style.background = `linear-gradient(90deg, #e74c3c ${pct * 0.3}%, ${color} ${pct}%, #1a2030 ${pct}%)`;
+}
+
+function toggleChip(chip) {
+  chip.classList.toggle("active");
+  // Sync chips → textarea
+  const container = chip.closest(".karma-chips");
+  const targetId = container.dataset.target;
+  const textarea = document.getElementById(targetId);
+  if (!textarea) return;
+
+  const activeChips = [...container.querySelectorAll(".karma-chip.active")].map(c => c.textContent);
+  textarea.value = activeChips.join(", ");
+}
+
 async function submitKarma(lobbyId, targetUserId) {
-  const select = document.getElementById("karma-" + targetUserId);
-  const btn = select?.closest(".karma-card")?.querySelector(".karma-btn");
-  const score = parseFloat(select.value);
+  const slider = document.getElementById("karma-" + targetUserId);
+  const commentEl = document.getElementById("karma-comment-" + targetUserId);
+  const btn = slider?.closest(".karma-card")?.querySelector(".karma-btn");
+  const score = parseInt(slider.value);
+  const comment = commentEl?.value?.trim() || "";
 
   // animate button
   if (btn) {
@@ -315,15 +344,19 @@ async function submitKarma(lobbyId, targetUserId) {
     id: lobbyId,
     targetUserId,
     score,
+    comment,
   });
 
   if (result.success) {
-    // Replace karma card content with "Rated" tag — no full reload
-    const card = select?.closest(".karma-card");
+    const card = slider?.closest(".karma-card");
     if (card) {
+      const imgSrc = card.querySelector("img")?.src || "";
+      const name = card.querySelector("p")?.textContent || "";
       card.innerHTML = `
-        <img src="${card.querySelector("img")?.src || ""}" class="karma-avatar" />
-        <p class="text-white fw-bold mb-1" style="font-size:12px;">${card.querySelector("p")?.textContent || ""}</p>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="${imgSrc}" class="karma-avatar m-0" />
+          <p class="text-white fw-bold mb-0" style="font-size:13px;">${name}</p>
+        </div>
         <div class="evaluated-tag w-100">Rated ✓</div>`;
     }
     showToast("Karma submitted ✓", "success");

@@ -22,7 +22,7 @@ namespace GamerLFG.Services.Interface
         Task<bool> RejectApplicantAsync(string lobbyId, string userId);
         Task<bool> KickMemberAsync(string lobbyId, string userId);
         Task<bool> CompleteLobbyAsync(string lobbyId);
-        Task<bool> SubmitKarmaAsync(string lobbyId, string fromUserId, string targetUserId, double score);
+        Task<bool> SubmitKarmaAsync(string lobbyId, string fromUserId, string targetUserId, double score, string comment = "");
         Task<bool> ChangeMemberRoleAsync(string lobbyId, string userId, string newRole);
         Task<bool> ToggleRecruitmentAsync(string lobbyId);
         Task<List<ShowLobbyDTO>> GetLobbiesAsyncByName(string? lobName,string? userId,string userName = "", int pageSize = 10);

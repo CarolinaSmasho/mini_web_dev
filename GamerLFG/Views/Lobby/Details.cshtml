@@ -286,24 +286,50 @@
                     var u2 = Model.MemberMap.GetValueOrDefault(pid);
                     bool alreadyRated = Model.EndorsedUserIds.Contains(pid);
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="karma-card">
-                            <img src="@Avatar(u2?.Avatar, pid)" class="karma-avatar" />
-                            <p class="text-white fw-bold mb-1" style="font-size:12px;">@(u2?.Username ?? pid)</p>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <img src="@Avatar(u2?.Avatar, pid)" class="karma-avatar m-0" />
+                                <p class="text-white fw-bold mb-0" style="font-size:13px;">@(u2?.Username ?? pid)</p>
+                            </div>
                             @if (alreadyRated)
                             {
                                 <div class="evaluated-tag w-100">Rated</div>
                             }
                             else
                             {
-                                <select id="karma-@pid" class="karma-select">
-                                    <option value="5">MVP (+5)</option>
-                                    <option value="4">Leader (+4)</option>
-                                    <option value="3" selected>Good (+3)</option>
-                                    <option value="2">Chill (+2)</option>
-                                    <option value="-5">Toxic (-5)</option>
-                                    <option value="-3">AFK (-3)</option>
-                                </select>
+                                <!-- Range Slider -->
+                                <div class="karma-slider-wrap">
+                                    <div class="karma-slider-labels">
+                                        <span class="karma-label-neg">-5</span>
+                                        <span class="karma-label-zero">0</span>
+                                        <span class="karma-label-pos">+5</span>
+                                    </div>
+                                    <input type="range" id="karma-@pid" class="karma-range"
+                                           min="-5" max="5" step="1" value="3"
+                                           oninput="updateKarmaValue(this)" />
+                                    <div class="karma-value-display">
+                                        <span id="karma-val-@pid" class="karma-value-badge positive">+3</span>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Comment Chips -->
+                                <div class="karma-chips" data-target="karma-comment-@pid">
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">MVP สุดยอด!</button>
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">เล่นดีมาก</button>
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">สนุกด้วย</button>
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">ช่วยทีมเก่ง</button>
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">Chill ๆ</button>
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">เงียบไป</button>
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">AFK บ่อย</button>
+                                    <button type="button" class="karma-chip" onclick="toggleChip(this)">Toxic</button>
+                                </div>
+
+                                <!-- Comment Text -->
+                                <textarea id="karma-comment-@pid" class="karma-comment"
+                                          placeholder="พิมพ์ comment เพิ่มเติม หรือเลือกจากด้านบน..."
+                                          rows="2"></textarea>
+
                                 <button class="karma-btn" onclick="submitKarma('@lobby.Id', '@pid')">Submit</button>
                             }
                         </div>
