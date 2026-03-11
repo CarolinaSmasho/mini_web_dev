@@ -31,9 +31,33 @@
     string FmtDate(DateTime dt) => dt.ToString("MMM dd, HH:mm");
     string Avatar(string? url, string seed) => url ?? $"https://api.dicebear.com/7.x/avataaars/svg?seed={seed}";
     string KarmaColor(double score) => score >= 3 ? "#2ecc71" : score >= 0 ? "#f39c12" : "#e74c3c";
+
+    // ── Snapshot hash สำหรับ Change Detection ──
+    var snapshotRaw = $"{lobby.Members.Count}" +
+                     $"|{lobby.IsComplete}" +
+                     $"|{lobby.IsRecruiting}" +
+                     $"|{string.Join(",", lobby.Members.Select(m => $"{m.UserId}:{m.Status}:{m.Role}"))}";
+    var snapshotBytes = System.Security.Cryptography.MD5.HashData(
+                            System.Text.Encoding.UTF8.GetBytes(snapshotRaw));
+    var initialSnapshot = Convert.ToHexString(snapshotBytes)[..12];
 }
 
 <link rel="stylesheet" href="~/css/lobby-details.css" asp-append-version="true">
+
+<!-- Refresh Banner — แสดงเมื่อ polling detect lobby เปลี่ยน -->
+<div id="refresh-banner" role="alert">
+    <span class="banner-icon">🔔</span>
+    <span class="banner-msg">มีการเปลี่ยนแปลงใน Lobby นี้</span>
+    <button class="banner-btn" onclick="doRefreshPage()">Refresh เลย</button>
+    <button class="banner-close" onclick="dismissBanner()" title="ปิด">&times;</button>
+</div>
+
+<!-- Hidden element ฝัง lobbyId + initial snapshot hash ให้ polling JS อ่าน -->
+<div id="lobby-snapshot-root"
+     data-lobby-id="@lobby.Id"
+     data-snapshot="@initialSnapshot"
+     style="display:none;"
+     aria-hidden="true"></div>
 
 <main class="container py-4">
 <div class="row g-4">

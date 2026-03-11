@@ -33,7 +33,12 @@ async function postAction(url, body) {
       const txt = await res.text();
       return { success: false, message: res.statusText || txt };
     }
-    return await res.json();
+    const data = await res.json();
+    // ถ้า action สำเร็จ ให้ sync snapshot ทันที → ผู้กด action ไม่เห็น banner
+    if (data.success && typeof window.syncLobbySnapshot === "function") {
+      window.syncLobbySnapshot();
+    }
+    return data;
   } catch (e) {
     return { success: false, message: e.message };
   }
@@ -419,3 +424,96 @@ function initCountdown() {
 }
 
 document.addEventListener("DOMContentLoaded", initCountdown);
+
+// ─────────────────────────────────────────────────────────────────────────
+// Lobby Change Detection — Polling every 5s
+// ─────────────────────────────────────────────────────────────────────────
+function startChangeDetection() {
+  const root = document.getElementById("lobby-snapshot-root");
+  if (!root) {
+    console.warn("[Snapshot] lobby-snapshot-root not found");
+    return;
+  }
+
+  const lobbyId = root.dataset.lobbyId;
+  if (!lobbyId || !root.dataset.snapshot) {
+    console.warn("[Snapshot] missing data attrs");
+    return;
+  }
+
+  const banner = document.getElementById("refresh-banner");
+  if (!banner) {
+    console.warn("[Snapshot] refresh-banner not found");
+    return;
+  }
+
+  // knownHash คือ hash ที่ user คนนี้รู้จักอยู่แล้ว — เปลี่ยนได้เมื่อ user ทำ action เอง
+  let knownHash = root.dataset.snapshot;
+  let changed = false;
+  let paused = false;
+
+  async function poll() {
+    if (changed || paused) return;
+    try {
+      const res = await fetch(`/Lobby/Snapshot?id=${lobbyId}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.hash && data.hash !== knownHash) {
+        changed = true;
+        banner.classList.add("visible");
+        console.log("[Snapshot] lobby changed:", knownHash, "→", data.hash);
+      }
+    } catch (e) {
+      console.warn("[Snapshot poll error]", e);
+    }
+  }
+
+  // เรียกจาก action functions เพื่อ sync hash ใหม่ → ผู้กด action ไม่เห็น banner
+  window.syncLobbySnapshot = async function () {
+    try {
+      const res = await fetch(`/Lobby/Snapshot?id=${lobbyId}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.hash) {
+        knownHash = data.hash;
+        changed = false; // reset เผื่อ banner แสดงอยู่ก่อน action
+        banner.classList.remove("visible");
+        console.log("[Snapshot] synced → knownHash:", knownHash);
+      }
+    } catch (_) {}
+  };
+
+  window.doRefreshPage = () => {
+    // ใช้ cache-bust param บังคับ browser โหลดใหม่จาก server ไม่ใช่จาก cache
+    const url = new URL(window.location.href);
+    url.searchParams.set("_t", Date.now());
+    window.location.href = url.toString();
+  };
+  window.dismissBanner = () => {
+    banner.classList.remove("visible");
+    paused = true;
+    changed = false;
+    setTimeout(() => {
+      paused = false;
+    }, 60_000);
+  };
+
+  setInterval(poll, 5_000);
+  console.log(
+    "[Snapshot] polling started — lobby:",
+    lobbyId,
+    "| hash:",
+    knownHash,
+  );
+}
+
+// script อยู่ท้าย body → DOM พร้อมแน่นอนแล้ว ไม่ต้องรอ event
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startChangeDetection);
+} else {
+  startChangeDetection();
+}

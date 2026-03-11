@@ -25,12 +25,33 @@ namespace GamerLFG.Controllers
             _mongoDBservice = mongoDBservice;
 
         }
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> Details(string id)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var viewModel = await _lobbyService.GetLobbyDetailsAsync(id, currentUserId);
             if (viewModel == null) return NotFound();
             return View(viewModel);
+        }
+
+        // ── Polling endpoint: ใช้ detect ว่า lobby เปลี่ยนจากตอนเปิดหน้าหรือเปล่า ──
+        [HttpGet]
+        public async Task<IActionResult> Snapshot(string id)
+        {
+            var lobby = await _lobbyService.GetLobbyByIdAsync(id);
+            if (lobby == null) return NotFound();
+
+            // hash จาก field ที่สำคัญ — ถ้าค่าใดเปลี่ยน hash จะต่างกัน
+            var raw = $"{lobby.Members.Count}" +
+                      $"|{lobby.IsComplete}" +
+                      $"|{lobby.IsRecruiting}" +
+                      $"|{string.Join(",", lobby.Members.Select(m => $"{m.UserId}:{m.Status}:{m.Role}"))}";
+
+            var bytes = System.Security.Cryptography.MD5.HashData(
+                            System.Text.Encoding.UTF8.GetBytes(raw));
+            var hash  = Convert.ToHexString(bytes)[..12]; // 12 hex chars ก็พอ
+
+            return Json(new { hash });
         }
 
         public async Task<IActionResult> Index()
