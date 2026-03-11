@@ -262,3 +262,11 @@ const checkTimeInput = () => {
         endEventBefore = elEndEv.value;
     }
 };
+
+const counting = (adder,target,min,max) =>{
+    let current = document.getElementById(target);
+    let curentVal = parseInt(current.value);
+    if(curentVal+adder >= min && curentVal+adder <= max){
+       current.value=curentVal+adder; 
+    }
+}

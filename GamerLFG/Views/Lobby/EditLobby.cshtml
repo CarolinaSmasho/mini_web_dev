@@ -1,8 +1,8 @@
 @{
     ViewData["Title"] = "Edit Lobby";
-    string[] Moods = {"Chill","Hardcore","Not Toxic","Toxic","God"};
+    string[] Moods = {"Chill","Hardcore","Not Toxic","Toxic","Femboy"};
     string[] Games = {
-    "Elden Ring",
+    "Elden Ring NightReign",
     "Monster Hunter: World",
     "Remnant 2",
     "Dark Souls III",
@@ -55,12 +55,15 @@
             <input asp-for="Description" type="text"  placeholder="description">
         </div>
         <div>
-                    <input type="number" asp-for="MaxPlayers" id="min" min="@Model.CurrentMemberCount" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) < currentMemberCount) this.value = currentMemberCount;">
-                    <div id="add-count-btn">
-                        <button type="button" onclick="countingTimeEdit(1,'min')"><i class="fa fa-arrow-up"></i></button>
-                        <button type="button" onclick="countingTimeEdit(-1,'min')"><i class="fa fa-arrow-down"></i></button>
+                    <div id="btn-player-amount">
+                        <button type="button" onclick="counting(-1,'min',2,100)" class="org-btn"><i class="fa fa-arrow-left"></i></button>
+                        <input type="number" asp-for="MaxPlayers" id="min" min="@Model.CurrentMemberCount" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) < currentMemberCount) this.value = currentMemberCount;"
+                        style="background-color: aliceblue;padding:1rem;font-size:large;max-width:5rem;"
+                        >
+
+                        <button type="button" onclick="counting(1,'min',2,100)" class="org-btn"><i class="fa fa-arrow-right"></i></button>
                     </div>
-                    <p>MIN (current members: @Model.CurrentMemberCount)</p>
         </div>
 
         <div class="require">
