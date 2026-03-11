@@ -5,7 +5,6 @@
 @using GamerLFG.Models
 @using GamerLFG.Services.Interface.DTOs
 
-
 @{
     List<ShowLobbyDTO>? MyLobby = Model.MyLobbies;
     List<ShowLobbyDTO>? OtherLobby = new List<ShowLobbyDTO>();
@@ -15,7 +14,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <script src="~/js/home_page.js" asp-append-version="true" defer></script>
-
 
         <main>
         <div class="mobile-search" id="mobile-search">
@@ -73,7 +71,7 @@
                         <div class="icon">
                                 @for(int i=0;i< lob.MaxPlayers && i<=15;i++){
                                      
-                                    @if(i>=lob.CurrentPlayers ){ //include pending
+                                    @if(i>=lob.CurrentPlayers ){
                                     <i class="fa fa-user-o aria-hidden="true""></i>    
                                     }
                                     else{
@@ -104,8 +102,6 @@
             
             }
                  
-
-
 
             <a asp-controller="Lobby" asp-action="Create_lobby" style="width: fit-content;hight:fit-content">
             <div class="add-lobby">

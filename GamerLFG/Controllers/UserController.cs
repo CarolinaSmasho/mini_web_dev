@@ -20,7 +20,6 @@ public class UserController : Controller
         _mongoDBservice = mongoDBservice;
     }
 
-
     [HttpGet]
     public async Task<IActionResult> Friends_list()
         {
@@ -29,10 +28,8 @@ public class UserController : Controller
 
             var friendsList = await _userService.GetMyFriendsAsync(currentUserId);
 
-
             return View(friendsList);
         }
-
 
     [HttpGet]
     public async Task<IActionResult> SearchAPI(string keyword)
@@ -46,13 +43,12 @@ public class UserController : Controller
 
    
     
-    [HttpPost] // ระบุว่าเป็น POST
+    [HttpPost]
     public async Task<IActionResult> DeleteFriend(string targetUserId)
     {
 
         string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        // สั่งลบเพื่อนใน Service
         bool success = await _userService.RemoveFriendAsync(currentUserId, targetUserId);
         
         if (success)
@@ -100,16 +96,13 @@ public class UserController : Controller
     
     private readonly MongoDBservice _mongoDBservice;
 
-
-// สร้าง URL พิเศษไว้สำหรับสลับบัญชีชั่วคราว
     [HttpGet]
     public IActionResult MockLogin(string id)
     {
-        // สั่งบันทึก ID ลงใน Cookie ของเบราว์เซอร์นั้นๆ
+
         Response.Cookies.Append("CurrentUserId", id, new CookieOptions { Expires = DateTime.Now.AddDays(1) });
         return Content($"✅ ล็อกอินสำเร็จ! ตอนนี้คุณสวมรอยเป็น User ID: {id} แล้ว (ลองกลับไปหน้าเว็บหลักเพื่อเทสระบบเพื่อนได้เลย)");
     }
-
 
     [HttpGet]
     public async Task<IActionResult> Profiles(string id)

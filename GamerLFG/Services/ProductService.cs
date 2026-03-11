@@ -13,13 +13,11 @@ public class ProductService
         _database = database;
     }
 
-    // ดึงสินค้าทั้งหมดจาก MongoDB
     public async Task<List<Product>> GetAllAsync()
     {
         return await _database.Products.Find(_ => true).ToListAsync();
     }
 
-    // Seed ข้อมูลตัวอย่าง (เรียกตอน startup ถ้า collection ว่าง)
     public async Task SeedAsync()
     {
         var count = await _database.Products.CountDocumentsAsync(_ => true);

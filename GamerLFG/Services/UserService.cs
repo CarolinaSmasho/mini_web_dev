@@ -3,7 +3,6 @@ using MongoDB.Bson;
 using GamerLFG.Models;
 using GamerLFG.service;
 
-
 namespace GamerLFG.Services
 {
     public class UserService : IUserService
@@ -14,7 +13,6 @@ namespace GamerLFG.Services
         {
             _userCollection = database.GetCollection<User>("Users");
         }
-
 
         public async Task<List<User>> GetMyFriendsAsync(string myUserId)
         {
@@ -28,20 +26,18 @@ namespace GamerLFG.Services
 
         public async Task<List<User>> SearchFriendAsync(string keyword)
         {
-            // ป้องกันกรณี User กดค้นหาช่องว่างๆ
+
             if (string.IsNullOrWhiteSpace(keyword))
             {
                 return new List<User>();
             }
 
-            // ใช้ Regex ในการค้นหา (ตัว "i" หมายถึง Case-Insensitive ไม่สนตัวพิมพ์เล็ก-ใหญ่)
             var filter = Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression(keyword, "i"));
             
             var searchResults = await _userCollection.Find(filter).ToListAsync();
 
             return searchResults;
         }
-
 
         public async Task<User> SearchUserAsync(string UserId)
         {

@@ -2,7 +2,6 @@
 @using GamerLFG.Services.Interface.DTOs;
 @model List<ShowLobbyDTO>
 
-
 @foreach(ShowLobbyDTO lob in Model){
                 <div class="public-lobby lobby-item" data-id="@lob.Id">
                 <div class="lobby" onclick="toLobby('@lob.Id')">

@@ -28,7 +28,7 @@
 @model EditLobbyDTO;
 
 <script>
-    // Data from server for JS constraints
+
     const occupiedRoleCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OccupiedRoleCounts));
     const currentMemberCount = @Model.CurrentMemberCount;
     const initialRoles = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
@@ -83,7 +83,6 @@
 
         <div id="roles-hidden-container"></div>
         </div>
-
 
         <div class="mood-select">
             <p>TACTICAL PROTOCAL TAGS</p>

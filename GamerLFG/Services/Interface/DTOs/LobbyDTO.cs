@@ -24,8 +24,8 @@ namespace GamerLFG.Services.Interface.DTOs
         public bool isRecuiting {get;set;}
         public DateTime EndEvent {get;set;}
         public string HostId {get;set;}
-        /// <summary>สถานะปัจจุบันของ lobby คำนวณจาก GetStatus()</summary>
-        public LobbyStatus Status {get;set;}
+        
+                public LobbyStatus Status {get;set;}
     }
 
     public class CreateLobbyDTO
@@ -51,7 +51,7 @@ namespace GamerLFG.Services.Interface.DTOs
 
         public List<string> Moods { get; set; } = new();
 
-        /// <summary>Role slots with quotas, bound from form via Roles[i].Name / Roles[i].Quantity.</summary>
+        
         public List<string> Roles { get; set; } = new();
         public string HostRole { get; set; } = "Others";
 
@@ -65,8 +65,7 @@ namespace GamerLFG.Services.Interface.DTOs
         [Required(ErrorMessage = "กรุณาระบุเวลาสิ้นสุดกิจกรรม")]
         public DateTime EndEvent { get; set; }
 
-        // หมายเหตุ: Start/End Recruiting อาจจะตั้งค่า Default 
-        // หรือรับมาจากหน้าฟอร์มก็ได้ แล้วแต่การออกแบบ UI ของคุณ
+        
         [Required(ErrorMessage = "กรุณาระบุเวลาเริ่มสมัครกิจกรรม")]
         public DateTime StartRecruiting { get; set; }
         [Required(ErrorMessage = "กรุณาระบุเวลาสิ้นสุดรับสมัครกิจกรรม")]
@@ -99,10 +98,7 @@ namespace GamerLFG.Services.Interface.DTOs
         }
         public Lobby ToEntity()
         {
-            // Console.WriteLine(this.Roles);
-            // Console.WriteLine("      start    ");
-            // Console.WriteLine(this.Roles);
-            // Console.WriteLine("      end       ");
+            
             string jsonContent = this.Roles?.FirstOrDefault();
             
             List<LobbyRole> lobbyRoles = new List<LobbyRole>();
@@ -120,31 +116,20 @@ namespace GamerLFG.Services.Interface.DTOs
             }
             else
             {
-                // Console.WriteLine("             iam in              ");
+
                 lobbyRoles.Add(new LobbyRole {
                         Name = "Others",
                         Quantity = this.MaxPlayers
                     });
             }
-            // Console.WriteLine(this.Moods.GetType());
+
             return new Lobby
             {
                 
-                Title = this.Title, //
-                Game = this.Game, //
-                Description = this.Description, //
-                HostId = this.HostId,
+                Title = this.Title,                Game = this.Game,                Description = this.Description,                HostId = this.HostId,
                 HostName = this.HostName,
-                Picture = this.Picture, //
-                DiscordLink = this.DiscordLink, //
-                Moods = this.Moods, //
-                Roles = lobbyRoles, //
-                MaxPlayers = this.MaxPlayers, //
-                StartRecruiting = this.StartRecruiting, //
-                EndRecruiting = this.EndRecruiting, //
-                StartEvent = this.StartEvent, // 
-                EndEvent = this.EndEvent, //
-                Members = new List<GamerLFG.Models.LobbyMember> 
+                Picture = this.Picture,                DiscordLink = this.DiscordLink,                Moods = this.Moods,                Roles = lobbyRoles,                MaxPlayers = this.MaxPlayers,                StartRecruiting = this.StartRecruiting,                EndRecruiting = this.EndRecruiting,                StartEvent = this.StartEvent,
+                EndEvent = this.EndEvent,                Members = new List<GamerLFG.Models.LobbyMember> 
                 { 
                     new LobbyMember 
                     { 
@@ -183,24 +168,18 @@ namespace GamerLFG.Services.Interface.DTOs
 
         public List<string> Moods { get; set; } = new();
 
-        /// <summary>Role slots with quotas, bound from form via Roles[i].Name / Roles[i].Quantity.</summary>
+        
         public List<LobbyRole> Roles { get; set; } = new();
 
-        /// <summary>
-        /// Role names currently held by active members.
-        /// NOT bound from form — server-side only, passed to View for JS locking.
-        /// </summary>
+        
         [System.Text.Json.Serialization.JsonIgnore]
         public List<string> OccupiedRoles { get; set; } = new();
 
-        /// <summary>
-        /// Role name -> count of active members in that role.
-        /// NOT bound from form — server-side only, passed to View for JS constraints.
-        /// </summary>
+        
         [System.Text.Json.Serialization.JsonIgnore]
         public Dictionary<string, int> OccupiedRoleCounts { get; set; } = new();
 
-        /// <summary>Number of active (non-Pending) members currently in the lobby.</summary>
+        
         [System.Text.Json.Serialization.JsonIgnore]
         public int CurrentMemberCount { get; set; }
 
@@ -231,14 +210,12 @@ namespace GamerLFG.Services.Interface.DTOs
             existing.StartEvent = this.StartEvent;
             existing.EndEvent = this.EndEvent;
 
-            // ── Role protection ──────────────────────────────────────────────
-            // Count ALL members per role (joined + pending) as minimum quota
             var roleMemberCounts = existing.Members
                 .Where(m => !string.IsNullOrEmpty(m.Role))
                 .GroupBy(m => m.Role)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            // Start from submitted roles
+            
             var merged = new List<LobbyRole>(this.Roles);
 
             foreach (var kvp in roleMemberCounts)
@@ -246,19 +223,17 @@ namespace GamerLFG.Services.Interface.DTOs
                 var existingRole = merged.FirstOrDefault(r => r.Name == kvp.Key);
                 if (existingRole == null)
                 {
-                    // Re-add occupied role that the host tried to delete
                     merged.Add(new LobbyRole { Name = kvp.Key, Quantity = kvp.Value });
                 }
                 else if (existingRole.Quantity < kvp.Value)
                 {
-                    // Enforce minimum quantity = number of active members in this role
                     existingRole.Quantity = kvp.Value;
                 }
             }
 
             existing.Roles = merged;
 
-            // ── MaxPlayers protection ────────────────────────────────────────
+            
             var activeMemberCount = existing.Members.Count(m => m.Status != "Pending");
             if (existing.MaxPlayers < activeMemberCount)
                 existing.MaxPlayers = activeMemberCount;

@@ -4,11 +4,10 @@ using GamerLFG.Models.TestData;
 using GamerLFG.Services;
 using GamerLFG.Services.Interface.DTOs;
 using System.Text.Json;
-using GamerLFG.Services.Interface; // สำหรับ ASP.NET Core
+using GamerLFG.Services.Interface;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-
 
 using GamerLFG.service;
 using MongoDB.Driver;
@@ -33,7 +32,7 @@ namespace GamerLFG.Controllers
             if (viewModel == null) return NotFound();
             return View(viewModel);
         }
-        // ยังไม่ชัวร์
+
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -41,11 +40,6 @@ namespace GamerLFG.Controllers
             return View(lobbyData);
         }
 
-
-
-        // ── DEV ONLY: จำลอง login เป็น user ที่ต้องการ ─────────────────────────
-        // Usage: /Lobby/SwitchUser?userId=000000000000000000000001
-        //        /Lobby/SwitchUser          ← logout (clear session)
         [HttpGet]
         public IActionResult SwitchUser(string? userId)
         {
@@ -71,11 +65,6 @@ namespace GamerLFG.Controllers
         }
 
         
-
-        // --- ส่วนของ API ที่เรียกใช้จาก JavaScript (fetch) ในหน้า View ---
-
-
-        //ยังไม่ชัวร์ ^^&
 
         [HttpPost]
         public async Task<IActionResult> Apply(string id, string role)
@@ -172,7 +161,6 @@ namespace GamerLFG.Controllers
             if (string.IsNullOrEmpty(currentUserId))
                 return Unauthorized(new { success = false, message = "Not logged in" });
 
-            // Only allow: host can change anyone's role, member can change their own role
             var lobby = await _lobbyService.GetLobbyByIdAsync(id);
             if (lobby == null) return NotFound();
 
@@ -203,9 +191,6 @@ namespace GamerLFG.Controllers
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(currentUserId))
                 return RedirectToAction("Login", "Auth");
-            // var currentUserId = HttpContext.Session.GetString("UserId");
-            // if (string.IsNullOrEmpty(currentUserId))
-            //     return RedirectToAction("Login", "Auth");
 
             var lobby = await _lobbyService.GetLobbyByIdAsync(id);
             if (lobby == null) return NotFound();
@@ -228,18 +213,18 @@ namespace GamerLFG.Controllers
                 EndEvent = lobby.EndEvent,
                 StartRecruiting = lobby.StartRecruiting,
                 EndRecruiting = lobby.EndRecruiting,
-                // Roles that have any members (joined/host OR pending) — locked from deletion/rename
+
                 OccupiedRoles = lobby.Members
                     .Where(m => !string.IsNullOrEmpty(m.Role))
                     .Select(m => m.Role)
                     .Distinct()
                     .ToList(),
-                // Count of ALL members per role including pending (for min quantity enforcement)
+
                 OccupiedRoleCounts = lobby.Members
                     .Where(m => !string.IsNullOrEmpty(m.Role))
                     .GroupBy(m => m.Role)
                     .ToDictionary(g => g.Key, g => g.Count()),
-                // Total active members (for min MaxPlayers enforcement)
+
                 CurrentMemberCount = lobby.Members.Count(m => m.Status != "Pending")
             };
 
@@ -316,7 +301,6 @@ namespace GamerLFG.Controllers
             return Json(new { success = result, isRecruiting = !lobby.IsRecruiting });
         }
 
-
         [HttpGet]
             public async Task<IActionResult> Create_lobby()
         {
@@ -333,7 +317,7 @@ namespace GamerLFG.Controllers
             model.HostId = userId;
             model.HostName = userName;
             model.StartRecruiting = DateTime.Now;
-            model.EndRecruiting = DateTime.Now.AddDays(1); // ตัวอย่าง: ให้สิ้นสุดพรุ่งนี้
+            model.EndRecruiting = DateTime.Now.AddDays(1);
             model.StartEvent = DateTime.Now.AddDays(2);
             model.EndEvent = DateTime.Now.AddDays(2).AddHours(3);
 
@@ -343,14 +327,14 @@ namespace GamerLFG.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create_lobby(CreateLobbyDTO model)
         {
-            // Console.Write(model);
+
             if (ModelState.IsValid)
             {
                 Console.WriteLine("Model is Valid");
                 var (success, message) = await _lobbyService.CreateLobbyAsync(model);
                 if (!success)
                 {
-                    // ใช้ ModelState เพิ่ม Error แทนการส่ง string เข้า View ตรงๆ
+
                     ModelState.AddModelError(string.Empty, message);
                     return View(model);
                 }
@@ -360,27 +344,6 @@ namespace GamerLFG.Controllers
 
             return View(model);
         }
-
-        // [HttpPost]
-        // // [ValidateAntiForgeryToken]
-        // public async Task<IActionResult> Create_lobby(CreateLobbyDTO model)
-        // {   
-        //     Console.Write("Call create func");
-        //     if (ModelState.IsValid)
-        //     {
-        //         string modelJson = JsonSerializer.Serialize(model, new JsonSerializerOptions { WriteIndented = true });
-        //         Console.WriteLine("--- Incoming Model Data ---");
-        //         Console.WriteLine(modelJson);
-
-        //         var (success,message) = await _lobbyService.CreateLobbyAsync(model);
-        //         if (!success)
-        //         {
-        //             return View(message);
-        //         }
-        //         return RedirectToAction("Index");
-        //     }
-        //     return View(model);
-        // }
 
     }
 }

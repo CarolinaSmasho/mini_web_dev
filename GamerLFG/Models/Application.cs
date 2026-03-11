@@ -14,7 +14,7 @@ namespace GamerLFG.Models
         public string? UserId { get; set; }
         public string? Message { get; set; }
         
-        public string? Status { get; set; } // เช่น "Pending", "Accepted", "Rejected"
+        public string? Status { get; set; }
         public string? AppliedRole { get; set; }
         
         public DateTime AppliedAt { get; set; } = DateTime.UtcNow;

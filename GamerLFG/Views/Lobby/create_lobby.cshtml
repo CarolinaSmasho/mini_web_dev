@@ -77,7 +77,6 @@
         <input type="hidden" asp-for="Roles" id="ItemsData">
         </div>
 
-
         <div class="mood-select">
             <p>TACTICAL PROTOCAL TAGS</p>
             <div class=moods>
@@ -141,28 +140,7 @@
               <input type="datetime-local" onclick="this.showPicker()" onchange="checkTimeInput()" class="input-date" id="end-e" asp-for="EndEvent">  
              </label>
 
-             @* <div class="time-range">
-
-                <div>
-                  <input type="text" name="hour" id='hour' oninput=" this.value = this.value.replace(/[^0-9]/g, '')">
-                  <div id="add-count-btn">
-                    <button type="button" onclick="countingTime(1,'hour')"><i class="fa fa-arrow-up"></i></button>
-                    <button type="button" onclick="countingTime(-1,'hour')"><i class="fa fa-arrow-down"></i></button>
-                    </div>
-                  <p>HOUR</p>
-                </div>
-
-
-                <div>
-                    <input type="text" name="min" id="min" oninput=" this.value = this.value.replace(/[^0-9]/g, '')">
-                    <div id="add-count-btn">
-                        <button type="button" onclick="countingTime(1,'min')"><i class="fa fa-arrow-up"></i></button>
-                        <button type="button" onclick="countingTime(-1,'min')"><i class="fa fa-arrow-down"></i></button>
-                    </div>
-                    <p>MIN</p>
-                </div>
-                  
-             </div> *@
+             
              
         </div>
 

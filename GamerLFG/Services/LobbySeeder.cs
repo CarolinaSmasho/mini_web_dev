@@ -4,32 +4,27 @@ using MongoDB.Driver;
 
 namespace GamerLFG.Services
 {
-    /// <summary>
-    /// Seed ข้อมูลทดสอบสำหรับ Lobby/Details
-    /// รันครั้งเดียวตอน startup — ถ้ามีข้อมูลอยู่แล้วจะข้ามไป
-    /// </summary>
+
     public class LobbySeeder
     {
-        // ── IDs ตรงกับ LobbyTestCases.cs ──────────────────────────────────────
+
         public const string IdHost    = "000000000000000000000001";
         public const string IdMember1 = "000000000000000000000002";
         public const string IdMember2 = "000000000000000000000003";
-        public const string IdVisitor = "000000000000000000000098"; // SC3/SC4 — ยังไม่ได้ขอเข้า
-        public const string IdPending = "000000000000000000000099"; // SC5     — ส่ง request ไปแล้ว
+        public const string IdVisitor = "000000000000000000000098";
+        public const string IdPending = "000000000000000000000099";
 
-        // ── Lobby IDs (5 สถานการณ์) ─────────────────────────────────────────
         public const string IdLobby1_BeforeRecruit = "aaaaaaaaaaaaaaaaaaaaa001";
         public const string IdLobby2_Recruiting    = "aaaaaaaaaaaaaaaaaaaaa002";
         public const string IdLobby3_Intermission  = "aaaaaaaaaaaaaaaaaaaaa003";
         public const string IdLobby4_Mission       = "aaaaaaaaaaaaaaaaaaaaa004";
         public const string IdLobby5_Completed     = "aaaaaaaaaaaaaaaaaaaaa005";
-        public const string IdLobby = "aaaaaaaaaaaaaaaaaaaaaaaa"; // legacy
+        public const string IdLobby = "aaaaaaaaaaaaaaaaaaaaaaaa";
 
         public static async Task SeedAsync(MongoDBservice db)
         {
             Console.WriteLine("[LobbySeeder] กำลังตรวจสอบข้อมูลทดสอบ...");
 
-            // ── Users (upsert เสมอ — ไม่ขึ้นกับ lobby) ───────────────────────
             var users = new List<User>
             {
                 new() {
@@ -118,7 +113,6 @@ namespace GamerLFG.Services
                 Console.WriteLine($"[LobbySeeder] upserted user: {user.Username}");
             }
 
-            // ── Lobbies — upsert ทุกครั้งเพื่อให้เวลาอ้างอิงจาก now ปัจจุบัน ──
             var now = DateTime.UtcNow;
 
             Console.WriteLine("[LobbySeeder] กำลัง upsert lobbies 5 สถานการณ์...");
@@ -136,7 +130,6 @@ namespace GamerLFG.Services
                 new() { Name = "Controller", Quantity = 2 },
             };
 
-            // ─── 1) ก่อน Recruit — ยังไม่ถึงเวลารับสมัคร ──────────────────
             var lobby1 = new Lobby
             {
                 Id              = IdLobby1_BeforeRecruit,
@@ -152,7 +145,7 @@ namespace GamerLFG.Services
                 Moods           = new() { "Chill" },
                 Roles           = new(defaultRoles),
                 DiscordLink     = null,
-                StartRecruiting = now.AddDays(1),              // พรุ่งนี้
+                StartRecruiting = now.AddDays(1),
                 EndRecruiting   = now.AddDays(1).AddHours(3),
                 StartEvent      = now.AddDays(2),
                 EndEvent        = now.AddDays(2).AddHours(3),
@@ -160,7 +153,6 @@ namespace GamerLFG.Services
                 CreatedAt       = now.AddDays(-1),
             };
 
-            // ─── 2) ช่วง Recruit — กำลังเปิดรับสมัคร ──────────────────────
             var lobby2 = new Lobby
             {
                 Id              = IdLobby2_Recruiting,
@@ -176,15 +168,14 @@ namespace GamerLFG.Services
                 Moods           = new() { "Chill", "Competitive" },
                 Roles           = new(defaultRoles),
                 DiscordLink     = null,
-                StartRecruiting = now.AddHours(-2),            // เริ่มไปแล้ว 2 ชม.
-                EndRecruiting   = now.AddHours(4),             // ปิดรับอีก 4 ชม.
+                StartRecruiting = now.AddHours(-2),
+                EndRecruiting   = now.AddHours(4),
                 StartEvent      = now.AddDays(1),
                 EndEvent        = now.AddDays(1).AddHours(3),
                 Members         = new(defaultMembers),
                 CreatedAt       = now.AddHours(-3),
             };
 
-            // ─── 3) หลัง Recruit / Intermission — ปิดรับแล้ว รอเริ่มงาน ───
             var lobby3 = new Lobby
             {
                 Id              = IdLobby3_Intermission,
@@ -200,15 +191,14 @@ namespace GamerLFG.Services
                 Moods           = new() { "Competitive" },
                 Roles           = new(defaultRoles),
                 DiscordLink     = "https://discord.gg/example",
-                StartRecruiting = now.AddDays(-2),             // เปิดรับเมื่อ 2 วันก่อน
-                EndRecruiting   = now.AddHours(-5),            // ปิดรับไปแล้ว 5 ชม.
-                StartEvent      = now.AddHours(3),             // เริ่มอีก 3 ชม.
+                StartRecruiting = now.AddDays(-2),
+                EndRecruiting   = now.AddHours(-5),
+                StartEvent      = now.AddHours(3),
                 EndEvent        = now.AddHours(6),
                 Members         = new(defaultMembers),
                 CreatedAt       = now.AddDays(-3),
             };
 
-            // ─── 4) ช่วง Mission — กำลังเล่นอยู่ ──────────────────────────
             var lobby4 = new Lobby
             {
                 Id              = IdLobby4_Mission,
@@ -226,13 +216,12 @@ namespace GamerLFG.Services
                 DiscordLink     = "https://discord.gg/example2",
                 StartRecruiting = now.AddDays(-3),
                 EndRecruiting   = now.AddDays(-2),
-                StartEvent      = now.AddHours(-1),            // เริ่มไปแล้ว 1 ชม.
-                EndEvent        = now.AddHours(2),             // จบอีก 2 ชม.
+                StartEvent      = now.AddHours(-1),
+                EndEvent        = now.AddHours(2),
                 Members         = new(defaultMembers),
                 CreatedAt       = now.AddDays(-4),
             };
 
-            // ─── 5) หลัง Mission — จบแล้ว ──────────────────────────────────
             var lobby5 = new Lobby
             {
                 Id              = IdLobby5_Completed,
@@ -251,7 +240,7 @@ namespace GamerLFG.Services
                 StartRecruiting = now.AddDays(-7),
                 EndRecruiting   = now.AddDays(-6),
                 StartEvent      = now.AddDays(-5),
-                EndEvent        = now.AddDays(-5).AddHours(3), // จบไปแล้ว 5 วัน
+                EndEvent        = now.AddDays(-5).AddHours(3),
                 Members         = new(defaultMembers),
                 CreatedAt       = now.AddDays(-8),
             };
@@ -267,16 +256,13 @@ namespace GamerLFG.Services
 
             Console.WriteLine("[LobbySeeder] Seed สำเร็จ! upsert 5 lobbies ทุกสถานการณ์");
 
-            // ── Applications — ครอบคลุม 3 สถานะ: Pending, Accepted, Rejected ─────
             Console.WriteLine("[LobbySeeder] กำลัง upsert Applications...");
 
-
-            // ── KarmaHistory — ประวัติให้คะแนนหลังจบ Lobby5 ────────────────────
             Console.WriteLine("[LobbySeeder] กำลัง upsert KarmaHistory...");
 
             var karmaHistories = new List<KarmaHistory>
             {
-                // Host ให้คะแนน Member1 — คะแนนสูง
+
                 new() {
                     Id           = "cccccccccccccccccccccc01",
                     TargetUserId = IdMember1,
@@ -285,7 +271,7 @@ namespace GamerLFG.Services
                     Comment      = "DPS เทพมาก carry ทั้งทีม",
                     Date         = now.AddDays(-5).AddHours(4),
                 },
-                // Host ให้คะแนน Member2 — คะแนนปานกลาง
+
                 new() {
                     Id           = "cccccccccccccccccccccc02",
                     TargetUserId = IdMember2,
@@ -294,7 +280,7 @@ namespace GamerLFG.Services
                     Comment      = "Tank ได้ดี แต่บางทีหลุดตำแหน่ง",
                     Date         = now.AddDays(-5).AddHours(4),
                 },
-                // Member1 ให้คะแนน Host — คะแนนสูง
+
                 new() {
                     Id           = "cccccccccccccccccccccc03",
                     TargetUserId = IdHost,
@@ -303,7 +289,7 @@ namespace GamerLFG.Services
                     Comment      = "ลีดเก่งมาก สั่งงานชัดเจน",
                     Date         = now.AddDays(-5).AddHours(5),
                 },
-                // Member2 ให้คะแนน Host — คะแนนปานกลาง
+
                 new() {
                     Id           = "cccccccccccccccccccccc04",
                     TargetUserId = IdHost,
@@ -312,7 +298,7 @@ namespace GamerLFG.Services
                     Comment      = "ลีดโอเค แต่ตึงไปนิดนึง",
                     Date         = now.AddDays(-5).AddHours(5),
                 },
-                // Member1 ให้คะแนน Member2
+
                 new() {
                     Id           = "cccccccccccccccccccccc05",
                     TargetUserId = IdMember2,
@@ -332,22 +318,21 @@ namespace GamerLFG.Services
             }
             Console.WriteLine($"[LobbySeeder] upserted {karmaHistories.Count} karma histories");
 
-            // ── Notifications — ครอบคลุมหลาย type + ทั้ง read/unread ────────────
             Console.WriteLine("[LobbySeeder] กำลัง upsert Notifications...");
 
             var notifications = new List<Notification>
             {
-                // friend_request — Newbie ส่ง friend request ให้ Host (ยังไม่อ่าน)
+
                 new() {
                     Id             = "dddddddddddddddddddddd01",
                     Type           = "friend_request",
-                    RelateObjectId = "eeeeeeeeeeeeeeeeeeeeee01", // FriendRequest Id
+                    RelateObjectId = "eeeeeeeeeeeeeeeeeeeeee01",
                     UserId         = IdHost,
                     Text           = "Newbie_Player ส่งคำขอเป็นเพื่อน",
                     IsRead         = false,
                     Date           = now.AddHours(-2),
                 },
-                // lobby_invite — Host เชิญ Looker เข้า Lobby2 (ยังไม่อ่าน)
+
                 new() {
                     Id             = "dddddddddddddddddddddd02",
                     Type           = "lobby_invite",
@@ -357,7 +342,7 @@ namespace GamerLFG.Services
                     IsRead         = false,
                     Date           = now.AddHours(-1),
                 },
-                // lobby_invite — Host เชิญ Newbie เข้า Lobby2 (อ่านแล้ว)
+
                 new() {
                     Id             = "dddddddddddddddddddddd03",
                     Type           = "lobby_invite",
@@ -367,7 +352,7 @@ namespace GamerLFG.Services
                     IsRead         = true,
                     Date           = now.AddHours(-3),
                 },
-                // friend_request — Host accept friend ของ Dew (อ่านแล้ว)
+
                 new() {
                     Id             = "dddddddddddddddddddddd04",
                     Type           = "friend_request",
@@ -377,7 +362,7 @@ namespace GamerLFG.Services
                     IsRead         = true,
                     Date           = now.AddDays(-3),
                 },
-                // application_accepted — Dew ได้รับการอนุมัติเข้า Lobby3 (อ่านแล้ว)
+
                 new() {
                     Id             = "dddddddddddddddddddddd05",
                     Type           = "application_accepted",
@@ -387,7 +372,7 @@ namespace GamerLFG.Services
                     IsRead         = true,
                     Date           = now.AddDays(-2).AddHours(3),
                 },
-                // application_rejected — Looker ถูกปฏิเสธจาก Lobby3 (ยังไม่อ่าน)
+
                 new() {
                     Id             = "dddddddddddddddddddddd06",
                     Type           = "application_rejected",
@@ -397,7 +382,7 @@ namespace GamerLFG.Services
                     IsRead         = false,
                     Date           = now.AddDays(-2).AddHours(4),
                 },
-                // new_application — Host ได้รับแจ้ง Newbie สมัครเข้า Lobby2 (ยังไม่อ่าน)
+
                 new() {
                     Id             = "dddddddddddddddddddddd07",
                     Type           = "new_application",
@@ -418,7 +403,6 @@ namespace GamerLFG.Services
             }
             Console.WriteLine($"[LobbySeeder] upserted {notifications.Count} notifications");
 
-            // ── FriendRequests — ครอบคลุม pending + accepted ────────────────────
             Console.WriteLine("[LobbySeeder] กำลัง upsert FriendRequests...");
 
             var friendRequestCollection = db.Users.Database
@@ -426,7 +410,7 @@ namespace GamerLFG.Services
 
             var friendRequests = new List<FriendRequest>
             {
-                // pending — Newbie ส่งให้ Host (รอตอบรับ)
+
                 new() {
                     Id           = "eeeeeeeeeeeeeeeeeeeeee01",
                     UserSender   = IdPending,
@@ -434,7 +418,7 @@ namespace GamerLFG.Services
                     Status       = "pending",
                     CreatedAt    = now.AddHours(-2),
                 },
-                // accepted — Dew กับ Host (เป็นเพื่อนกันแล้ว)
+
                 new() {
                     Id           = "eeeeeeeeeeeeeeeeeeeeee02",
                     UserSender   = IdMember1,
@@ -442,7 +426,7 @@ namespace GamerLFG.Services
                     Status       = "accepted",
                     CreatedAt    = now.AddMonths(-4),
                 },
-                // accepted — Tank กับ Host
+
                 new() {
                     Id           = "eeeeeeeeeeeeeeeeeeeeee03",
                     UserSender   = IdHost,
@@ -450,7 +434,7 @@ namespace GamerLFG.Services
                     Status       = "accepted",
                     CreatedAt    = now.AddMonths(-3),
                 },
-                // accepted — Dew กับ Tank
+
                 new() {
                     Id           = "eeeeeeeeeeeeeeeeeeeeee04",
                     UserSender   = IdMember2,
@@ -458,7 +442,7 @@ namespace GamerLFG.Services
                     Status       = "accepted",
                     CreatedAt    = now.AddMonths(-2),
                 },
-                // pending — Looker ส่งให้ Dew (รอตอบรับ)
+
                 new() {
                     Id           = "eeeeeeeeeeeeeeeeeeeeee05",
                     UserSender   = IdVisitor,

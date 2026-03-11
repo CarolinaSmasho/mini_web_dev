@@ -26,7 +26,6 @@ public class FriendRequestController : Controller
 
     }
 
-
     [HttpPost]
     public async Task<IActionResult> Send(string targetUserId)
     {
@@ -74,7 +73,6 @@ public class FriendRequestController : Controller
 
         var requestList = await _friendRequestService.GetPendingRequestsAsync(currentUserId);
 
-        // 🟢 2. เปลี่ยนมาใช้ List ของคลาสที่เราเพิ่งสร้าง
         var requestViewModels = new List<FriendRequestViewModel>();
 
         foreach (var req in requestList)
@@ -83,14 +81,14 @@ public class FriendRequestController : Controller
 
             if (sender != null)
             {
-                // 🟢 3. หยิบข้อมูลใส่กล่อง (ไม่ต้องมีชื่อตัวแปรย่อยๆ เล็กๆ แล้ว ใช้ตัวพิมพ์ใหญ่ตามคลาสได้เลย)
+
                 requestViewModels.Add(new FriendRequestViewModel
                 {
                     RequestId = req.Id,
                     SenderId = sender.Id,
                     SenderName = sender.Name,
                     SenderAvatar = sender.Avatar,
-                    // 🟢 แปลงเป็นเวลาไทย (+7) -> สั่งจัดฟอร์แมต วัน/เดือน/ปี -> ใช้ Culture "th-TH" เพื่อให้ปีเป็น พ.ศ.
+
                     SentAt = req.CreatedAt.ToLocalTime().ToString("d/M/yyyy", new System.Globalization.CultureInfo("th-TH"))
                 });
             }

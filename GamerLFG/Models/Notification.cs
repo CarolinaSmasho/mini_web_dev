@@ -7,13 +7,13 @@ public class Notification
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
 
-    public string Type { get; set; } // e.g., 'friend_request', 'lobby_invite'
+    public string Type { get; set; }
     
     [BsonRepresentation(BsonType.ObjectId)]
-    public string RelateObjectId { get; set; } // ID ของ FriendRequest หรือ Lobby ที่เกี่ยวข้อง
+    public string RelateObjectId { get; set; }
 
     [BsonRepresentation(BsonType.ObjectId)]
-    public string UserId { get; set; } // ผู้รับแจ้งเตือน
+    public string UserId { get; set; }
 
     public string Text { get; set; }
     public bool IsRead { get; set; } = false;

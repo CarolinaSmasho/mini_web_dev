@@ -13,7 +13,6 @@ namespace GamerLFG.Services.Interface
         Task UpdateLobbyAsync (Lobby lobby);
         Task AddmemberAsync (Lobby current_lobby,User newUser);
 
-        /// <summary>ดึงข้อมูลทั้งหมดที่ Lobby/Details ต้องการ รวมถึง members, applications และ karma</summary>
         Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId);
 
         Task<Lobby?> GetLobbyByIdAsync(string id);

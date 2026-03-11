@@ -42,13 +42,12 @@
 
 <script>
     function readNotification(element, id, type, relateObjectId) {
-        // ถ้าอ่านแล้ว ให้กดแล้วพาไปหน้าเป้าหมาย
+
         if (!element.classList.contains('unread')) {
             redirectBasedOnType(type, relateObjectId);
             return;
         }
 
-        // AJAX อ่านแล้ว
         fetch('/Noti/MarkAsRead', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

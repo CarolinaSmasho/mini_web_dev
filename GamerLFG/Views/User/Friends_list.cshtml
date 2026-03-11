@@ -8,7 +8,6 @@
 <div class="container">
 <h1>Friends List</h1>
 
-
 <ul class="nav-tabs">
     <li id="friends" class="rbx-tab active"><a asp-controller="User" asp-action="Friends_list">
         <span class="text-lead" style="color : black;">Friends</span></a>
@@ -28,7 +27,6 @@
     <ul id="searchResultList" class="friend-cards">
     </ul>
 </div>
-
 
 <div id="friend_containers" class="friend-card-containers">
     <ul class="friend-cards">
@@ -54,16 +52,12 @@
                                             @friend.Username
                                         </p>
                                     </div>
-                                    @* <div class="friend-card-label">
-                                        @(friend.VibeTags.Any() ? friend.VibeTags.First() : "Offline")
-                                    </div> *@
+                                    
                                 </span>
                             </div>
                         </div>
                     </div>
                 </li>
-
-
 
             
             }
@@ -71,8 +65,6 @@
         else
         {
             <p>ยังไม่มีเพื่อนในรายชื่อ</p>
-
-
 
         
         }
@@ -90,7 +82,6 @@
             return;
         }
 
-        // ยิง Fetch API ไปหา Controller ของเรา
         fetch(`/User/SearchAPI?keyword=${encodeURIComponent(keyword)}`)
             .then(response => response.json())
             .then(users => {
@@ -116,7 +107,7 @@
                                             <div class="avatar-name-container">
                                                 <p class="text-overflow avatar-name">${user.username}</p>
                                             </div>
-                                            @* <div class="friend-card-label">${user.bio || 'ไม่มีข้อมูลแนะนำตัว'}</div> *@
+                                            
                                         </span>
                                     </div>
                                 </div>

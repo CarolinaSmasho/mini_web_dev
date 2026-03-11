@@ -38,12 +38,9 @@
 <main class="container py-4">
 <div class="row g-4">
 
-@* ══════════════════════════════════════════════════════
-   LEFT COLUMN
-   ══════════════════════════════════════════════════════ *@
 <div class="col-lg-8">
 
-    @* ── Hero Banner ── *@
+    
     <div class="card-dark p-0 overflow-hidden">
         <img src="@lobby.Picture" class="hero-img" alt="Game" />
         <div class="p-4">
@@ -58,7 +55,7 @@
         </div>
     </div>
 
-    @* ── Members Grid ── *@
+    
     <div class="card-dark">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0 text-white">Members</h5>
@@ -131,7 +128,7 @@
         </div>
     </div>
 
-    @* ── Pending Requests (Host only) ── *@
+    
     @if (isHost && Model.PendingApplications.Any())
     {
         <div class="card-dark" style="border-color:#3498db44;">
@@ -179,7 +176,7 @@
         </div>
     }
 
-    @* ── Invite a Friend (Members, during Recruiting) ── *@
+    
     @if (isMember && !lobby.IsComplete && status == LobbyStatus.Recruiting && Model.InvitableFriends.Any())
     {
         <div class="card-dark" style="border-color:#3498db44;">
@@ -217,7 +214,7 @@
         </div>
     }
 
-    @* ── Comms Box ── *@
+    
     @if (isMember && !isHost)
     {
         <div class="comms-box" style="background:#0d1f0d; border-color:#2ecc71;">
@@ -248,7 +245,7 @@
         </div>
     }
 
-    @* ── Karma Evaluation (after mission complete) ── *@
+    
     @if (lobby.IsComplete && (isMember || isHost))
     {
         <div class="card-dark" style="border-color:#9b59b644;">
@@ -289,12 +286,9 @@
 
 </div>
 
-@* ══════════════════════════════════════════════════════
-   RIGHT COLUMN
-   ══════════════════════════════════════════════════════ *@
 <div class="col-lg-4">
 
-    @* ── Mission Info & Timeline ── *@
+    
     <div class="card-dark">
         <h5 class="text-white mb-3" style="font-size:15px;">Mission Info</h5>
         <hr class="divider">
@@ -340,7 +334,7 @@
             }
         </div>
 
-        @* ── Action Buttons ── *@
+        
         @if (isHost && !lobby.IsComplete)
         {
             <div class="toggle-wrap">
@@ -417,7 +411,7 @@
         }
     </div>
 
-    @* ── Host Card ── *@
+    
     @{ var hostUser = Model.MemberMap.GetValueOrDefault(lobby.HostId ?? ""); }
     <div class="card-dark d-flex align-items-center gap-3" style="padding:14px 16px;">
         <img src="@Avatar(hostUser?.Avatar, Model.HostName)"

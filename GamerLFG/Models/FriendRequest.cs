@@ -12,6 +12,6 @@ public class FriendRequest
     [BsonRepresentation(BsonType.ObjectId)]
     public string UserReceiver { get; set; }
 
-    public string Status { get; set; } // 'pending', 'accepted'
+    public string Status { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

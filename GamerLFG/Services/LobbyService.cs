@@ -16,9 +16,8 @@ namespace GamerLFG.Services
             
         }
      
-        // _database.Users;
-        // _database.Users;
-        public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){ // ใช้function แบบ async
+
+        public async Task<LobbyListResponse> GetAllLobbyAsync(string? userId = null){
             
             var now = DateTime.UtcNow;
             var isRecruiting = Builders<Lobby>.Filter.And(
@@ -27,10 +26,10 @@ namespace GamerLFG.Services
                 Builders<Lobby>.Filter.Eq(l => l.IsRecruiting, true),
                 Builders<Lobby>.Filter.Eq(l => l.IsComplete, false)
             );
-            // var isRecruiting =  Builders<Lobby>.Filter.Eq(l =>l.GetStatus(), LobbyStatus.Recruiting);
+
             var isMine = Builders<Lobby>.Filter.Eq(l => l.HostId,userId);
             var notMine = Builders<Lobby>.Filter.Ne(l => l.HostId,userId);
-            var myLobbyList = await _database.Lobbies.Find(isMine).ToListAsync(); // ดึง lobby ของเรามาแบบ async
+            var myLobbyList = await _database.Lobbies.Find(isMine).ToListAsync();
             var otherLobbyList = await _database.Lobbies.Find(notMine & isRecruiting).SortBy(l => l.Id).Limit(10).ToListAsync();
              
             var myLobby = myLobbyList.Select( lob => new ShowLobbyDTO{
@@ -52,7 +51,6 @@ namespace GamerLFG.Services
                     ? await _database.Users.Find(u => otherHostIds.Contains(u.Id)).ToListAsync()
                     : new List<User>();
                 var otherHostMap = nextHostUsers.ToDictionary(u => u.Id);
-
 
             var publicLobby = otherLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,
@@ -80,7 +78,7 @@ namespace GamerLFG.Services
             
         public async Task<List<ShowLobbyDTO>> GetNextLobbiesAsync(string? lastId,string? userId, int pageSize = 10)
             {
-                // ใช้ .Ne() แทน .Eq()
+
                 var notYours = Builders<Lobby>.Filter.Ne(l => l.HostId, userId);
                 var now = DateTime.UtcNow;
                 var isRecruiting = Builders<Lobby>.Filter.And(
@@ -90,7 +88,7 @@ namespace GamerLFG.Services
                 Builders<Lobby>.Filter.Eq(l => l.IsComplete, false)
                  );
                 
-                // กรองเอาเฉพาะตัวที่ ID "หลังจาก" ตัวสุดท้ายที่หน้าจอแสดงอยู่
+
                 var filter = Builders<Lobby>.Filter.Gt(l => l.Id, lastId);
                 var nextLobby = await _database.Lobbies.Find(filter & notYours & isRecruiting)
                                 .SortBy(l => l.Id)
@@ -118,8 +116,6 @@ namespace GamerLFG.Services
                     }).ToList();
                 }
 
-        //
-
         public async Task<(bool success, string message)> CreateLobbyAsync(CreateLobbyDTO newLobby) 
         {
             try {
@@ -136,38 +132,27 @@ namespace GamerLFG.Services
                 }
                 var lobby = newLobby.ToEntity();
                 
-                // Debug ดูว่า Entity พร้อมใช้งานไหม
+
                 Console.WriteLine($"Inserting Lobby: {System.Text.Json.JsonSerializer.Serialize(lobby)}");
 
                 await _database.Lobbies.InsertOneAsync(lobby);
                 
-                // ถ้ามาถึงตรงนี้ได้ แสดงว่าคำสั่งส่งออกไปสำเร็จ
+
                 return (true, "OK");
             }
             
             catch (MongoException ex) {
-                // ดัก Error เฉพาะจาก MongoDB
+
                 Console.WriteLine($"MongoDB Error: {ex.Message}");
                 return (false, ex.Message);
             }
             catch (Exception ex) {
-                // ดัก Error อื่นๆ เช่น Mapping พัง
+
                 Console.WriteLine($"General Error: {ex.Message}");
                 return (false, ex.Message);
             }
         }
-                // public async Task<(bool success,string message)> CreateLobbyAsync(CreateLobbyDTO newLobby){
-        //     var lobby = newLobby.ToEntity();
-        //     Console.Write(newLobby);
-        //     // var hostObj = await _users.Find(u => u.Id == lobby.HostId).FirstOrDefaultAsync();
-        //     // if (hostObj == null)
-        //     //     {
-        //     //     return (false,"Host not found");
-        //     //     }
-        //     // string hostName = hostObj.Username;
-        //     await _database.Lobbies.InsertOneAsync(lobby);
-        //     return (true,"OK");
-        // }
+
         public async Task<bool> DeleteLobbyAsync(string id)
         {
             var result = await _database.Lobbies.DeleteOneAsync(l => l.Id == id);
@@ -193,11 +178,10 @@ namespace GamerLFG.Services
 
         public async Task<(bool success, string message)> ApplyToLobbyAsync(string lobbyId, string userId, string role)
         {
-            // Fetch the lobby first to check capacity
+
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
             if (lobby == null) return (false, "Lobby not found.");
 
-            // ตรวจสอบสถานะรวมเวลา: ต้องอยู่ในช่วง Recruiting เท่านั้น
             var status = lobby.GetStatus();
             if (status != LobbyStatus.Recruiting)
             {
@@ -212,11 +196,10 @@ namespace GamerLFG.Services
                 return (false, reason);
             }
 
-            // Find the role slot definition
             var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == role);
             if (roleDef != null)
             {
-                // Count ALL members holding this role (Host + joined + Pending)
+
                 var takenCount = lobby.Members.Count(m => m.Role == role);
 
                 if (takenCount >= roleDef.Quantity)
@@ -232,7 +215,7 @@ namespace GamerLFG.Services
                 AppliedAt = DateTime.UtcNow
             });
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-            //noti ahh
+
             if (result.ModifiedCount > 0)
             {
                 var applicant = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
@@ -267,7 +250,7 @@ namespace GamerLFG.Services
         }
 
         public async Task<bool> RecruitMemberAsync(string lobbyId, string userId)
-        {   //lobby title
+        {
 
             var lobby = await _database.Lobbies.Find(l => l.Id == lobbyId).FirstOrDefaultAsync();
             if (lobby == null) return false;
@@ -278,7 +261,7 @@ namespace GamerLFG.Services
             );
             var update = Builders<Lobby>.Update.Set("Members.$.Status", "joined");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-             //noti ahh
+
             if (result.ModifiedCount > 0)
             {
                 var notification = new Notification
@@ -291,7 +274,6 @@ namespace GamerLFG.Services
                     Date = DateTime.Now
                 };
 
-                // บันทึกลงตาราง Notifications
                 await _database.Notifications.InsertOneAsync(notification);
             }
             return result.ModifiedCount > 0;
@@ -305,7 +287,7 @@ namespace GamerLFG.Services
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Pending");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-             //noti ahh
+
             if (result.ModifiedCount > 0)
             {
                 var notification = new Notification
@@ -331,7 +313,6 @@ namespace GamerLFG.Services
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId);
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
 
-            //noti ahh
             if (result.ModifiedCount > 0)
             {
                 var notification = new Notification
@@ -347,7 +328,6 @@ namespace GamerLFG.Services
             }
             return result.ModifiedCount > 0;
 
-
         }
 
         public async Task<bool> CompleteLobbyAsync(string lobbyId)
@@ -359,7 +339,7 @@ namespace GamerLFG.Services
             var update = Builders<Lobby>.Update.Set(l => l.IsComplete, true)
                                                .Set(l => l.IsRecruiting, false);
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
-            //noti ahh
+
             if (result.ModifiedCount > 0)
             {
                 var notifications = new List<Notification>();
@@ -428,7 +408,6 @@ namespace GamerLFG.Services
                 await _database.Users.UpdateOneAsync(userFilter, userUpdate);
             }
 
-            //noti ahh
             var sender = await _database.Users.Find(u => u.Id == fromUserId).FirstOrDefaultAsync();
             var senderName = sender != null ? sender.Username : "เพื่อนร่วมทีม";
             var notification = new Notification
@@ -452,7 +431,6 @@ namespace GamerLFG.Services
             var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status != "Pending");
             if (member == null) return false;
 
-            // "Other" is always allowed without slot limits
             if (newRole != "Other")
             {
                 var roleDef = lobby.Roles.FirstOrDefault(r => r.Name == newRole);
@@ -462,10 +440,9 @@ namespace GamerLFG.Services
                     m.Role == newRole && m.UserId != userId && m.Status != "Pending");
 
                 if (takenCount >= roleDef.Quantity)
-                    return false; // role is full
+                    return false;
             }
 
-            // Update the member's role
             var filter = Builders<Lobby>.Filter.And(
                 Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
                 Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status != "Pending")
@@ -488,14 +465,13 @@ namespace GamerLFG.Services
 
         public async Task<LobbyDetailsViewModel?> GetLobbyDetailsAsync(string id, string? currentUserId)
         {
-            // 1. ดึง lobby จาก DB
+
             var lobby = await _database.Lobbies
                 .Find(l => l.Id == id)
                 .FirstOrDefaultAsync();
 
             if (lobby == null) return null;
 
-            // 2. ดึง user ของทุก member (Status != "Pending" && != "Invited")
             var memberIds = lobby.Members
                 .Where(m => m.Status != "Pending" && m.Status != "Invited")
                 .Select(m => m.UserId)
@@ -507,12 +483,10 @@ namespace GamerLFG.Services
 
             var memberMap = memberUsers.ToDictionary(u => u.Id);
 
-            // 3. กำหนด role flags
             bool isHost   = currentUserId == lobby.HostId;
             bool isMember = lobby.Members.Any(m =>
                 m.UserId == currentUserId && m.Status != "Pending" && m.Status != "Invited");
 
-            // 4. Pending members (มองเห็นเฉพาะ Host) + hasPendingRequest (สำหรับ Visitor)
             var pendingApps  = new List<LobbyMember>();
             var applicantMap = new Dictionary<string, User>();
             bool hasPendingRequest = false;
@@ -542,7 +516,6 @@ namespace GamerLFG.Services
                     .Any(m => m.UserId == currentUserId && m.Status == "Pending");
             }
 
-            // 5. Karma — ดึง user ที่ currentUser rate ไปแล้วในกลุ่มนี้
             var endorsedUserIds = new HashSet<string>();
             if (lobby.IsComplete && !string.IsNullOrEmpty(currentUserId))
             {
@@ -553,7 +526,6 @@ namespace GamerLFG.Services
                 endorsedUserIds = karmaGiven.Select(k => k.TargetUserId).ToHashSet();
             }
 
-            // 6. ดึง CurrentUser — ถ้าไม่อยู่ใน MemberMap (visitor/pending) ให้ fetch เพิ่ม
             User? currentUser = null;
             if (!string.IsNullOrEmpty(currentUserId))
             {
@@ -562,14 +534,13 @@ namespace GamerLFG.Services
                     : await _database.Users.Find(u => u.Id == currentUserId).FirstOrDefaultAsync();
             }
 
-            // 7. Friend invite data
             var invitableFriends = new List<User>();
             bool hasPendingInvite = false;
             string? invitedByName = null;
 
             if (!string.IsNullOrEmpty(currentUserId))
             {
-                // Check if currentUser has a pending invite (Status == "Invited")
+
                 var inviteMember = lobby.Members.FirstOrDefault(m => m.UserId == currentUserId && m.Status == "Invited");
                 if (inviteMember != null)
                 {
@@ -583,7 +554,6 @@ namespace GamerLFG.Services
                     }
                 }
 
-                // Populate invitable friends for members when lobby is recruiting
                 if ((isMember || isHost) && lobby.GetStatus() == LobbyStatus.Recruiting && currentUser != null)
                 {
                     var allMemberUserIds = lobby.Members.Select(m => m.UserId).ToHashSet();
@@ -627,7 +597,7 @@ namespace GamerLFG.Services
             var pendingMembers = lobby.Members.Where(m => m.Status == "Pending").ToList();
             if (!pendingMembers.Any())
             {
-                // No pending members, just mark as processed
+
                 var markFilter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
                 var markUpdate = Builders<Lobby>.Update
                     .Set(l => l.AutoRecruitProcessed, true)
@@ -636,32 +606,27 @@ namespace GamerLFG.Services
                 return;
             }
 
-            // Fetch user objects to get KarmaScore
             var pendingUserIds = pendingMembers.Select(m => m.UserId).ToList();
             var pendingUsers = await _database.Users.Find(u => pendingUserIds.Contains(u.Id)).ToListAsync();
             var userKarmaMap = pendingUsers.ToDictionary(u => u.Id, u => u.KarmaScore);
 
-            // Sort: KarmaScore DESC, then AppliedAt ASC (earliest first for ties)
             var sorted = pendingMembers
                 .OrderByDescending(m => userKarmaMap.GetValueOrDefault(m.UserId, 0))
                 .ThenBy(m => m.AppliedAt)
                 .ToList();
 
-            // Calculate available slots
             var currentJoined = lobby.Members.Count(m => m.Status != "Pending" && m.Status != "Invited");
             var availableSlots = Math.Max(0, lobby.MaxPlayers - currentJoined);
 
             var accepted = sorted.Take(availableSlots).ToList();
             var rejected = sorted.Skip(availableSlots).ToList();
 
-            // Update lobby in memory
             foreach (var member in accepted)
             {
                 member.Status = "joined";
                 member.Role = "Other";
             }
 
-            // Remove rejected members
             foreach (var member in rejected)
             {
                 lobby.Members.Remove(member);
@@ -670,11 +635,9 @@ namespace GamerLFG.Services
             lobby.AutoRecruitProcessed = true;
             lobby.IsRecruiting = false;
 
-            // Save all changes at once
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             await _database.Lobbies.ReplaceOneAsync(filter, lobby);
 
-            // Send notifications
             foreach (var member in accepted)
             {
                 await _database.Notifications.InsertOneAsync(new Notification
@@ -711,16 +674,13 @@ namespace GamerLFG.Services
             if (status != LobbyStatus.Recruiting)
                 return (false, "Recruitment is currently closed.");
 
-            // Verify inviter is a member
             var inviterMember = lobby.Members.FirstOrDefault(m => m.UserId == inviterId && (m.Status == "joined" || m.Status == "Host"));
             if (inviterMember == null)
                 return (false, "You must be a member to invite friends.");
 
-            // Verify friend is not already in the lobby
             if (lobby.Members.Any(m => m.UserId == friendId))
                 return (false, "This user is already in the lobby.");
 
-            // Verify friend is in inviter's FriendIds
             var inviterUser = await _database.Users.Find(u => u.Id == inviterId).FirstOrDefaultAsync();
             if (inviterUser == null || !inviterUser.FriendIds.Contains(friendId))
                 return (false, "You can only invite your friends.");
@@ -741,7 +701,6 @@ namespace GamerLFG.Services
                 var friendUser = await _database.Users.Find(u => u.Id == friendId).FirstOrDefaultAsync();
                 var friendName = friendUser?.Username ?? "Someone";
 
-                // Send notification to friend
                 await _database.Notifications.InsertOneAsync(new Notification
                 {
                     Type = "lobby_invite",
@@ -766,7 +725,6 @@ namespace GamerLFG.Services
             var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status == "Invited");
             if (member == null) return (false, "No pending invite found.");
 
-            // Change status from "Invited" to "Pending" (waiting for host approval)
             var filter = Builders<Lobby>.Filter.And(
                 Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId),
                 Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status == "Invited")
@@ -781,7 +739,6 @@ namespace GamerLFG.Services
                 var friendName = friendUser?.Username ?? "Someone";
                 var inviterName = inviterUser?.Username ?? "someone";
 
-                // Send notification to host
                 await _database.Notifications.InsertOneAsync(new Notification
                 {
                     Type = "lobby_invite_request",
@@ -806,7 +763,6 @@ namespace GamerLFG.Services
             var member = lobby.Members.FirstOrDefault(m => m.UserId == userId && m.Status == "Invited");
             if (member == null) return (false, "No pending invite found.");
 
-            // Remove the invited member
             var filter = Builders<Lobby>.Filter.Eq(l => l.Id, lobbyId);
             var update = Builders<Lobby>.Update.PullFilter(l => l.Members, m => m.UserId == userId && m.Status == "Invited");
             var result = await _database.Lobbies.UpdateOneAsync(filter, update);
@@ -816,7 +772,6 @@ namespace GamerLFG.Services
                 var friendUser = await _database.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
                 var friendName = friendUser?.Username ?? "Someone";
 
-                // Notify inviter that friend declined
                 await _database.Notifications.InsertOneAsync(new Notification
                 {
                     Type = "lobby_invite_declined",
