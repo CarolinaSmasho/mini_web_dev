@@ -64,13 +64,51 @@ namespace GamerLFG.Services
                 MaxPlayers = lob.MaxPlayers,
                 Status = lob.GetStatus(),
                 isRecuiting = lob.IsRecruiting
-                
+
             }).ToList();
+
+            // Completed lobbies ที่ user เป็นสมาชิก (รวม host ด้วย)
+            var completedLobbies = new List<ShowLobbyDTO>();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var completedFilter = Builders<Lobby>.Filter.And(
+                    Builders<Lobby>.Filter.Eq(l => l.IsComplete, true),
+                    Builders<Lobby>.Filter.ElemMatch(l => l.Members,
+                        m => m.UserId == userId && m.Status != "Pending")
+                );
+                var completedList = await _database.Lobbies
+                    .Find(completedFilter)
+                    .SortByDescending(l => l.EndEvent)
+                    .Limit(20)
+                    .ToListAsync();
+
+                var completedHostIds = completedList.Select(l => l.HostId).Where(id => id != null).Distinct().ToList();
+                var completedHostUsers = completedHostIds.Any()
+                    ? await _database.Users.Find(u => completedHostIds.Contains(u.Id)).ToListAsync()
+                    : new List<User>();
+                var completedHostMap = completedHostUsers.ToDictionary(u => u.Id);
+
+                completedLobbies = completedList.Select(lob => new ShowLobbyDTO
+                {
+                    Id = lob.Id,
+                    Title = lob.Title,
+                    Game = lob.Game,
+                    Description = lob.Description,
+                    HostName = completedHostMap.TryGetValue(lob.HostId ?? "", out var ch) ? ch.Username : lob.HostName,
+                    Picture = lob.Picture,
+                    Moods = lob.Moods,
+                    CurrentPlayers = lob.Members.Count(m => m.Status != "Pending"),
+                    MaxPlayers = lob.MaxPlayers,
+                    Status = lob.GetStatus(),
+                    isRecuiting = false
+                }).ToList();
+            }
 
             return new LobbyListResponse
             {
                 MyLobbies = myLobby,
-                OtherLobbies = publicLobby
+                OtherLobbies = publicLobby,
+                CompletedLobbies = completedLobbies
             };
         
             }

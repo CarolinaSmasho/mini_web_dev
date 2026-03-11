@@ -146,6 +146,7 @@ namespace GamerLFG.Services.Interface.DTOs
     {
         public List<ShowLobbyDTO> MyLobbies { get; set; } = new();
         public List<ShowLobbyDTO> OtherLobbies { get; set; } = new();
+        public List<ShowLobbyDTO> CompletedLobbies { get; set; } = new();
     }
 
     public class EditLobbyDTO

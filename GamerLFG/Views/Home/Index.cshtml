@@ -9,6 +9,7 @@
     List<ShowLobbyDTO>? MyLobby = Model.MyLobbies;
     List<ShowLobbyDTO>? OtherLobby = new List<ShowLobbyDTO>();
     OtherLobby.AddRange(Model.OtherLobbies);
+    List<ShowLobbyDTO>? CompletedLobby = Model.CompletedLobbies ?? new List<ShowLobbyDTO>();
 }
 <link rel="stylesheet" href="~/css/home_page.css" asp-append-version="true">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -111,6 +112,66 @@
             </a>
 
             </div>
+
+        @if (CompletedLobby.Any())
+        {
+            <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
+                <i class="fa fa-trophy" style="color: #9b59b6;"></i> Completed Missions</h3>
+            <div class="lobbies" id="completed-lob">
+                @foreach (ShowLobbyDTO lob in CompletedLobby)
+                {
+                    <div class="public-lobby">
+                        <div class="lobby" onclick="toLobby('@lob.Id')" style="border-color:#9b59b633;">
+                            <div class="game-pic" style="background-image: url('@lob.Picture');">
+                                <div class="gname">
+                                    <p>@lob.Game</p>
+                                </div>
+                                <div style="position:absolute;top:8px;right:8px;background:#9b59b6;color:#fff;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:0.04em;">
+                                    COMPLETED
+                                </div>
+                            </div>
+                            <div class="host-bar">
+                                <div>
+                                    <i class="fa fa-user-o"></i>
+                                    <p>Host: @lob.HostName</p>
+                                </div>
+                                <i class="fa fa-check-circle" style="color: #9b59b6;"></i>
+                            </div>
+                            <h3>@lob.Title</h3>
+                            <div class="slots">
+                                <div class="icon">
+                                    @for (int i = 0; i < lob.MaxPlayers && i <= 10; i++)
+                                    {
+                                        @if (i >= lob.CurrentPlayers)
+                                        {
+                                            <i class="fa fa-user-o"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa fa-user-o" style="color: #9b59b6;"></i>
+                                        }
+                                    }
+                                </div>
+                                <div>
+                                    <p>@lob.CurrentPlayers/@lob.MaxPlayers SLOTS</p>
+                                </div>
+                            </div>
+                            <div class="tag-game">
+                                @foreach (string mood in lob.Moods)
+                                {
+                                    <p class="tag-ele">@mood</p>
+                                }
+                            </div>
+                            <div style="margin-top: auto;">
+                                <a href="/Lobby/Details/@lob.Id">
+                                    <button class="orange-button" style="background:linear-gradient(135deg,#9b59b6,#7d3c98);border-color:#9b59b6;">VIEW RESULTS</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
 
         <h3 class="lobby-type" style="color: aliceblue;padding-left:2rem;padding-top:1rem;padding:0;margin:0;">
                 <i class="fa fa-globe" style="color: #ffa431;"></i>Public Feed</h3>
