@@ -27,10 +27,14 @@ namespace GamerLFG.Services
                 Builders<Lobby>.Filter.Eq(l => l.IsComplete, false)
             );
 
-            var isMine = Builders<Lobby>.Filter.Eq(l => l.HostId,userId);
+            var isMember = Builders<Lobby>.Filter.ElemMatch(l => l.Members,
+                m => m.UserId == userId && m.Status != "Pending");
+            var notCompleted = Builders<Lobby>.Filter.Eq(l => l.IsComplete, false);
             var notMine = Builders<Lobby>.Filter.Ne(l => l.HostId,userId);
-            var myLobbyList = await _database.Lobbies.Find(isMine).ToListAsync();
-            var otherLobbyList = await _database.Lobbies.Find(notMine & isRecruiting).SortBy(l => l.Id).Limit(10).ToListAsync();
+            var myLobbyList = await _database.Lobbies.Find(isMember & notCompleted).ToListAsync();
+            var notMember = Builders<Lobby>.Filter.Not(
+                Builders<Lobby>.Filter.ElemMatch(l => l.Members, m => m.UserId == userId && m.Status != "Pending"));
+            var otherLobbyList = await _database.Lobbies.Find(notMember & isRecruiting).SortBy(l => l.Id).Limit(10).ToListAsync();
              
             var myLobby = myLobbyList.Select( lob => new ShowLobbyDTO{
                 Id = lob.Id,

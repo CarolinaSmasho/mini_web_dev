@@ -31,7 +31,7 @@
     string PhaseCls(int p) => p < phase ? "past" : p == phase ? "active" : "";
     string FmtDate(DateTime dt) => dt.ToString("MMM dd, HH:mm");
     string Avatar(string? url, string seed) => url ?? $"https://api.dicebear.com/7.x/avataaars/svg?seed={seed}";
-    string KarmaColor(double score) => score >= 3 ? "#2ecc71" : score >= 0 ? "#f39c12" : "#e74c3c";
+    string KarmaColor(double score) => score >= 4 ? "#00d2ff" :score >= 2 ? "#2ecc71" : score >= 0 ? "#f39c12" : "#e74c3c";
 
     // ── Snapshot hash สำหรับ Change Detection ──
     var snapshotRaw = $"{lobby.Members.Count}" +
@@ -58,11 +58,13 @@
      data-lobby-id="@lobby.Id"
      data-snapshot="@initialSnapshot"
      style="display:none;"
-     aria-hidden="true"></div>
+     aria-hidden="true">
+</div>
 
 <main class="container py-4">
 <div class="row g-4">
 
+@* Heroooooooooooo *@
 <div class="col-lg-8">
 
     
@@ -154,7 +156,7 @@
     </div>
 
     
-    @if (isHost && Model.PendingApplications.Any())
+    @if (isHost )
     {
         <div class="card-dark" style="border-color:#3498db25;">
             <p class="section-title">Pending Requests <span style="color:#5a7090;">(@Model.PendingApplications.Count)</span></p>
