@@ -16,7 +16,8 @@
     var endEvent     = lobby.EndEvent.ToLocalTime();
     var now          = DateTime.Now;
 
-    int phase = now < startRecruit ? 0
+    int phase = lobby.IsComplete ? 4
+              : now < startRecruit ? 0
               : now < endRecruit   ? 1
               : now < startEvent   ? 2
               : now < endEvent     ? 3
