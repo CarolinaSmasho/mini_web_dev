@@ -9,11 +9,11 @@ namespace GamerLFG.Models
 {
     public enum LobbyStatus
     {
-        ComingSoon,   // ยังไม่ถึงวัน StartRecruiting
-        Recruiting,   // StartRecruiting <= now <= EndRecruiting
-        EventOngoing, // EndRecruiting < now <= EndEvent (event กำลังเกิดขึ้น)
-        Completed,    // IsComplete = true หรือเลย EndEvent
-        Cancelled     // IsRecruiting = false ก่อนถึง StartEvent
+        ComingSoon,
+        Recruiting,
+        EventOngoing,
+        Completed,
+        Cancelled
     }
 
 public class Lobby
@@ -32,10 +32,8 @@ public class Lobby
     public string Picture { get; set; }
     public string DiscordLink { get; set; }
 
-    // Settings & Tags
     public List<string> Moods { get; set; } = new();
 
-    /// <summary>Roles with quota — each role has a name and max headcount.</summary>
     public List<LobbyRole> Roles { get; set; } = new();
 
     public int MaxPlayers { get; set; }
@@ -43,7 +41,6 @@ public class Lobby
     public bool IsComplete { get; set; } = false;
     public bool AutoRecruitProcessed { get; set; } = false;
 
-    /// <summary>คำนวณสถานะปัจจุบันของ lobby จากวันที่และ flags</summary>
     public LobbyStatus GetStatus()
     {
         var now = DateTime.UtcNow;
@@ -63,21 +60,17 @@ public class Lobby
         return LobbyStatus.ComingSoon;
     }
 
-    // Time Management
     public DateTime StartRecruiting { get; set; }
     public DateTime EndRecruiting { get; set; }
     public DateTime StartEvent { get; set; }
     public DateTime EndEvent { get; set; }
 
-    // Members (Embedded Array)
     public List<LobbyMember> Members { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     }
 
-
-/// <summary>A role slot with a name and maximum number of players allowed.</summary>
 public class LobbyRole
 {
     public string Name { get; set; }
@@ -88,13 +81,12 @@ public class LobbyMember
 {
     [BsonRepresentation(BsonType.ObjectId)]
     public string UserId { get; set; }
-    public string Status { get; set; } // e.g., 'Host', 'joined', 'Pending', 'Invited'
+    public string Status { get; set; }
     public string Role { get; set; }
     public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
 
     [BsonRepresentation(BsonType.ObjectId)]
     public string? InvitedBy { get; set; }
 }
-
 
 }

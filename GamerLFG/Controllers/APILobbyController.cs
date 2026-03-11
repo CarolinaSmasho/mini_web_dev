@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using GamerLFG.Services.Interface.DTOs; // เปลี่ยนเป็น Namespace ที่เก็บ CreateLobbyDTO ของคุณ
+using GamerLFG.Services.Interface.DTOs;
 using GamerLFG.Services;
 using GamerLFG.Services.Interface;
 
-[ApiController] // สำคัญมาก: เพื่อให้ Swagger รู้ว่าเป็น API
-[Route("api/[controller]")] // URL จะเป็น /api/lobby
+[ApiController]
+[Route("api/[controller]")]
 public class LobbyController : ControllerBase
 {
     private readonly ILobbyService _lobbyService;
@@ -14,7 +14,7 @@ public class LobbyController : ControllerBase
         _lobbyService = lobbyService;
     }
 
-    [HttpPost("create")] // ระบุ Http Method และ Path
+    [HttpPost("create")]
     public async Task<IActionResult> CreateLobby([FromBody] CreateLobbyDTO newLobby)
     {
         try 

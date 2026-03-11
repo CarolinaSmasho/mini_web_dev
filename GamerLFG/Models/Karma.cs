@@ -3,7 +3,6 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace GamerLFG.Models
 
-
 {
     public class KarmaHistory
     {

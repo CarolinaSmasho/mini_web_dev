@@ -19,18 +19,14 @@ namespace GamerLFG.Controllers
             _productService = productService;
         }
 
-        // GET /Product
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // ดึงข้อมูลทั้งหมดจาก MongoDB
+
             var products = await _productService.GetAllAsync();
 
-            // ส่ง list ไปที่ View ผ่าน Model
             return View(products);
         }
-
-
 
     }
 }

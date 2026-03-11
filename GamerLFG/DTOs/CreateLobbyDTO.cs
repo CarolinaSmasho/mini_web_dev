@@ -13,8 +13,8 @@ namespace GamerLFG.DTOs
 
         public string? Description { get; set; }
         
-        // [Required]
-        public string HostId { get; set; } = null!; // รับมาจาก Session ของ User ที่ล็อกอิน
+
+        public string HostId { get; set; } = null!;
 
         public int MaxPlayers { get; set; }
         public DateTime? StartRecruiting { get; set; }

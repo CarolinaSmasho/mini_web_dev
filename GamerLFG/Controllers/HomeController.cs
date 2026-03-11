@@ -9,9 +9,8 @@ using System.Security.Claims;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly ILobbyService _lobbyService; // เพิ่ม Service นี้เข้ามา
+    private readonly ILobbyService _lobbyService;
 
-    // ฉีดเข้ามาใน Constructor
     public HomeController(ILogger<HomeController> logger, ILobbyService lobbyService)
     {
         _logger = logger;
@@ -24,12 +23,12 @@ public class HomeController : Controller
         return View(allLob);
     }
 
-    [HttpPost] // ต้องระบุว่าเป็น Post ให้ตรงกับ fetch
+    [HttpPost]
     public async Task<IActionResult> GetNextLobby([FromBody] ShowLobbyDTO lastLob)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (lastLob == null) return BadRequest("ไม่มีห้องแล้ววว");
-        List<ShowLobbyDTO> lobbies = await _lobbyService.GetNextLobbiesAsync(lastLob.Id,userId); // เรียกใช้ Service จริงๆ ตรงนี้
+        List<ShowLobbyDTO> lobbies = await _lobbyService.GetNextLobbiesAsync(lastLob.Id,userId);
         return PartialView("_LobbyCardsPartial", lobbies);
     }
 
@@ -40,7 +39,7 @@ public class HomeController : Controller
         Console.WriteLine(target.Title);
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (target == null) return BadRequest("ไม่มีห้องที่ถามหา");
-        List<ShowLobbyDTO> lobbies = await _lobbyService.GetLobbiesAsyncByName(target.Title,userId,target.HostName); // เรียกใช้ Service จริงๆ ตรงนี้
+        List<ShowLobbyDTO> lobbies = await _lobbyService.GetLobbiesAsyncByName(target.Title,userId,target.HostName);
         ViewBag.HostId = userId;
         return PartialView("_LobbyCardsPartial", lobbies);
     }
@@ -50,15 +49,6 @@ public class HomeController : Controller
     {
         return View();
     }
-    // public IActionResult Login()
-    // {
-    //     return View();
-    // }
-
-    // public IActionResult Register()
-    // {
-    //     return View();
-    // }
 
     public IActionResult Profiles()
     {

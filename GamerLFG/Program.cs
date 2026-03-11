@@ -7,18 +7,15 @@ using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. Configurations & Database ---
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"));
 
-// ลงทะเบียน MongoDB Client
 builder.Services.AddSingleton<IMongoClient>(sp => 
 {
     var connectionString = builder.Configuration.GetSection("MongoDB")["ConnectionString"];
     return new MongoClient(connectionString);
 });
 
-// *** จุดสำคัญ: ลงทะเบียน Database ให้ Service อื่นๆ เรียกใช้ได้ ***
 builder.Services.AddSingleton<IMongoDatabase>(sp => 
 {
     var client = sp.GetRequiredService<IMongoClient>();
@@ -26,7 +23,6 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
     return client.GetDatabase(databaseName);
 });
 
-// --- 2. Custom Services ---
 builder.Services.AddSingleton<MongoDBservice>();
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<AuthService>();
@@ -36,7 +32,6 @@ builder.Services.AddHostedService<RecruitmentBackgroundService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
 
-// --- 3. Auth & Session ---
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -53,13 +48,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// --- 4. Tools (Swagger) ---
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// --- 5. Pipeline Setup ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -71,7 +64,6 @@ else
     app.UseHsts();
 }
 
-// Seed Data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -83,7 +75,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // เปลี่ยนจาก MapStaticAssets ถ้าเป็นเวอร์ชันเก่ากว่า .NET 9
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
