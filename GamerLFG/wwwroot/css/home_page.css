@@ -168,7 +168,7 @@ grid-auto-columns: minmax(90px, auto);
 }
 .icon{
     display: grid;
-    grid-template-columns: repeat(8, minmax(27px, 1fr));
+    grid-template-columns: repeat(8, minmax(25px, 1fr));
 
 
 }
