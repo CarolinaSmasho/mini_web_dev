@@ -40,7 +40,7 @@ namespace GamerLFG.Services
                 HostName  = lob.HostName,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
-                CurrentPlayers = lob.Members.Count,
+                CurrentPlayers = lob.Members.Count(m => m.Status != "Pending"),
                 MaxPlayers = lob.MaxPlayers,
                 Status = lob.GetStatus(),
                 isRecuiting = lob.IsRecruiting
@@ -61,7 +61,7 @@ namespace GamerLFG.Services
                 HostName  = otherHostMap.TryGetValue(lob.HostId ?? "", out var hu) ? hu.Username : lob.HostId,
                 Picture = lob.Picture,
                 Moods = lob.Moods,
-                CurrentPlayers = lob.Members.Count,
+                CurrentPlayers = lob.Members.Count(m => m.Status != "Pending"),
                 MaxPlayers = lob.MaxPlayers,
                 Status = lob.GetStatus(),
                 isRecuiting = lob.IsRecruiting
@@ -110,7 +110,7 @@ namespace GamerLFG.Services
                     HostName  = nextHostMap.TryGetValue(lob.HostId ?? "", out var hu) ? hu.Username : lob.HostId,
                     Picture = lob.Picture,
                     Moods = lob.Moods,
-                    CurrentPlayers = lob.Members.Count,
+                    CurrentPlayers = lob.Members.Count(m => m.Status != "Pending"),
                     MaxPlayers = lob.MaxPlayers,
                     Status = lob.GetStatus(),
                     isRecuiting = lob.IsRecruiting
@@ -877,7 +877,7 @@ namespace GamerLFG.Services
                     HostName  = nextHostMap.TryGetValue(lob.HostId ?? "", out var hu) ? hu.Username : lob.HostId,
                     Picture = lob.Picture,
                     Moods = lob.Moods,
-                    CurrentPlayers = lob.Members.Count,
+                    CurrentPlayers = lob.Members.Count(m => m.Status != "Pending"),
                     MaxPlayers = lob.MaxPlayers,
                     isRecuiting = lob.IsRecruiting,
                     Status = lob.GetStatus(),

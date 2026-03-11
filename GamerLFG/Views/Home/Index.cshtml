@@ -73,7 +73,7 @@
                         <div class="icon">
                                 @for(int i=0;i< lob.MaxPlayers && i<=15;i++){
                                      
-                                    @if(i>=lob.CurrentPlayers){
+                                    @if(i>=lob.CurrentPlayers ){ //include pending
                                     <i class="fa fa-user-o aria-hidden="true""></i>    
                                     }
                                     else{
