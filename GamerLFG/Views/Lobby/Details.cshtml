@@ -56,10 +56,10 @@
     </div>
 
     
-    <div class="card-dark">
+    <div class="card-dark" id="members-section">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0 text-white">Members</h5>
-            <span class="text-secondary" style="font-size:13px;">@Model.PlayerIds.Count / @lobby.MaxPlayers</span>
+            <h5 class="mb-0 text-white section-title">Members</h5>
+            <span style="font-size:12px; color:#3a4a62; font-weight:600;">@Model.PlayerIds.Count / @lobby.MaxPlayers</span>
         </div>
 
         <div class="row g-2">
@@ -70,7 +70,7 @@
                 bool isMe         = pid == Model.CurrentUserId;
                 bool canChangeRole = !lobby.IsComplete && (isHost || isMe);
 
-                <div class="col-md-6">
+                <div class="col-md-6" data-member="@pid">
                     <div class="member-card @(isMe ? "you" : "")">
                         <img src="@Avatar(user?.Avatar, user?.Username ?? pid)" class="avatar" />
 
@@ -131,45 +131,49 @@
     
     @if (isHost && Model.PendingApplications.Any())
     {
-        <div class="card-dark" style="border-color:#3498db44;">
-            <h5 class="text-white mb-3" style="font-size:15px;">
-                Pending Requests <span class="text-secondary">(@Model.PendingApplications.Count)</span>
-            </h5>
+        <div class="card-dark" style="border-color:#3498db25;">
+            <p class="section-title">Pending Requests <span style="color:#5a7090;">(@Model.PendingApplications.Count)</span></p>
             @foreach (var app in Model.PendingApplications)
             {
                 var ap = Model.ApplicantMap.GetValueOrDefault(app.UserId ?? "");
-                <div class="d-flex justify-content-between align-items-center p-2 mb-2"
-                     style="background:#0a0a0a; border-radius:8px; border:1px solid #222;">
-                    <div class="d-flex align-items-center gap-2">
+                <div data-applicant="@app.UserId"
+                     style="display:flex; justify-content:space-between; align-items:center;
+                            padding:12px 14px; margin-bottom:8px;
+                            background:#0a0e14; border-radius:12px; border:1px solid #1a2030;
+                            transition:opacity .3s;">
+                    <div style="display:flex; align-items:center; gap:12px;">
                         <img src="@Avatar(ap?.Avatar, ap?.Username ?? "unknown")"
-                             width="36" class="rounded" style="border:2px solid #333;" />
+                             width="40" style="border-radius:10px; border:2px solid #1e2535; flex-shrink:0;" />
                         <div>
-                            <p class="mb-0 fw-bold text-white" style="font-size:13px;">@(ap?.Username ?? "Unknown")</p>
-                            <small style="color:#f2960d; font-size:11px;">@app.Role</small>
-                            <small style="color:@KarmaColor(ap?.KarmaScore ?? 0); font-size:11px; margin-left:6px;">
-                                ★ @(ap?.KarmaScore.ToString("0.0") ?? "0.0")
-                            </small>
+                            <p style="margin:0; font-weight:700; color:#d8e0ee; font-size:13px;">@(ap?.Username ?? "Unknown")</p>
+                            <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+                                <small style="color:#f2960d; font-size:11px;">@app.Role</small>
+                                <small style="color:@KarmaColor(ap?.KarmaScore ?? 0); font-size:11px;">★ @((ap?.KarmaScore ?? 0).ToString("0.0"))</small>
+                            </div>
                             @if (ap?.VibeTags != null && ap.VibeTags.Any())
                             {
-                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:5px;">
                                     @foreach (var tag in ap.VibeTags)
                                     {
-                                        <span class="badge bg-secondary" style="font-size:9px; padding:2px 5px;">@tag</span>
+                                        <span style="background:#1a2535; color:#5a7090; border-radius:4px; font-size:9px; padding:2px 6px; font-weight:600;">@tag</span>
                                     }
                                 </div>
                             }
                             @if (app.InvitedBy != null)
                             {
                                 var inviterName = Model.MemberMap.TryGetValue(app.InvitedBy, out var invU) ? invU.Username : "someone";
-                                <br/><small style="color:#3498db; font-size:10px;">Invited by @inviterName</small>
+                                <small style="color:#3a6a9a; font-size:10px;">Invited by @inviterName</small>
                             }
                         </div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-danger" style="font-size:11px;"
+                    <div style="display:flex; gap:8px; flex-shrink:0;">
+                        <button style="background:transparent; color:#e74c3c; border:1px solid #e74c3c33;
+                                       padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;"
+                                onmouseover="this.style.background='#e74c3c15'" onmouseout="this.style.background='transparent'"
                                 onclick="rejectApplicant('@lobby.Id', '@app.UserId')">Reject</button>
-                        <button class="btn btn-sm btn-success" style="font-size:11px;"
-                                onclick="recruitMember('@lobby.Id', '@app.UserId')">Accept</button>
+                        <button style="background:linear-gradient(135deg,#2ecc71,#20a85a); color:#000;
+                                       border:none; padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;"
+                                onclick="recruitMember('@lobby.Id', '@app.UserId')">Accept ✓</button>
                     </div>
                 </div>
             }
@@ -179,26 +183,26 @@
     
     @if (isMember && !lobby.IsComplete && status == LobbyStatus.Recruiting && Model.InvitableFriends.Any())
     {
-        <div class="card-dark" style="border-color:#3498db44;">
-            <h5 class="text-white mb-3" style="font-size:15px;">Invite a Friend</h5>
+        <div class="card-dark" style="border-color:#3498db20;">
+            <p class="section-title">Invite a Friend</p>
             @foreach (var friend in Model.InvitableFriends)
             {
-                <div class="d-flex justify-content-between align-items-center p-2 mb-2"
-                     style="background:#0a0a0a; border-radius:8px; border:1px solid #222;">
-                    <div class="d-flex align-items-center gap-2">
+                <div data-invite="@friend.Id"
+                     style="display:flex; justify-content:space-between; align-items:center;
+                            padding:10px 14px; margin-bottom:8px;
+                            background:#0a0e14; border-radius:12px; border:1px solid #1a2030;">
+                    <div style="display:flex; align-items:center; gap:12px;">
                         <img src="@Avatar(friend.Avatar, friend.Username)"
-                             width="36" class="rounded" style="border:2px solid #333;" />
+                             width="38" style="border-radius:10px; border:2px solid #1e2535;" />
                         <div>
-                            <p class="mb-0 fw-bold text-white" style="font-size:13px;">@friend.Username</p>
-                            <small style="color:@KarmaColor(friend.KarmaScore); font-size:11px;">
-                                ★ @friend.KarmaScore.ToString("0.0")
-                            </small>
+                            <p style="margin:0; font-weight:700; color:#d8e0ee; font-size:13px;">@friend.Username</p>
+                            <small style="color:@KarmaColor(friend.KarmaScore); font-size:11px;">★ @friend.KarmaScore.ToString("0.0")</small>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center gap-2">
+                    <div style="display:flex; align-items:center; gap:8px;">
                         <select id="invite-role-@friend.Id"
-                                style="background:#0a0a0a; border:1px solid #f2960d44; color:#f2960d;
-                                       padding:2px 6px; border-radius:4px; font-size:11px; max-width:110px;">
+                                style="background:#080c10; border:1px solid #f2960d33; color:#f2960d;
+                                       padding:4px 8px; border-radius:7px; font-size:11px; max-width:110px;">
                             @foreach (var r in lobby.Roles)
                             {
                                 var remaining = r.Quantity - lobby.Members.Count(m => m.Role == r.Name);
@@ -206,7 +210,8 @@
                             }
                             <option value="Other" selected>Other</option>
                         </select>
-                        <button class="btn btn-sm" style="background:#3498db; color:#fff; font-size:11px; padding:3px 10px;"
+                        <button style="background:linear-gradient(135deg,#3498db,#1a78c2); color:#fff;
+                                       border:none; padding:5px 14px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;"
                                 onclick="inviteFriend('@lobby.Id', '@friend.Id')">Invite</button>
                     </div>
                 </div>
