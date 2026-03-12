@@ -125,10 +125,9 @@ public class UserController : Controller
             .Find(k => k.TargetUserId == id)
             .ToListAsync();
 
-        // Simple average จาก KarmaHistory ทั้งหมด
         user.KarmaScore = karmaRecords.Any()
             ? Math.Round(karmaRecords.Average(k => k.Score), 2)
-            : user.KarmaScore; // ถ้าไม่มี history ใช้ค่าใน DB ตามเดิม
+            : user.KarmaScore;
 
         return View(user);
     }

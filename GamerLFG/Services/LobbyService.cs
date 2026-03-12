@@ -71,7 +71,6 @@ namespace GamerLFG.Services
 
             }).ToList();
 
-            // Completed lobbies ที่ user เป็นสมาชิก (รวม host ด้วย)
             var completedLobbies = new List<ShowLobbyDTO>();
             if (!string.IsNullOrEmpty(userId))
             {
@@ -422,16 +421,14 @@ namespace GamerLFG.Services
 
         public async Task<bool> SubmitKarmaAsync(string lobbyId, string fromUserId, string targetUserId, double score, string comment = "")
         {
-            // เช็คว่าเคย rate targetUser ใน lobby นี้แล้วหรือยัง
             var alreadyRated = await _database.KarmaHistories
                 .Find(k => k.LobbyId == lobbyId &&
                            k.FromUserId == fromUserId &&
                            k.TargetUserId == targetUserId)
                 .AnyAsync();
 
-            if (alreadyRated) return false; // ห้าม rate ซ้ำใน lobby เดิม
+            if (alreadyRated) return false;
 
-            // ถ้าไม่มี comment ให้ใช้ label ตาม score
             if (string.IsNullOrWhiteSpace(comment))
             {
                 comment = score switch
@@ -458,7 +455,6 @@ namespace GamerLFG.Services
 
             await _database.KarmaHistories.InsertOneAsync(karmaHistory);
 
-            // Recalculate KarmaScore จาก KarmaHistory ทั้งหมด (ทุก lobby)
             var allHistories = await _database.KarmaHistories
                 .Find(k => k.TargetUserId == targetUserId)
                 .ToListAsync();
@@ -584,7 +580,6 @@ namespace GamerLFG.Services
             var endorsedUserIds = new HashSet<string>();
             if (lobby.IsComplete && !string.IsNullOrEmpty(currentUserId))
             {
-                // filter ด้วย LobbyId ด้วย → rate ซ้ำข้าม lobby ได้ แต่ใน lobby เดิมห้าม
                 var karmaGiven = await _database.KarmaHistories
                     .Find(k => k.LobbyId  == id &&
                                k.FromUserId == currentUserId &&

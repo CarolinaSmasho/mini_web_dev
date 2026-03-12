@@ -34,14 +34,12 @@ namespace GamerLFG.Controllers
             return View(viewModel);
         }
 
-        // ── Polling endpoint: ใช้ detect ว่า lobby เปลี่ยนจากตอนเปิดหน้าหรือเปล่า ──
         [HttpGet]
         public async Task<IActionResult> Snapshot(string id)
         {
             var lobby = await _lobbyService.GetLobbyByIdAsync(id);
             if (lobby == null) return NotFound();
 
-            // hash จาก field ที่สำคัญ — ถ้าค่าใดเปลี่ยน hash จะต่างกัน
             var raw = $"{lobby.Members.Count}" +
                       $"|{lobby.IsComplete}" +
                       $"|{lobby.IsRecruiting}" +
