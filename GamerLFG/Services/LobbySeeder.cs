@@ -20,6 +20,19 @@ namespace GamerLFG.Services
         public const string IdLobby4_Mission       = "aaaaaaaaaaaaaaaaaaaaa004";
         public const string IdLobby5_Completed     = "aaaaaaaaaaaaaaaaaaaaa005";
         public const string IdLobby = "aaaaaaaaaaaaaaaaaaaaaaaa";
+        public const string IdLobby6_OverflowPending = "aaaaaaaaaaaaaaaaaaaaa006";
+
+        public const string IdPending2 = "000000000000000000000010";
+        public const string IdPending3 = "000000000000000000000011";
+        public const string IdPending4 = "000000000000000000000012";
+        public const string IdPending5 = "000000000000000000000013";
+        public const string IdPending6 = "000000000000000000000014";
+        public const string IdPending7 = "000000000000000000000015";
+        public const string IdPending8 = "000000000000000000000016";
+
+        public const string IdHostA = "000000000000000000000020";
+        public const string IdHostB = "000000000000000000000021";
+        public const string IdHostC = "000000000000000000000022";
 
         public static async Task SeedAsync(MongoDBservice db)
         {
@@ -101,6 +114,156 @@ namespace GamerLFG.Services
                     steam = "newbie_player",
                     twitch = "",
                     CreatedAt = DateTime.UtcNow.AddDays(-7),
+                },
+                new() {
+                    Id = IdPending2, Username = "ProSniper_X",
+                    Name = "ProSniper",
+                    Email = "pending2@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=ProSniper_X",
+                    Bio = "Headshot machine. Top 500 every season.",
+                    KarmaScore = 4.9,
+                    VibeTags = new() { "Competitive", "Tryhard" },
+                    GameLibrary = new() { "Valorant", "CS2", "Overwatch 2" },
+                    FriendIds = new(),
+                    discord = "ProSniper#1111",
+                    steam = "prosniper_x",
+                    twitch = "prosniper_live",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-8),
+                },
+                new() {
+                    Id = IdPending3, Username = "ChillGamer_99",
+                    Name = "ChillGamer",
+                    Email = "pending3@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=ChillGamer_99",
+                    Bio = "Just here to vibe and have fun.",
+                    KarmaScore = 3.8,
+                    VibeTags = new() { "Chill", "Casual" },
+                    GameLibrary = new() { "Valorant", "Minecraft" },
+                    FriendIds = new(),
+                    discord = "ChillGamer#2222",
+                    steam = "chillgamer99",
+                    twitch = "",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-2),
+                },
+                new() {
+                    Id = IdPending4, Username = "ToxicNoMore",
+                    Name = "Reformed",
+                    Email = "pending4@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=ToxicNoMore",
+                    Bio = "Reformed toxic player. Trying to be better.",
+                    KarmaScore = 1.5,
+                    VibeTags = new() { "Competitive" },
+                    GameLibrary = new() { "Valorant", "League of Legends" },
+                    FriendIds = new(),
+                    discord = "Reformed#3333",
+                    steam = "toxicnomore",
+                    twitch = "",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-5),
+                },
+                new() {
+                    Id = IdPending5, Username = "SupportMain_Ana",
+                    Name = "Ana",
+                    Email = "pending5@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=SupportMain_Ana",
+                    Bio = "Heal bot reporting for duty. I keep the team alive.",
+                    KarmaScore = 4.5,
+                    VibeTags = new() { "Chill", "Competitive" },
+                    GameLibrary = new() { "Valorant", "Overwatch 2" },
+                    FriendIds = new(),
+                    discord = "AnaSupport#4444",
+                    steam = "supportmain_ana",
+                    twitch = "ana_heals",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-3),
+                },
+                new() {
+                    Id = IdPending6, Username = "AFKAndy",
+                    Name = "Andy",
+                    Email = "pending6@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=AFKAndy",
+                    Bio = "I might be AFK but my heart is in the game.",
+                    KarmaScore = 2.1,
+                    VibeTags = new() { "Casual" },
+                    GameLibrary = new() { "Valorant" },
+                    FriendIds = new(),
+                    discord = "AFKAndy#5555",
+                    steam = "afkandy",
+                    twitch = "",
+                    CreatedAt = DateTime.UtcNow.AddDays(-14),
+                },
+                new() {
+                    Id = IdPending7, Username = "FlexKing_MVP",
+                    Name = "FlexKing",
+                    Email = "pending7@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=FlexKing_MVP",
+                    Bio = "I play every role. Need a fill? I'm your guy.",
+                    KarmaScore = 4.6,
+                    VibeTags = new() { "Competitive", "Chill" },
+                    GameLibrary = new() { "Valorant", "League of Legends", "Overwatch 2" },
+                    FriendIds = new(),
+                    discord = "FlexKing#6666",
+                    steam = "flexking_mvp",
+                    twitch = "flexking_plays",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-4),
+                },
+                new() {
+                    Id = IdPending8, Username = "Lurker_Silent",
+                    Name = "Lurker",
+                    Email = "pending8@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Lurker_Silent",
+                    Bio = "No mic, but I follow callouts. Trust me.",
+                    KarmaScore = 2.8,
+                    VibeTags = new() { "Casual" },
+                    GameLibrary = new() { "Valorant", "CS2" },
+                    FriendIds = new(),
+                    discord = "Lurker#7777",
+                    steam = "lurker_silent",
+                    twitch = "",
+                    CreatedAt = DateTime.UtcNow.AddDays(-10),
+                },
+                new() {
+                    Id = IdHostA, Username = "SakuraRain",
+                    Name = "Sakura",
+                    Email = "hosta@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=SakuraRain",
+                    Bio = "RPG addict. 3000+ hours in every JRPG ever.",
+                    KarmaScore = 4.3,
+                    VibeTags = new() { "Chill", "Competitive" },
+                    GameLibrary = new() { "Final Fantasy XIV", "Genshin Impact", "Valorant", "Monster Hunter" },
+                    FriendIds = new(),
+                    discord = "Sakura#1001",
+                    steam = "sakura_rain",
+                    twitch = "sakura_plays",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-10),
+                },
+                new() {
+                    Id = IdHostB, Username = "DarkSoulz_69",
+                    Name = "DarkSoul",
+                    Email = "hostb@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=DarkSoulz_69",
+                    Bio = "Git gud or git out. Soulsborne veteran.",
+                    KarmaScore = 3.7,
+                    VibeTags = new() { "Tryhard", "Competitive" },
+                    GameLibrary = new() { "Elden Ring", "Dark Souls 3", "Sekiro", "CS2", "Dota 2" },
+                    FriendIds = new(),
+                    discord = "DarkSoulz#1002",
+                    steam = "darksoulz69",
+                    twitch = "darksoulz_live",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-7),
+                },
+                new() {
+                    Id = IdHostC, Username = "PixelQueen",
+                    Name = "Pixel",
+                    Email = "hostc@test.com", PasswordHash = "$2a$11$oVxuDXp/06jDgXNWRib5Q.ojgyRG5VlVLSYcO8A/cpmr0KCogJvS6",
+                    Avatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=PixelQueen",
+                    Bio = "Indie game enthusiast. Cozy vibes only.",
+                    KarmaScore = 4.7,
+                    VibeTags = new() { "Chill", "Casual", "Friendly" },
+                    GameLibrary = new() { "Stardew Valley", "Minecraft", "Terraria", "Among Us", "Overcooked 2" },
+                    FriendIds = new(),
+                    discord = "PixelQueen#1003",
+                    steam = "pixelqueen",
+                    twitch = "pixelqueen_cozy",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-5),
                 },
             };
 
@@ -245,7 +408,102 @@ namespace GamerLFG.Services
                 CreatedAt       = now.AddDays(-8),
             };
 
-            var lobbies = new[] { lobby1, lobby2, lobby3, lobby4, lobby5 };
+            var lobby6 = new Lobby
+            {
+                Id              = IdLobby6_OverflowPending,
+                Title           = "[Overflow] Valorant Ranked 5-Stack",
+                Game            = "Valorant",
+                Description     = "หาทีม 5 คน แต่คนสมัครเกิน! ระบบจะรับตาม Karma สูงสุด",
+                Picture         = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+                HostId          = IdHost,
+                HostName        = "Notatord_Commander",
+                MaxPlayers      = 5,
+                IsRecruiting    = true,
+                IsComplete      = false,
+                AutoRecruitProcessed = false,
+                Moods           = new() { "Competitive", "Tryhard" },
+                Roles           = new()
+                {
+                    new() { Name = "Duelist",    Quantity = 2 },
+                    new() { Name = "Controller", Quantity = 1 },
+                    new() { Name = "Sentinel",   Quantity = 1 },
+                    new() { Name = "Initiator",  Quantity = 1 },
+                },
+                DiscordLink     = "https://discord.gg/example-overflow",
+                StartRecruiting = now.AddHours(-6),
+                EndRecruiting   = now.AddMinutes(30),
+                StartEvent      = now.AddHours(2),
+                EndEvent        = now.AddHours(5),
+                Members         = new()
+                {
+                    new() { UserId = IdHost,     Status = "Host",    Role = "Duelist",    AppliedAt = now.AddHours(-6) },
+                    new() { UserId = IdMember1,  Status = "joined",  Role = "Controller", AppliedAt = now.AddHours(-5) },
+                    new() { UserId = IdPending,  Status = "Pending", Role = "Sentinel",   AppliedAt = now.AddHours(-4) },
+                    new() { UserId = IdPending2, Status = "Pending", Role = "Duelist",    AppliedAt = now.AddHours(-4).AddMinutes(5) },
+                    new() { UserId = IdPending3, Status = "Pending", Role = "Initiator",  AppliedAt = now.AddHours(-3).AddMinutes(30) },
+                    new() { UserId = IdPending4, Status = "Pending", Role = "Sentinel",   AppliedAt = now.AddHours(-3) },
+                    new() { UserId = IdPending5, Status = "Pending", Role = "Initiator",  AppliedAt = now.AddHours(-2).AddMinutes(45) },
+                    new() { UserId = IdPending6, Status = "Pending", Role = "Controller", AppliedAt = now.AddHours(-2) },
+                    new() { UserId = IdPending7, Status = "Pending", Role = "Duelist",    AppliedAt = now.AddHours(-1).AddMinutes(30) },
+                    new() { UserId = IdPending8, Status = "Pending", Role = "Sentinel",   AppliedAt = now.AddHours(-1) },
+                },
+                CreatedAt       = now.AddHours(-7),
+            };
+
+            var bulkLobbyData = new (string Id, string Title, string Game, string Desc, string HostId, string HostName, int Max, List<string> Moods, string Pic)[]
+            {
+                ("bbbbbbbbbbbbbbbbbbbb0001", "Valorant Ranked Push", "Valorant", "Diamond+ only, aimlab score 80k+", IdHostA, "SakuraRain", 5, new() { "Competitive", "Tryhard" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0002", "Chill Minecraft SMP", "Minecraft", "Survival server, no griefing pls", IdHostC, "PixelQueen", 10, new() { "Chill", "Casual" }, "https://pbs.twimg.com/profile_images/2028865530401337344/SlCKJUWN_400x400.jpg"),
+                ("bbbbbbbbbbbbbbbbbbbb0003", "CS2 Faceit Grind", "CS2", "Level 8+ faceit, need serious team", IdHostB, "DarkSoulz_69", 5, new() { "Competitive" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0004", "Elden Ring Co-op NG+7", "Elden Ring", "All bosses no summon, let's suffer together", IdHostB, "DarkSoulz_69", 3, new() { "Tryhard" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0005", "League ARAM Night", "League of Legends", "ARAM only, no salt, just fun", IdHostA, "SakuraRain", 5, new() { "Chill", "Casual" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0006", "Overwatch 2 Comp Climb", "Overwatch 2", "Tank/Support duo welcome", IdHostC, "PixelQueen", 6, new() { "Competitive", "Chill" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0007", "Stardew Valley Co-op Farm", "Stardew Valley", "Year 1 fresh start, cozy vibes", IdHostC, "PixelQueen", 4, new() { "Chill", "Friendly" }, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp9QhAqExpEt5DMUmmh31szAeOq3OulK8yrOghKQISbhlTRrH78eHSaoI89uGSkJmAWomLBw&s=10"),
+                ("bbbbbbbbbbbbbbbbbbbb0008", "Dota 2 Turbo Party", "Dota 2", "Turbo mode for quick games", IdHostB, "DarkSoulz_69", 5, new() { "Casual" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0009", "Genshin Spiral Abyss Carry", "Genshin Impact", "AR60 helping AR45+ clear floor 12", IdHostA, "SakuraRain", 2, new() { "Chill", "Competitive" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0010", "Monster Hunter Rise Hunt", "Monster Hunter", "Afflicted investigations, MR200+", IdHostA, "SakuraRain", 4, new() { "Competitive" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0011", "Terraria Master Mode", "Terraria", "Full playthrough from scratch", IdHostC, "PixelQueen", 4, new() { "Chill", "Tryhard" }, "https://images.unsplash.com/photo-1587573089734-599d584d68f4?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0012", "Among Us Custom Lobby", "Among Us", "15 players, 3 impostors, proximity chat", IdHostC, "PixelQueen", 15, new() { "Casual", "Friendly" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0013", "FFXIV Savage Raid", "Final Fantasy XIV", "P9S-P12S prog party, know mechs", IdHostA, "SakuraRain", 8, new() { "Competitive", "Tryhard" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0014", "Sekiro Boss Rush Race", "Sekiro", "Who dies less wins. Bragging rights only.", IdHostB, "DarkSoulz_69", 4, new() { "Tryhard", "Competitive" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0015", "Overcooked 2 Chaos Night", "Overcooked 2", "4 star all levels or we riot", IdHostC, "PixelQueen", 4, new() { "Casual", "Chill" }, "https://images.unsplash.com/photo-1587573089734-599d584d68f4?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0016", "Valorant Unrated Chill", "Valorant", "No rage, just practice and fun", IdHostA, "SakuraRain", 5, new() { "Chill" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0017", "Dark Souls 3 SL1 Run", "Dark Souls 3", "Co-op SL1, no pyro allowed", IdHostB, "DarkSoulz_69", 3, new() { "Tryhard" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0018", "League Clash Tournament", "League of Legends", "Gold+ team, need jungle & mid", IdHostA, "SakuraRain", 5, new() { "Competitive", "Tryhard" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0019", "CS2 Wingman Duo", "CS2", "Quick wingman games, any rank welcome", IdHostB, "DarkSoulz_69", 2, new() { "Casual" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0020", "Minecraft Modded SMP", "Minecraft", "All The Mods 9, fresh world", IdHostC, "PixelQueen", 8, new() { "Chill", "Friendly" }, "https://upload.wikimedia.org/wikipedia/en/thumb/b/b6/Minecraft_2024_cover_art.png/250px-Minecraft_2024_cover_art.png"),
+                ("bbbbbbbbbbbbbbbbbbbb0021", "Overwatch 2 Mystery Heroes", "Overwatch 2", "Arcade night, no tryhards pls", IdHostC, "PixelQueen", 6, new() { "Casual", "Chill" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0022", "Genshin Domain Farm", "Genshin Impact", "Artifact domain co-op, AR50+", IdHostA, "SakuraRain", 4, new() { "Chill" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0023", "Dota 2 Ranked Party", "Dota 2", "Ancient+ stack, mic required", IdHostB, "DarkSoulz_69", 5, new() { "Competitive", "Tryhard" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0024", "FFXIV Treasure Map Party", "Final Fantasy XIV", "Portal maps, bring gatherer", IdHostA, "SakuraRain", 8, new() { "Chill", "Casual" }, "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80"),
+                ("bbbbbbbbbbbbbbbbbbbb0025", "Valorant 10-Man Custom", "Valorant", "In-house 5v5, balanced teams", IdHostB, "DarkSoulz_69", 10, new() { "Competitive" }, "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"),
+            };
+
+            var bulkLobbies = bulkLobbyData.Select((d, i) => new Lobby
+            {
+                Id              = d.Id,
+                Title           = d.Title,
+                Game            = d.Game,
+                Description     = d.Desc,
+                Picture         = d.Pic,
+                HostId          = d.HostId,
+                HostName        = d.HostName,
+                MaxPlayers      = d.Max,
+                IsRecruiting    = true,
+                IsComplete      = false,
+                Moods           = d.Moods,
+                Roles           = new() { new() { Name = "Any", Quantity = d.Max } },
+                DiscordLink     = "https://discord.gg/example",
+                StartRecruiting = now.AddHours(-3 - i),
+                EndRecruiting   = now.AddHours(6 + i),
+                StartEvent      = now.AddDays(1).AddHours(i),
+                EndEvent        = now.AddDays(1).AddHours(3 + i),
+                Members         = new() { new() { UserId = d.HostId, Status = "Host", Role = "Leader", AppliedAt = now.AddHours(-3 - i) } },
+                CreatedAt       = now.AddHours(-4 - i),
+            }).ToList();
+
+            var lobbies = new List<Lobby> { lobby1, lobby2, lobby3, lobby4, lobby5, lobby6 };
+            lobbies.AddRange(bulkLobbies);
             foreach (var lobby in lobbies)
             {
                 await db.Lobbies.ReplaceOneAsync(
