@@ -24,7 +24,6 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
 });
 
 builder.Services.AddSingleton<MongoDBservice>();
-builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<ILobbyService, LobbyService>();
 builder.Services.AddHostedService<RecruitmentBackgroundService>();
@@ -59,9 +58,6 @@ if (!app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var productService = services.GetRequiredService<ProductService>();
-    await productService.SeedAsync();
-    
     var dbService = services.GetRequiredService<MongoDBservice>();
     await LobbySeeder.SeedAsync(dbService);
 }

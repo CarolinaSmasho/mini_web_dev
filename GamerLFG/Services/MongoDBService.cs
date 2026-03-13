@@ -17,7 +17,6 @@ namespace GamerLFG.service
         public IMongoCollection<User> Users => database.GetCollection<User>("Users");
         public IMongoCollection<Lobby> Lobbies => database.GetCollection<Lobby>("Lobbies");
         public IMongoCollection<Application> Applications => database.GetCollection<Application>("Applications");
-        public IMongoCollection<Product> Products => database.GetCollection<Product>("Products");
         public IMongoCollection<KarmaHistory> KarmaHistories => database.GetCollection<KarmaHistory>("KarmaHistory");
         public IMongoCollection<Notification> Notifications => database.GetCollection<Notification>("Notifications");
     }
